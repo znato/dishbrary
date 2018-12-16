@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne;
 @Getter
 @Setter
 @Entity
-public class User extends AbstractEntity{
+public class User extends AbstractEntity {
 
     @Column
     private String username;
@@ -18,6 +18,8 @@ public class User extends AbstractEntity{
     private String firstName;
     @Column
     private String lastName;
+    @Column
+    private String email;
     @Column
     private String password;
     @Column
