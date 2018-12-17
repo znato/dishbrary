@@ -2,6 +2,8 @@ package hu.gdf.szgd.cookbook.db.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.List;
@@ -11,11 +13,14 @@ import java.util.List;
 @Setter
 public class Recipe extends AbstractEntity {
 
+    @ManyToOne
+    private User owner;
     @Column(nullable = false)
     private String name;
     @Column
     private String instruction;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Ingredient> ingredients;
     @Column
     @ManyToMany
@@ -33,4 +38,6 @@ public class Recipe extends AbstractEntity {
     @Column
     @Basic(fetch = FetchType.LAZY)
     private Byte[] video;
+    @OneToMany(mappedBy = "recipe")
+    private List<Comment> comments;
 }
