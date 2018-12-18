@@ -1,7 +1,10 @@
-function MyDiv() {
+function CookbookApp() {
     return (
-        <div>Hello from MyDiv</div>
+        <div>
+            <Banner bannerImageUrl="/images/cookbook-banner.jpg"/>
+            <MainMenu/>
+        </div>
     );
 }
 
-ReactDOM.render(<MyDiv/>, document.getElementById("app-root"))
+ReactDOM.render(<CookbookApp/>, document.getElementById("app-root"));
