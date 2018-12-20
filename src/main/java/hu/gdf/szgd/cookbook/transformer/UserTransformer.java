@@ -35,11 +35,11 @@ public class UserTransformer {
     public CookbookUser transformCookbookUserToPresentation(CookbookUser cookbookUser) {
         CookbookUser retVal = new CookbookUser();
 
-        cookbookUser.setId(cookbookUser.getId());
-        cookbookUser.setUsername(cookbookUser.getUsername());
-        cookbookUser.setFirstName(cookbookUser.getFirstName());
-        cookbookUser.setLastName(cookbookUser.getLastName());
-        cookbookUser.setEmail(cookbookUser.getEmail());;
+        retVal.setId(cookbookUser.getId());
+        retVal.setUsername(cookbookUser.getUsername());
+        retVal.setFirstName(cookbookUser.getFirstName());
+        retVal.setLastName(cookbookUser.getLastName());
+        retVal.setEmail(cookbookUser.getEmail());;
 
         return retVal;
     }

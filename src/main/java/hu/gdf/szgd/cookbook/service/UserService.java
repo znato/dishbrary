@@ -61,7 +61,7 @@ public class UserService {
         } else {
             //user already authenticated, no action required
             log.debug("User[{}] already authenticated", userName);
-            return cookbookUser;
+            return userTransformer.transformCookbookUserToPresentation(cookbookUser);
         }
     }
 

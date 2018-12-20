@@ -6,6 +6,7 @@ import hu.gdf.szgd.cookbook.web.exception.UserAlreadyExistsException;
 import hu.gdf.szgd.cookbook.web.model.CookbookResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,7 @@ public class CookbookUserRestService {
             return Response.ok(
                     new CookbookResponse<>(authenticatedUser)
             ).build();
-        } catch (InternalAuthenticationServiceException authEx) {
+        } catch (InternalAuthenticationServiceException | BadCredentialsException authEx) {
             log.warn("Error during logging in user: {} - Error: {}", user.getUsername(), authEx.getMessage());
             CookbookResponse response = new CookbookResponse();
 
