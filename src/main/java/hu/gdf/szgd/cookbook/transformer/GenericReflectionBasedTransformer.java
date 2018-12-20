@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Log4j2
-public class GenericReflectionBasedEntityTransformer {
+public class GenericReflectionBasedTransformer {
 
     public enum AccessorType {
         GETTER("get"), SETTER("set");
@@ -25,9 +25,9 @@ public class GenericReflectionBasedEntityTransformer {
         }
     }
 
-    public <T> T transform(AbstractEntity entity, T targetObject) {
+    public <T> T transform(Object inputObject, T targetObject) {
         Class<?> targetClass = targetObject.getClass();
-        Class<? extends AbstractEntity> entityClass = entity.getClass();
+        Class<?> entityClass = inputObject.getClass();
 
         log.trace("Start transformation from {} to {}", entityClass.getName(), targetClass.getName());
 
@@ -38,15 +38,19 @@ public class GenericReflectionBasedEntityTransformer {
 
         while (c != null) {
             for (Method method : c.getDeclaredMethods()) {
-                log.trace("Method[{}] found in class: {}", method.getName(), c.getName());
+                if (log.isTraceEnabled()) {
+                    log.trace("Method[{}] found in class: {}", method.getName(), c.getName());
+                }
 
                 if (method.getName().startsWith(AccessorType.SETTER.value)) {
-                    log.trace("Setter method[{}] found for class: {}", method.getName(), c.getName());
+                    if (log.isTraceEnabled()) {
+                        log.trace("Setter method[{}] found for class: {}", method.getName(), c.getName());
+                    }
                     allSetterOfTarget.add(method);
                 }
             }
 
-            c = targetClass.getSuperclass();
+            c = c.getSuperclass();
         }
 
         if (log.isDebugEnabled()) {
@@ -60,8 +64,10 @@ public class GenericReflectionBasedEntityTransformer {
 
             getterMethodOfInput.map(getterMethod -> {
                 try {
-                    Object getValue = getterMethod.invoke(entity);
-                    log.debug("Getter method of {} returned with {}", entityClass.getName(), getValue);
+                    Object getValue = getterMethod.invoke(inputObject);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Getter method of {} returned with {}", entityClass.getName(), getValue);
+                    }
 
                     return setterMethod.invoke(targetObject, getValue);
                 } catch (Exception e) {
@@ -79,13 +85,15 @@ public class GenericReflectionBasedEntityTransformer {
         return targetObject;
     }
 
-    public <T> T transform(AbstractEntity entity, Class<T> targetClass) {
-        return transform(entity, createInstance(targetClass));
+    public <T> T transform(Object inputObject, Class<T> targetClass) {
+        return transform(inputObject, createInstance(targetClass));
     }
 
     public <T> T createInstance(Class<T> targetClass) {
         try {
-            log.debug("Creating instance of {} with default constructor.", targetClass.getName());
+            if (log.isDebugEnabled()) {
+                log.debug("Creating instance of {} with default constructor.", targetClass.getName());
+            }
 
             return targetClass.newInstance();
         } catch (Exception e) {
@@ -105,12 +113,14 @@ public class GenericReflectionBasedEntityTransformer {
 
         String methodName = methodNameBuilder.toString();
 
-        log.debug("Trying to retrieve method[{}] from class: {}", targetClass.getName(), methodName);
+        if (log.isDebugEnabled()) {
+            log.debug("Trying to retrieve method[{}] from class: {}", targetClass.getName(), methodName);
+        }
 
         try {
             return Optional.of(targetClass.getMethod(methodName, paramTypes));
         } catch (NoSuchMethodException e) {
-            String msg = String.format("Unexpected exception during access method[%s] of class: %s",  methodName, targetClass.getName());
+            String msg = String.format("Method[%s] of class: %s has not been found during mapping.",  methodName, targetClass.getName());
 
             log.warn(msg);
         }

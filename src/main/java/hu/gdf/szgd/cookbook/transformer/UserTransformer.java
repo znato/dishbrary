@@ -20,16 +20,44 @@ import java.util.List;
 public class UserTransformer {
 
     @Autowired
-    private GenericReflectionBasedEntityTransformer genericTransformer;
+    private GenericReflectionBasedTransformer genericTransformer;
 
     public CookbookUser transformUser(User user) {
         log.debug("Transfomr user: id[{}], username[{}]", user.getId(), user.getUsername());
 
-        CookbookUser cookbookUser = genericTransformer.transform(user, CookbookUser.class);
+        CookbookUser cookbookUser = genericTransformer.transform(user, new CookbookUser());
 
         cookbookUser.setGrantedAuthorities(mapRoleForUser(user));
 
         return cookbookUser;
+    }
+
+    public CookbookUser transformCookbookUserToPresentation(CookbookUser cookbookUser) {
+        CookbookUser retVal = new CookbookUser();
+
+        cookbookUser.setId(cookbookUser.getId());
+        cookbookUser.setUsername(cookbookUser.getUsername());
+        cookbookUser.setFirstName(cookbookUser.getFirstName());
+        cookbookUser.setLastName(cookbookUser.getLastName());
+        cookbookUser.setEmail(cookbookUser.getEmail());;
+
+        return retVal;
+    }
+
+    public CookbookUser transformUserToPresentation(User user) {
+        CookbookUser cookbookUser = new CookbookUser();
+
+        cookbookUser.setId(user.getId());
+        cookbookUser.setUsername(user.getUsername());
+        cookbookUser.setFirstName(user.getFirstName());
+        cookbookUser.setLastName(user.getLastName());
+        cookbookUser.setEmail(user.getEmail());
+
+        return cookbookUser;
+    }
+
+    public User transformCookbookUser(CookbookUser cookbookUser) {
+        return genericTransformer.transform(cookbookUser, new User());
     }
 
     private List<GrantedAuthority> mapRoleForUser(User user) {

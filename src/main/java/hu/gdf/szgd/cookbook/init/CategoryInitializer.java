@@ -26,6 +26,7 @@ public class CategoryInitializer {
 
         categoryRepository.save(new Category("Előételek"));
         categoryRepository.save(new Category("Levesek"));
+        categoryRepository.save(new Category("Saláta"));
         categoryRepository.save(new Category("Csirke"));
         categoryRepository.save(new Category("Marha"));
         categoryRepository.save(new Category("Sertés"));

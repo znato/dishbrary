@@ -14,6 +14,7 @@ public class CookbookUser implements UserDetails {
     private String username;
     private String firstName;
     private String lastName;
+    private String email;
     private String password;
     private boolean expired;
     private boolean banned;

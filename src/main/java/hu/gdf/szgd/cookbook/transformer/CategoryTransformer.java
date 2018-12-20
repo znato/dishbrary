@@ -15,7 +15,7 @@ public class CategoryTransformer {
     public CategoryRestModel transform(Category category) {
         log.debug("Transform Category with name:{} and id: {}", category.getName(), category.getId());
 
-        return new CategoryRestModel(category.getName());
+        return new CategoryRestModel(category.getId(), category.getName());
     }
 
 

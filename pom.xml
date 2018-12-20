@@ -72,6 +72,30 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+
+			<plugin>
+				<artifactId>exec-maven-plugin</artifactId>
+				<groupId>org.codehaus.mojo</groupId>
+
+				<executions>
+					<execution>
+						<id>buid-ui</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<!--<configuration>-->
+						<!--<executable>${basedir}/src/main/ui/build-ui.sh</executable>-->
+						<!--</configuration>-->
+					</execution>
+				</executions>
+
+				<configuration>
+					<workingDirectory>${basedir}/src/main/ui/</workingDirectory>
+					<executable>${basedir}/src/main/ui/build-ui.sh</executable>
+				</configuration>
+
+			</plugin>
 		</plugins>
 	</build>
 
