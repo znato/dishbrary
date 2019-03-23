@@ -23,3 +23,8 @@
 /dist/
 /nbdist/
 /.nb-gradle/
+
+### Frontend Node
+/frontend/**/node/
+/frontend/**/node_modules/
+/frontend/**/dist/
