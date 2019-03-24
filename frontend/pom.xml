@@ -18,4 +18,8 @@
     <modules>
         <module>cookbook-ui</module>
     </modules>
+
+    <build>
+        <outputDirectory>${project.build.directory}/dist</outputDirectory>
+    </build>
 </project>
