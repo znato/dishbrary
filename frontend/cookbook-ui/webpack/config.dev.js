@@ -1,33 +1,35 @@
-const HtmlWebPackPlugin = require("html-webpack-plugin");
+const merge = require("webpack-merge");
+const baseConfig = require("./config.base.js");
 
-module.exports = {
-    entry: {
-        app: "./src/js/index.js"
-    },
-    output: {
-        path: __dirname + "/target/dist/static"
-    },
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
+module.exports = merge(baseConfig, {
+    mode: "development",
+    devtool: "#inline-source-map",
     module: {
         rules: [
-            {
-                test: /\.(js|jsx)$/,
-                exclude: /node_modules/,
-                use: "babel-loader"
-            },
             {
                 test: /\.html$/,
                 use: [
                     {
                         loader: "html-loader",
                         options: {
-                            minimize: true
+                            minimize: false
                         }
                     }
                 ]
             },
             {
                 test: /\.css$/,
-                use: ["style-loader", "css-loader"]
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    {
+                        loader: "css-loader",
+                        options: {
+                            sourceMap: true
+                        }
+                    }
+                ],
             },
             {
                 test: /\.(woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
@@ -56,9 +58,9 @@ module.exports = {
         ]
     },
     plugins: [
-        new HtmlWebPackPlugin({
-            template: "src/index.html",
-            filename: "index.html"
+        new MiniCssExtractPlugin({
+            filename: "[name].css",
+            chunkFilename: "[id].css"
         })
     ]
-};
+});

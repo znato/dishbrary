@@ -16,7 +16,17 @@
     <properties>
         <frontend-plugin.version>1.7.5</frontend-plugin.version>
         <node.version>v10.15.1</node.version>
+        <npm.run.targetScript>build-prod</npm.run.targetScript>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <npm.run.targetScript>build-dev</npm.run.targetScript>
+            </properties>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>
@@ -49,7 +59,7 @@
                             <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <arguments>run build-prod</arguments>
+                            <arguments>run ${npm.run.targetScript}</arguments>
                         </configuration>
                     </execution>
                 </executions>
