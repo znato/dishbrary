@@ -1,6 +1,8 @@
 package hu.gdf.szgd.cookbook.security;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,9 +20,13 @@ public class CookbookUser implements UserDetails {
     private String firstName;
     private String lastName;
     private String email;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
+    @JsonIgnore
     private boolean expired;
+    @JsonIgnore
     private boolean banned;
+    @JsonIgnore
     private List<GrantedAuthority> grantedAuthorities;
 
     public void setGrantedAuthorities(List<GrantedAuthority> grantedAuthorities) {
@@ -28,26 +34,31 @@ public class CookbookUser implements UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return grantedAuthorities;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return !expired;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
         return !banned;
     }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return isEnabled();
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
         return !expired && !banned;
     }

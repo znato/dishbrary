@@ -57,11 +57,11 @@ public class UserService {
 
             SecurityContextHolder.getContext().setAuthentication(auth);
 
-            return userTransformer.transformCookbookUserToPresentation(loggedInUser);
+            return loggedInUser;
         } else {
             //user already authenticated, no action required
             log.debug("User[{}] already authenticated", userName);
-            return userTransformer.transformCookbookUserToPresentation(cookbookUser);
+            return cookbookUser;
         }
     }
 
@@ -79,7 +79,7 @@ public class UserService {
             userData.setPassword(passwordEncoder.encode(userData.getPassword()));
             User newUser = userRepository.save(userTransformer.transformCookbookUser(validateUser(userData)));
 
-            return userTransformer.transformUserToPresentation(newUser);
+            return userTransformer.transformUser(newUser);
         }
     }
 

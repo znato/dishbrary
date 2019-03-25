@@ -19,6 +19,7 @@ public class CookbookGenericExceptionHandler implements ExceptionMapper<Throwabl
 
         CookbookResponse response = new CookbookResponse();
 
+        response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
         response.setError(true);
         response.setMessage("A rendszer működésében átmeneti hiba lépett fel! Mar dolgozunk a javításán!");
 

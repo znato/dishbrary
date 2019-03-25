@@ -32,30 +32,6 @@ public class UserTransformer {
         return cookbookUser;
     }
 
-    public CookbookUser transformCookbookUserToPresentation(CookbookUser cookbookUser) {
-        CookbookUser retVal = new CookbookUser();
-
-        retVal.setId(cookbookUser.getId());
-        retVal.setUsername(cookbookUser.getUsername());
-        retVal.setFirstName(cookbookUser.getFirstName());
-        retVal.setLastName(cookbookUser.getLastName());
-        retVal.setEmail(cookbookUser.getEmail());
-
-        return retVal;
-    }
-
-    public CookbookUser transformUserToPresentation(User user) {
-        CookbookUser cookbookUser = new CookbookUser();
-
-        cookbookUser.setId(user.getId());
-        cookbookUser.setUsername(user.getUsername());
-        cookbookUser.setFirstName(user.getFirstName());
-        cookbookUser.setLastName(user.getLastName());
-        cookbookUser.setEmail(user.getEmail());
-
-        return cookbookUser;
-    }
-
     public User transformCookbookUser(CookbookUser cookbookUser) {
         return genericTransformer.transform(cookbookUser, new User());
     }

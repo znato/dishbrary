@@ -43,7 +43,7 @@ export class CookbookDropdownMenuItem extends React.Component {
                 <div className="cookbook-dropdown-content">
                     {
                         this.state.elementsInfo.map((elementInfo) => {
-                            return <a>{elementInfo.name}</a>
+                            return <a key={elementInfo.id}>{elementInfo.name}</a>
                         })
                     }
                 </div>
