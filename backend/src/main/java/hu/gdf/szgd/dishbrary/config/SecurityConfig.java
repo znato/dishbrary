@@ -18,45 +18,45 @@ import org.springframework.security.web.authentication.AnonymousAuthenticationFi
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        //TODO: after h2 development phase is finished enable csrf and frameOptions
-        http
-                .csrf().disable()
-                .headers().frameOptions().disable()
-                .and()
-                .authorizeRequests()
-                .antMatchers("/**").permitAll()
-                .and()
-                .logout()
-                .permitAll()
-                .and()
-                .addFilterBefore(new AnonymousDishbraryAuthenticationFilter("anon"), AnonymousAuthenticationFilter.class);
-    }
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		//TODO: after h2 development phase is finished enable csrf and frameOptions
+		http
+				.csrf().disable()
+				.headers().frameOptions().disable()
+				.and()
+				.authorizeRequests()
+				.antMatchers("/**").permitAll()
+				.and()
+				.logout()
+				.permitAll()
+				.and()
+				.addFilterBefore(new AnonymousDishbraryAuthenticationFilter("anon"), AnonymousAuthenticationFilter.class);
+	}
 
-    @Bean
-    protected BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+	@Bean
+	protected BCryptPasswordEncoder bCryptPasswordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 
-    @Bean
-    @Override
-    protected UserDetailsService userDetailsService() {
-        return new DishbraryUserDetailService();
-    }
+	@Bean
+	@Override
+	protected UserDetailsService userDetailsService() {
+		return new DishbraryUserDetailService();
+	}
 
-    @Bean
-    protected AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+	@Bean
+	protected AuthenticationProvider authenticationProvider() {
+		DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
 
-        authenticationProvider.setUserDetailsService(userDetailsService());
-        authenticationProvider.setPasswordEncoder(bCryptPasswordEncoder());
+		authenticationProvider.setUserDetailsService(userDetailsService());
+		authenticationProvider.setPasswordEncoder(bCryptPasswordEncoder());
 
-        return authenticationProvider;
-    }
+		return authenticationProvider;
+	}
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(authenticationProvider());
-    }
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.authenticationProvider(authenticationProvider());
+	}
 }

@@ -10,18 +10,18 @@ import javax.persistence.*;
 @Setter
 public class Ingredient extends AbstractEntity {
 
-    @Column(nullable = false, unique = true)
-    private String name;
-    @Column
-    private Integer energy;
-    @Column
-    private Integer protein;
-    @Column
-    private Integer fat;
-    @Column
-    private Integer carbohydrate;
-    @Column
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    private Byte[] image;
+	@Column(nullable = false, unique = true)
+	private String name;
+	@Column
+	private Integer energy;
+	@Column
+	private Integer protein;
+	@Column
+	private Integer fat;
+	@Column
+	private Integer carbohydrate;
+	@Column
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
+	private Byte[] image;
 }

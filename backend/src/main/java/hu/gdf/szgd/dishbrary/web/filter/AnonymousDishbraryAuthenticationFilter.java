@@ -12,22 +12,22 @@ import java.util.List;
 
 public class AnonymousDishbraryAuthenticationFilter extends AnonymousAuthenticationFilter {
 
-    private String key;
-    private static final AnonymousDishbraryUser ANONYMOUS_DISHBRARY_USER = new AnonymousDishbraryUser();
+	private String key;
+	private static final AnonymousDishbraryUser ANONYMOUS_DISHBRARY_USER = new AnonymousDishbraryUser();
 
-    public AnonymousDishbraryAuthenticationFilter(String key) {
-        this(key, ANONYMOUS_DISHBRARY_USER.getUsername(), AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"));
-    }
+	public AnonymousDishbraryAuthenticationFilter(String key) {
+		this(key, ANONYMOUS_DISHBRARY_USER.getUsername(), AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"));
+	}
 
-    public AnonymousDishbraryAuthenticationFilter(String key, Object principal, List<GrantedAuthority> authorities) {
-        super(key, principal, authorities);
-        this.key = key;
-    }
+	public AnonymousDishbraryAuthenticationFilter(String key, Object principal, List<GrantedAuthority> authorities) {
+		super(key, principal, authorities);
+		this.key = key;
+	}
 
-    @Override
-    protected Authentication createAuthentication(HttpServletRequest request) {
-        AnonymousAuthenticationToken auth = new AnonymousAuthenticationToken(this.key, getPrincipal(), getAuthorities());
-        auth.setDetails(ANONYMOUS_DISHBRARY_USER);
-        return auth;
-    }
+	@Override
+	protected Authentication createAuthentication(HttpServletRequest request) {
+		AnonymousAuthenticationToken auth = new AnonymousAuthenticationToken(this.key, getPrincipal(), getAuthorities());
+		auth.setDetails(ANONYMOUS_DISHBRARY_USER);
+		return auth;
+	}
 }

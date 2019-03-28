@@ -22,55 +22,55 @@ import static hu.gdf.szgd.dishbrary.web.WebConstants.JSON_WITH_UTF8_ENCODING;
 @Consumes(JSON_WITH_UTF8_ENCODING)
 public class DishbraryUserRestService {
 
-    @Autowired
-    private UserService userService;
+	@Autowired
+	private UserService userService;
 
-    @POST
-    @Path("/login")
-    public Response login(DishbraryUser user) {
-        try {
-            DishbraryUser authenticatedUser = userService.performLogin(user.getUsername(), user.getPassword());
+	@POST
+	@Path("/login")
+	public Response login(DishbraryUser user) {
+		try {
+			DishbraryUser authenticatedUser = userService.performLogin(user.getUsername(), user.getPassword());
 
-            return Response.ok(
-                    new DishbraryResponse<>(authenticatedUser)
-            ).build();
-        } catch (InternalAuthenticationServiceException | BadCredentialsException authEx) {
-            log.warn("Error during logging in user: {} - Error: {}", user.getUsername(), authEx.getMessage());
-            DishbraryResponse response = new DishbraryResponse();
+			return Response.ok(
+					new DishbraryResponse<>(authenticatedUser)
+			).build();
+		} catch (InternalAuthenticationServiceException | BadCredentialsException authEx) {
+			log.warn("Error during logging in user: {} - Error: {}", user.getUsername(), authEx.getMessage());
+			DishbraryResponse response = new DishbraryResponse();
 
-            response.setError(true);
-            response.setMessage("A beléptetés sikertelen!");
+			response.setError(true);
+			response.setMessage("A beléptetés sikertelen!");
 
-            return Response.status(Response.Status.UNAUTHORIZED)
-                    .entity(response)
-                    .build();
-        }
-    }
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(response)
+					.build();
+		}
+	}
 
-    @GET
-    @Path("/logout")
-    public Response logout() {
-        userService.performLogoutForCurrentUser();
+	@GET
+	@Path("/logout")
+	public Response logout() {
+		userService.performLogoutForCurrentUser();
 
-        return Response.ok(new DishbraryResponse<>("Sikeres kijelentkezés!")).build();
-    }
+		return Response.ok(new DishbraryResponse<>("Sikeres kijelentkezés!")).build();
+	}
 
-    @POST
-    @Path("/register")
-    public Response register(DishbraryUser userData) {
-        try {
-            return Response.ok(
-                    new DishbraryResponse<>(userService.registerUser(userData))
-            ).build();
-        } catch (UserAlreadyExistsException ex) {
-            DishbraryResponse response = new DishbraryResponse();
+	@POST
+	@Path("/register")
+	public Response register(DishbraryUser userData) {
+		try {
+			return Response.ok(
+					new DishbraryResponse<>(userService.registerUser(userData))
+			).build();
+		} catch (UserAlreadyExistsException ex) {
+			DishbraryResponse response = new DishbraryResponse();
 
-            response.setError(true);
-            response.setMessage("A megadott felhasználónév már foglalt!");
+			response.setError(true);
+			response.setMessage("A megadott felhasználónév már foglalt!");
 
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(response)
-                    .build();
-        }
-    }
+			return Response.status(Response.Status.BAD_REQUEST)
+					.entity(response)
+					.build();
+		}
+	}
 }

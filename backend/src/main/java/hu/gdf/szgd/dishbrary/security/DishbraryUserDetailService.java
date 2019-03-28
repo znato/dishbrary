@@ -15,16 +15,16 @@ import java.util.Optional;
 @Service
 public class DishbraryUserDetailService implements UserDetailsService {
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserTransformer userTransformer;
+	@Autowired
+	private UserRepository userRepository;
+	@Autowired
+	private UserTransformer userTransformer;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> userInDb = userRepository.findUserByUsername(username);
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		Optional<User> userInDb = userRepository.findUserByUsername(username);
 
-        return userInDb.map(user -> userTransformer.transformUser(user))
-                .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("Invalid username or password!"));
-    }
+		return userInDb.map(user -> userTransformer.transformUser(user))
+				.orElseThrow(() -> new AuthenticationCredentialsNotFoundException("Invalid username or password!"));
+	}
 }

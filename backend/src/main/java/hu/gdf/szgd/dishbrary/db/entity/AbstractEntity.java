@@ -17,14 +17,14 @@ import java.util.Date;
 @Setter
 public abstract class AbstractEntity {
 
-    @Id
-    @GeneratedValue
-    private Long id;
-    @Column
-    @CreationTimestamp
-    private Date creationDate;
-    @Column
-    @UpdateTimestamp
-    private Date modificationDate;
+	@Id
+	@GeneratedValue
+	private Long id;
+	@Column
+	@CreationTimestamp
+	private Date creationDate;
+	@Column
+	@UpdateTimestamp
+	private Date modificationDate;
 
 }

@@ -12,10 +12,10 @@ import javax.persistence.Lob;
 @Setter
 public class Cuisine extends AbstractEntity {
 
-    @Column
-    private String name;
-    @Lob
-    @Column
-    private Byte[] icon;
+	@Column
+	private String name;
+	@Lob
+	@Column
+	private Byte[] icon;
 
 }

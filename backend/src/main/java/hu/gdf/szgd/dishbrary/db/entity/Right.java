@@ -12,8 +12,8 @@ import javax.persistence.ManyToOne;
 @Setter
 public class Right extends AbstractEntity {
 
-    @Column(nullable = false, unique = true)
-    private String name;
-    @ManyToOne
-    private Role role;
+	@Column(nullable = false, unique = true)
+	private String name;
+	@ManyToOne
+	private Role role;
 }

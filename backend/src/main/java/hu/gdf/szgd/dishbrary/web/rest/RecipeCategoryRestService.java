@@ -19,14 +19,14 @@ import static hu.gdf.szgd.dishbrary.web.WebConstants.JSON_WITH_UTF8_ENCODING;
 @Consumes(JSON_WITH_UTF8_ENCODING)
 public class RecipeCategoryRestService {
 
-    @Autowired
-    private CategoryService categoryService;
+	@Autowired
+	private CategoryService categoryService;
 
-    @GET
-    @Path("/all")
-    public Response getAllCategories() {
-        return Response.ok(
-                new DishbraryCollectionResponse<>(categoryService.getAllCategory())
-        ).build();
-    }
- }
+	@GET
+	@Path("/all")
+	public Response getAllCategories() {
+		return Response.ok(
+				new DishbraryCollectionResponse<>(categoryService.getAllCategory())
+		).build();
+	}
+}

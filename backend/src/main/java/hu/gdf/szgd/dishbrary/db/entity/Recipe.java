@@ -13,31 +13,31 @@ import java.util.List;
 @Setter
 public class Recipe extends AbstractEntity {
 
-    @ManyToOne
-    private User owner;
-    @Column(nullable = false)
-    private String name;
-    @Column
-    private String instruction;
-    @ManyToMany
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private List<Ingredient> ingredients;
-    @Column
-    @ManyToMany
-    private List<Category> categories;
-    @Column
-    @ManyToMany
-    private List<Cuisine> cuisines;
-    @Column
-    private String tags;
-    @Lob
-    @Column
-    @Basic(fetch = FetchType.LAZY)
-    private Byte[] image;
-    @Lob
-    @Column
-    @Basic(fetch = FetchType.LAZY)
-    private Byte[] video;
-    @OneToMany(mappedBy = "recipe")
-    private List<Comment> comments;
+	@ManyToOne
+	private User owner;
+	@Column(nullable = false)
+	private String name;
+	@Column
+	private String instruction;
+	@ManyToMany
+	@LazyCollection(LazyCollectionOption.FALSE)
+	private List<Ingredient> ingredients;
+	@Column
+	@ManyToMany
+	private List<Category> categories;
+	@Column
+	@ManyToMany
+	private List<Cuisine> cuisines;
+	@Column
+	private String tags;
+	@Lob
+	@Column
+	@Basic(fetch = FetchType.LAZY)
+	private Byte[] image;
+	@Lob
+	@Column
+	@Basic(fetch = FetchType.LAZY)
+	private Byte[] video;
+	@OneToMany(mappedBy = "recipe")
+	private List<Comment> comments;
 }

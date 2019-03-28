@@ -14,51 +14,51 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DishbraryUser implements UserDetails {
 
-    private Long id;
-    private String username;
-    private String firstName;
-    private String lastName;
-    private String email;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String password;
-    @JsonIgnore
-    private boolean expired;
-    @JsonIgnore
-    private boolean banned;
-    @JsonIgnore
-    private List<GrantedAuthority> grantedAuthorities;
+	private Long id;
+	private String username;
+	private String firstName;
+	private String lastName;
+	private String email;
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private String password;
+	@JsonIgnore
+	private boolean expired;
+	@JsonIgnore
+	private boolean banned;
+	@JsonIgnore
+	private List<GrantedAuthority> grantedAuthorities;
 
-    public void setGrantedAuthorities(List<GrantedAuthority> grantedAuthorities) {
-        this.grantedAuthorities = grantedAuthorities;
-    }
+	public void setGrantedAuthorities(List<GrantedAuthority> grantedAuthorities) {
+		this.grantedAuthorities = grantedAuthorities;
+	}
 
-    @Override
-    @JsonIgnore
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return grantedAuthorities;
-    }
+	@Override
+	@JsonIgnore
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return grantedAuthorities;
+	}
 
-    @Override
-    @JsonIgnore
-    public boolean isAccountNonExpired() {
-        return !expired;
-    }
+	@Override
+	@JsonIgnore
+	public boolean isAccountNonExpired() {
+		return !expired;
+	}
 
-    @Override
-    @JsonIgnore
-    public boolean isAccountNonLocked() {
-        return !banned;
-    }
+	@Override
+	@JsonIgnore
+	public boolean isAccountNonLocked() {
+		return !banned;
+	}
 
-    @Override
-    @JsonIgnore
-    public boolean isCredentialsNonExpired() {
-        return isEnabled();
-    }
+	@Override
+	@JsonIgnore
+	public boolean isCredentialsNonExpired() {
+		return isEnabled();
+	}
 
-    @Override
-    @JsonIgnore
-    public boolean isEnabled() {
-        return !expired && !banned;
-    }
+	@Override
+	@JsonIgnore
+	public boolean isEnabled() {
+		return !expired && !banned;
+	}
 }

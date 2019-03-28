@@ -15,10 +15,10 @@ import java.util.List;
 @Setter
 public class Role extends AbstractEntity {
 
-    @Column(nullable = false, unique = true)
-    private String name;
-    @OneToMany(mappedBy = "role")
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private List<Right> rights;
+	@Column(nullable = false, unique = true)
+	private String name;
+	@OneToMany(mappedBy = "role")
+	@LazyCollection(LazyCollectionOption.FALSE)
+	private List<Right> rights;
 
 }

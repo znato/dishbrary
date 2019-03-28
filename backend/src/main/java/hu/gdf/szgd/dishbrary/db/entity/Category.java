@@ -15,6 +15,6 @@ import javax.persistence.Entity;
 @NoArgsConstructor
 public class Category extends AbstractEntity {
 
-    @Column
-    private String name;
+	@Column
+	private String name;
 }

@@ -14,15 +14,15 @@ import java.util.List;
 @Setter
 public class Comment extends AbstractEntity {
 
-    @ManyToOne
-    private User postedBy;
-    @Column
-    private String content;
-    @ManyToOne
-    private Recipe recipe;
-    @ManyToOne
-    private Comment parent;
-    @OneToMany(mappedBy = "parent")
-    private List<Comment> childComments;
+	@ManyToOne
+	private User postedBy;
+	@Column
+	private String content;
+	@ManyToOne
+	private Recipe recipe;
+	@ManyToOne
+	private Comment parent;
+	@OneToMany(mappedBy = "parent")
+	private List<Comment> childComments;
 
 }

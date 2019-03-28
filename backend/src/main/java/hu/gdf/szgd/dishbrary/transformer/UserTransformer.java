@@ -19,48 +19,48 @@ import java.util.List;
 @Log4j2
 public class UserTransformer {
 
-    @Autowired
-    private GenericReflectionBasedTransformer genericTransformer;
+	@Autowired
+	private GenericReflectionBasedTransformer genericTransformer;
 
-    public DishbraryUser transformUser(User user) {
-        log.debug("Transfomr user: id[{}], username[{}]", user.getId(), user.getUsername());
+	public DishbraryUser transformUser(User user) {
+		log.debug("Transfomr user: id[{}], username[{}]", user.getId(), user.getUsername());
 
-        DishbraryUser dishbraryUser = genericTransformer.transform(user, new DishbraryUser());
+		DishbraryUser dishbraryUser = genericTransformer.transform(user, new DishbraryUser());
 
-        dishbraryUser.setGrantedAuthorities(mapRoleForUser(user));
+		dishbraryUser.setGrantedAuthorities(mapRoleForUser(user));
 
-        return dishbraryUser;
-    }
+		return dishbraryUser;
+	}
 
-    public User transformDishbraryUser(DishbraryUser dishbraryUser) {
-        return genericTransformer.transform(dishbraryUser, new User());
-    }
+	public User transformDishbraryUser(DishbraryUser dishbraryUser) {
+		return genericTransformer.transform(dishbraryUser, new User());
+	}
 
-    private List<GrantedAuthority> mapRoleForUser(User user) {
-        List<GrantedAuthority> grantedAuthorities;
+	private List<GrantedAuthority> mapRoleForUser(User user) {
+		List<GrantedAuthority> grantedAuthorities;
 
-        Role role = user.getRole();
+		Role role = user.getRole();
 
-        if (role != null && !CollectionUtils.isEmpty(role.getRights())) {
-            List<Right> rights = role.getRights();
-            grantedAuthorities = new ArrayList<>(rights.size() + 1);
+		if (role != null && !CollectionUtils.isEmpty(role.getRights())) {
+			List<Right> rights = role.getRights();
+			grantedAuthorities = new ArrayList<>(rights.size() + 1);
 
-            String roleName = "ROLE_" + role.getName();
-            log.debug("User[{}] has role: {}", user.getUsername(), roleName);
+			String roleName = "ROLE_" + role.getName();
+			log.debug("User[{}] has role: {}", user.getUsername(), roleName);
 
-            grantedAuthorities.add(new SimpleGrantedAuthority(roleName));
+			grantedAuthorities.add(new SimpleGrantedAuthority(roleName));
 
-            rights.forEach(right -> {
-                String rightName = right.getName();
-                log.debug("User[{}] has right: {}", user.getUsername(), rightName);
+			rights.forEach(right -> {
+				String rightName = right.getName();
+				log.debug("User[{}] has right: {}", user.getUsername(), rightName);
 
-                grantedAuthorities.add(new SimpleGrantedAuthority(rightName));
-            });
-        } else {
-            log.debug("Empty role/right set found for user: {}", user.getUsername());
-            grantedAuthorities = Collections.emptyList();
-        }
+				grantedAuthorities.add(new SimpleGrantedAuthority(rightName));
+			});
+		} else {
+			log.debug("Empty role/right set found for user: {}", user.getUsername());
+			grantedAuthorities = Collections.emptyList();
+		}
 
-        return grantedAuthorities;
-    }
+		return grantedAuthorities;
+	}
 }

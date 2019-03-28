@@ -21,69 +21,69 @@ import java.util.Optional;
 @Log4j2
 public class UserService {
 
-    @Autowired
-    private AuthenticationProvider authenticationProvider;
+	@Autowired
+	private AuthenticationProvider authenticationProvider;
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private UserTransformer userTransformer;
+	@Autowired
+	private UserRepository userRepository;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+	@Autowired
+	private UserTransformer userTransformer;
 
-    public DishbraryUser performLogin(String userName, String password) {
-        DishbraryUser dishbraryUser = SecurityUtils.getDishbraryUserFromContext();
+	public DishbraryUser performLogin(String userName, String password) {
+		DishbraryUser dishbraryUser = SecurityUtils.getDishbraryUserFromContext();
 
-        log.debug("User in context: {}", dishbraryUser);
+		log.debug("User in context: {}", dishbraryUser);
 
-        if (dishbraryUser == null) {
-            String msg = "Illegal state! No user found in context!";
-            log.error(msg);
-            throw new IllegalStateException(msg);
-        }
+		if (dishbraryUser == null) {
+			String msg = "Illegal state! No user found in context!";
+			log.error(msg);
+			throw new IllegalStateException(msg);
+		}
 
-        if (dishbraryUser instanceof AnonymousDishbraryUser) {
-            log.debug("User in context require authentication - username: {}", userName);
+		if (dishbraryUser instanceof AnonymousDishbraryUser) {
+			log.debug("User in context require authentication - username: {}", userName);
 
-            UsernamePasswordAuthenticationToken auth =
-                    (UsernamePasswordAuthenticationToken) authenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(userName, password));
+			UsernamePasswordAuthenticationToken auth =
+					(UsernamePasswordAuthenticationToken) authenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(userName, password));
 
-            DishbraryUser loggedInUser = (DishbraryUser) auth.getPrincipal();
+			DishbraryUser loggedInUser = (DishbraryUser) auth.getPrincipal();
 
-            //put the principal object into details to get the SecurityUtils.getDishbraryUserFromContext() working properly
-            auth.setDetails(loggedInUser);
+			//put the principal object into details to get the SecurityUtils.getDishbraryUserFromContext() working properly
+			auth.setDetails(loggedInUser);
 
-            log.debug("User[{}] successfully authenticated", userName);
+			log.debug("User[{}] successfully authenticated", userName);
 
-            SecurityContextHolder.getContext().setAuthentication(auth);
+			SecurityContextHolder.getContext().setAuthentication(auth);
 
-            return loggedInUser;
-        } else {
-            //user already authenticated, no action required
-            log.debug("User[{}] already authenticated", userName);
-            return dishbraryUser;
-        }
-    }
+			return loggedInUser;
+		} else {
+			//user already authenticated, no action required
+			log.debug("User[{}] already authenticated", userName);
+			return dishbraryUser;
+		}
+	}
 
-    public void performLogoutForCurrentUser() {
-        SecurityContextHolder.getContext().setAuthentication(null);
+	public void performLogoutForCurrentUser() {
+		SecurityContextHolder.getContext().setAuthentication(null);
 
-    }
+	}
 
-    public DishbraryUser registerUser(DishbraryUser userData) {
-        Optional<User> existingUser = userRepository.findUserByUsername(userData.getUsername());
+	public DishbraryUser registerUser(DishbraryUser userData) {
+		Optional<User> existingUser = userRepository.findUserByUsername(userData.getUsername());
 
-        if (existingUser.isPresent()) {
-            throw new UserAlreadyExistsException("A megadott felhasználónév már foglalt!");
-        } else {
-            userData.setPassword(passwordEncoder.encode(userData.getPassword()));
-            User newUser = userRepository.save(userTransformer.transformDishbraryUser(validateUser(userData)));
+		if (existingUser.isPresent()) {
+			throw new UserAlreadyExistsException("A megadott felhasználónév már foglalt!");
+		} else {
+			userData.setPassword(passwordEncoder.encode(userData.getPassword()));
+			User newUser = userRepository.save(userTransformer.transformDishbraryUser(validateUser(userData)));
 
-            return userTransformer.transformUser(newUser);
-        }
-    }
+			return userTransformer.transformUser(newUser);
+		}
+	}
 
-    private DishbraryUser validateUser(DishbraryUser dishbraryUser) {
-        return dishbraryUser;
-    }
+	private DishbraryUser validateUser(DishbraryUser dishbraryUser) {
+		return dishbraryUser;
+	}
 }

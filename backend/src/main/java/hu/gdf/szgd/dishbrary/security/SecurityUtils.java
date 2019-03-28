@@ -6,19 +6,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @Log4j2
 public class SecurityUtils {
 
-    public static DishbraryUser getDishbraryUserFromContext() {
-        Object userDetails = SecurityContextHolder.getContext().getAuthentication().getDetails();
+	public static DishbraryUser getDishbraryUserFromContext() {
+		Object userDetails = SecurityContextHolder.getContext().getAuthentication().getDetails();
 
-        if (userDetails instanceof DishbraryUser) {
-            DishbraryUser dishbraryUser = (DishbraryUser) userDetails;
+		if (userDetails instanceof DishbraryUser) {
+			DishbraryUser dishbraryUser = (DishbraryUser) userDetails;
 
-            log.debug("User found in context! Username: {}", dishbraryUser.getUsername());
+			log.debug("User found in context! Username: {}", dishbraryUser.getUsername());
 
-            return dishbraryUser;
-        }
+			return dishbraryUser;
+		}
 
-        log.warn("No user found in context!!!");
+		log.warn("No user found in context!!!");
 
-        return null;
-    }
+		return null;
+	}
 }

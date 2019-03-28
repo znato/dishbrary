@@ -9,13 +9,13 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DishbraryResponse<T> {
 
-    private int status;
-    private T body;
-    private boolean error;
-    private String message;
+	private int status;
+	private T body;
+	private boolean error;
+	private String message;
 
-    public DishbraryResponse(T body) {
-        this.status = 200;
-        this.body = body;
-    }
+	public DishbraryResponse(T body) {
+		this.status = 200;
+		this.body = body;
+	}
 }

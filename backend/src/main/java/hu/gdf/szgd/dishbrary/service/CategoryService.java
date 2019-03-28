@@ -11,12 +11,12 @@ import java.util.List;
 @Service
 public class CategoryService {
 
-    @Autowired
-    private CategoryRepository categoryRepository;
-    @Autowired
-    private CategoryTransformer categoryTransformer;
+	@Autowired
+	private CategoryRepository categoryRepository;
+	@Autowired
+	private CategoryTransformer categoryTransformer;
 
-    public List<CategoryRestModel> getAllCategory() {
-        return categoryTransformer.transformAll(categoryRepository.findAll());
-    }
+	public List<CategoryRestModel> getAllCategory() {
+		return categoryTransformer.transformAll(categoryRepository.findAll());
+	}
 }

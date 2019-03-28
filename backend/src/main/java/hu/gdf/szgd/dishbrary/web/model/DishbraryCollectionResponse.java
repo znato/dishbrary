@@ -11,7 +11,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DishbraryCollectionResponse<T> extends DishbraryResponse<List<T>> {
 
-    public DishbraryCollectionResponse(List<T> body) {
-        super(body);
-    }
+	public DishbraryCollectionResponse(List<T> body) {
+		super(body);
+	}
 }

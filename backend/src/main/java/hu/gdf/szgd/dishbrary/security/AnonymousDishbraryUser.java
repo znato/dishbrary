@@ -4,8 +4,8 @@ import org.springframework.security.core.authority.AuthorityUtils;
 
 public class AnonymousDishbraryUser extends DishbraryUser {
 
-    public AnonymousDishbraryUser() {
-        setUsername("Anonymous");
-        setGrantedAuthorities(AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"));
-    }
+	public AnonymousDishbraryUser() {
+		setUsername("Anonymous");
+		setGrantedAuthorities(AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"));
+	}
 }
