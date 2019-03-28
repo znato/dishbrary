@@ -5,18 +5,18 @@
 
     <parent>
         <groupId>hu.gdf.szgd</groupId>
-        <artifactId>cookbook-parent</artifactId>
+        <artifactId>dishbrary-parent</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <artifactId>cookbook-frontend-parent</artifactId>
-    <name>cookbook-frontend-parent</name>
-    <description>Cookbook frontend project</description>
+    <artifactId>dishbrary-frontend-parent</artifactId>
+    <name>dishbrary-frontend-parent</name>
+    <description>Dishbrary frontend project</description>
 
     <packaging>pom</packaging>
 
     <modules>
-        <module>cookbook-ui</module>
+        <module>dishbrary-ui</module>
     </modules>
 
     <build>

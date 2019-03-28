@@ -4,13 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>hu.gdf.szgd</groupId>
-        <artifactId>cookbook-parent</artifactId>
+        <artifactId>dishbrary-parent</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <artifactId>cookbook-backend</artifactId>
-    <name>cookbook-backend</name>
-    <description>Cookbook backend project</description>
+    <artifactId>dishbrary-backend</artifactId>
+    <name>dishbrary-backend</name>
+    <description>Dishbrary backend project</description>
 
     <properties>
         <java.version>1.8</java.version>
@@ -19,9 +19,8 @@
     <dependencies>
         <dependency>
             <groupId>hu.gdf.szgd</groupId>
-            <artifactId>cookbook-ui</artifactId>
+            <artifactId>dishbrary-ui</artifactId>
             <version>${project.version}</version>
-
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

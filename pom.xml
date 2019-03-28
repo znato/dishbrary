@@ -11,10 +11,10 @@
 
 
     <groupId>hu.gdf.szgd</groupId>
-    <artifactId>cookbook-parent</artifactId>
+    <artifactId>dishbrary-parent</artifactId>
     <version>${revision}</version>
-    <name>cookbook-parent</name>
-    <description>Cookbook parent project</description>
+    <name>dishbrary-parent</name>
+    <description>Dishbrary parent project</description>
 
     <packaging>pom</packaging>
 

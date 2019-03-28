@@ -1,0 +1,117 @@
+.dishbrary-banner {
+    text-align: center;
+}
+
+.main-menu {
+    background-color: #333;
+    overflow: hidden;
+}
+
+/* Style the links inside the navigation bar */
+.dishbrary-menu-item {
+    float: left;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+}
+
+/* Change the color of links on hover */
+.dishbrary-menu-item:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+/* Add a color to the active/current link */
+.dishbrary-menu-item.active {
+    background-color: #4CAF50;
+    color: white;
+}
+
+/* DROPDOWN */
+
+/* The dropdown container */
+.dishbrary-dropdown-menu-item {
+    float: left;
+    overflow: hidden;
+}
+
+/* Dropdown button */
+.dishbrary-dropdown-menu-item .parent-item {
+    font-size: 16px;
+    border: none;
+    outline: none;
+    color: inherit;
+    padding: 14px 16px;
+    background-color: inherit;
+    font-family: inherit; /* Important for vertical align on mobile phones */
+    margin: 0; /* Important for vertical align on mobile phones */
+}
+
+/* Dropdown content (hidden by default) */
+.dishbrary-dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 180px;
+    max-width: 400px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    margin-left: -16px;
+    margin-top: 14px;
+}
+
+/* Links inside the dropdown */
+.dishbrary-dropdown-content a {
+    float: left;
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: inline-block;
+    text-align: left;
+}
+
+/* Add a grey background color to dropdown links on hover */
+.dishbrary-dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+/* Show the dropdown menu on hover */
+.dishbrary-dropdown-menu-item:hover .dishbrary-dropdown-content {
+    display: block;
+}
+
+.caret-down {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 6px;
+    vertical-align: middle;
+    border-top: 4px dashed;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+}
+
+/* Style the search box */
+.dishbrary-search-box {
+    float: right;
+    display: inline-block;
+}
+
+.dishbrary-search-box a {
+    padding: 6px 10px;
+    margin-top: 8px;
+    margin-right: 16px;
+    background: #d7d7d7;
+    font-size: 17px;
+    border: none;
+    cursor: pointer;
+}
+
+.dishbrary-search-box input[type=text] {
+    padding: 6px;
+    border: none;
+    margin-top: 8px;
+    font-size: 17px;
+}
