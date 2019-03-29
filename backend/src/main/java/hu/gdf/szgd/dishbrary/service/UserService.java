@@ -2,7 +2,6 @@ package hu.gdf.szgd.dishbrary.service;
 
 import hu.gdf.szgd.dishbrary.db.entity.User;
 import hu.gdf.szgd.dishbrary.db.repository.UserRepository;
-import hu.gdf.szgd.dishbrary.security.AnonymousDishbraryUser;
 import hu.gdf.szgd.dishbrary.security.DishbraryUser;
 import hu.gdf.szgd.dishbrary.security.SecurityUtils;
 import hu.gdf.szgd.dishbrary.transformer.UserTransformer;
@@ -36,33 +35,28 @@ public class UserService {
 
 		log.debug("User in context: {}", dishbraryUser);
 
-		if (dishbraryUser == null) {
-			String msg = "Illegal state! No user found in context!";
-			log.error(msg);
-			throw new IllegalStateException(msg);
-		}
-
-		if (dishbraryUser instanceof AnonymousDishbraryUser) {
-			log.debug("User in context require authentication - username: {}", userName);
-
-			UsernamePasswordAuthenticationToken auth =
-					(UsernamePasswordAuthenticationToken) authenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(userName, password));
-
-			DishbraryUser loggedInUser = (DishbraryUser) auth.getPrincipal();
-
-			//put the principal object into details to get the SecurityUtils.getDishbraryUserFromContext() working properly
-			auth.setDetails(loggedInUser);
-
-			log.debug("User[{}] successfully authenticated", userName);
-
-			SecurityContextHolder.getContext().setAuthentication(auth);
-
-			return loggedInUser;
-		} else {
+		if (SecurityUtils.isSessionAuthenticated()) {
 			//user already authenticated, no action required
 			log.debug("User[{}] already authenticated", userName);
 			return dishbraryUser;
 		}
+
+		log.debug("User in context require authentication - username: {}", userName);
+
+		UsernamePasswordAuthenticationToken auth =
+				(UsernamePasswordAuthenticationToken) authenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(userName, password));
+
+		DishbraryUser loggedInUser = (DishbraryUser) auth.getPrincipal();
+
+		//put the principal object into details to get the SecurityUtils.getDishbraryUserFromContext() working properly
+		auth.setDetails(loggedInUser);
+
+		log.debug("User[{}] successfully authenticated", userName);
+
+		SecurityContextHolder.getContext().setAuthentication(auth);
+
+		return loggedInUser;
+
 	}
 
 	public void performLogoutForCurrentUser() {

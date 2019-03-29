@@ -7,18 +7,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class SecurityUtils {
 
 	public static DishbraryUser getDishbraryUserFromContext() {
-		Object userDetails = SecurityContextHolder.getContext().getAuthentication().getDetails();
+		//it is safe to cast the userDetails without check thanks to the AnonymousDishbraryAuthenticationFilter
+		//which will place an anonym DishbraryUser into the context if it is empty
+		return (DishbraryUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+	}
 
-		if (userDetails instanceof DishbraryUser) {
-			DishbraryUser dishbraryUser = (DishbraryUser) userDetails;
-
-			log.debug("User found in context! Username: {}", dishbraryUser.getUsername());
-
-			return dishbraryUser;
-		}
-
-		log.warn("No user found in context!!!");
-
-		return null;
+	public static boolean isSessionAuthenticated() {
+		return !(getDishbraryUserFromContext() instanceof AnonymousDishbraryUser);
 	}
 }

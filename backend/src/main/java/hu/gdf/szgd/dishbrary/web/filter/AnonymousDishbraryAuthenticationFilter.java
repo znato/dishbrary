@@ -16,7 +16,7 @@ public class AnonymousDishbraryAuthenticationFilter extends AnonymousAuthenticat
 	private static final AnonymousDishbraryUser ANONYMOUS_DISHBRARY_USER = new AnonymousDishbraryUser();
 
 	public AnonymousDishbraryAuthenticationFilter(String key) {
-		this(key, ANONYMOUS_DISHBRARY_USER.getUsername(), AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"));
+		this(key, ANONYMOUS_DISHBRARY_USER.getUsername(), ANONYMOUS_DISHBRARY_USER.getGrantedAuthorities());
 	}
 
 	public AnonymousDishbraryAuthenticationFilter(String key, Object principal, List<GrantedAuthority> authorities) {

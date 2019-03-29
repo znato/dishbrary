@@ -6,6 +6,7 @@ import hu.gdf.szgd.dishbrary.web.exception.UserAlreadyExistsException;
 import hu.gdf.szgd.dishbrary.web.model.DishbraryResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,7 @@ public class DishbraryUserRestService {
 			log.warn("Error during logging in user: {} - Error: {}", user.getUsername(), authEx.getMessage());
 			DishbraryResponse response = new DishbraryResponse();
 
+			response.setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
 			response.setError(true);
 			response.setMessage("A beléptetés sikertelen!");
 
@@ -49,6 +51,7 @@ public class DishbraryUserRestService {
 
 	@GET
 	@Path("/logout")
+	@PreAuthorize("isAuthenticated()")
 	public Response logout() {
 		userService.performLogoutForCurrentUser();
 
