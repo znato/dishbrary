@@ -30,14 +30,10 @@ public class Recipe extends AbstractEntity {
 	private List<Cuisine> cuisines;
 	@Column
 	private String tags;
-	@Lob
 	@Column
-	@Basic(fetch = FetchType.LAZY)
-	private Byte[] image;
-	@Lob
+	private String coverImageFileName;
 	@Column
-	@Basic(fetch = FetchType.LAZY)
-	private Byte[] video;
+	private String videoFileName;
 	@OneToMany(mappedBy = "recipe")
 	private List<Comment> comments;
 }

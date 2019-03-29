@@ -4,7 +4,6 @@ import hu.gdf.szgd.dishbrary.security.AnonymousDishbraryUser;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
 import javax.servlet.http.HttpServletRequest;

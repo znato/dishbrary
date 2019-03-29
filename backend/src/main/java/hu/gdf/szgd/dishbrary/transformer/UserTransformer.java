@@ -27,12 +27,14 @@ public class UserTransformer {
 
 		DishbraryUser dishbraryUser = genericTransformer.transform(user, new DishbraryUser());
 
+		//TODO: dishbraryUser.setProfileImageUrl(getImageConfigUrl.append user.getProfileImageFileName());
 		dishbraryUser.setGrantedAuthorities(mapRoleForUser(user));
 
 		return dishbraryUser;
 	}
 
 	public User transformDishbraryUser(DishbraryUser dishbraryUser) {
+		//TODO: cut the path off from dishbraryUser.getProfileImageUrl and set user.profileImageFileName
 		return genericTransformer.transform(dishbraryUser, new User());
 	}
 

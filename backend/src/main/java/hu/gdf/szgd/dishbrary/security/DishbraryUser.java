@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -15,6 +16,7 @@ import java.util.List;
 public class DishbraryUser implements UserDetails {
 
 	private Long id;
+	private String profileImageUrl;
 	private String username;
 	private String firstName;
 	private String lastName;
@@ -23,6 +25,8 @@ public class DishbraryUser implements UserDetails {
 	private String password;
 	@JsonIgnore
 	private boolean expired;
+	@JsonIgnore
+	private Date lastLoginDate;
 	@JsonIgnore
 	private boolean banned;
 	@JsonIgnore

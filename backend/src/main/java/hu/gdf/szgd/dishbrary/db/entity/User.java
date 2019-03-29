@@ -3,9 +3,8 @@ package hu.gdf.szgd.dishbrary.db.entity;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -14,6 +13,8 @@ public class User extends AbstractEntity {
 
 	@Column
 	private String username;
+	@Column
+	private String profileImageFileName;
 	@Column
 	private String firstName;
 	@Column
@@ -24,6 +25,9 @@ public class User extends AbstractEntity {
 	private String password;
 	@Column
 	private boolean expired;
+	@Column
+	@Temporal(TemporalType.DATE)
+	private Date lastLoginDate;
 	@Column
 	private boolean banned;
 	@ManyToOne

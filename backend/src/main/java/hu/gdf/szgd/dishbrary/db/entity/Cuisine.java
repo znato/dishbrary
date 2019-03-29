@@ -5,7 +5,6 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Lob;
 
 @Entity
 @Getter
@@ -14,8 +13,7 @@ public class Cuisine extends AbstractEntity {
 
 	@Column
 	private String name;
-	@Lob
 	@Column
-	private Byte[] icon;
+	private String iconFileName;
 
 }
