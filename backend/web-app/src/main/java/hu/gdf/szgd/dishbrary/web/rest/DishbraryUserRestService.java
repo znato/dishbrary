@@ -7,6 +7,7 @@ import hu.gdf.szgd.dishbrary.web.model.DishbraryResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,14 @@ public class DishbraryUserRestService {
 
 			response.setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
 			response.setError(true);
-			response.setMessage("A beléptetés sikertelen!");
+
+			StringBuilder message = new StringBuilder("A beléptetés sikertelen!");
+
+			if (authEx.getCause() instanceof AuthenticationCredentialsNotFoundException) {
+				message.append(" Helytelen felhasználónév vagy jelszó'");
+			}
+
+			response.setMessage(message.toString());
 
 			return Response.status(Response.Status.UNAUTHORIZED)
 					.entity(response)

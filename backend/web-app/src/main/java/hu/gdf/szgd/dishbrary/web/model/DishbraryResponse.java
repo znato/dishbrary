@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 public class DishbraryResponse<T> {
 
 	private int status;
-	private T body;
+	private T content;
 	private boolean error;
 	private String message;
 
-	public DishbraryResponse(T body) {
+	public DishbraryResponse(T content) {
 		this.status = 200;
-		this.body = body;
+		this.content = content;
 	}
 }
