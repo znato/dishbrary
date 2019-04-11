@@ -1,7 +1,7 @@
 
 //application intended to be bundled together with the backend. Nevertheless, this can change for scaling reason
 //and also for development (to speed up FE development running one server and using node js for FE hosting)
-const sameOrigin = true;
+export const sameOrigin = true;
 
 export const serverProtocol = "http";
 export const serverHost = "localhost";
