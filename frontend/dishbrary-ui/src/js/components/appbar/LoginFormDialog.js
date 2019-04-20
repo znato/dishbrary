@@ -89,15 +89,6 @@ class LoginFormDialog extends React.Component {
 
     };
 
-    setRequiredMessage = (event) => {
-        event.target.setCustomValidity('A mező kitöltése kötelező!');
-
-    };
-
-    clearRequiredMessage = (event) => {
-        event.target.setCustomValidity('');
-    }
-
     handleLoginSuccess = (user) => {
         this.handleClose();
 
@@ -153,15 +144,11 @@ class LoginFormDialog extends React.Component {
                             <FormControl margin="normal" required fullWidth>
                                 <InputLabel htmlFor="username">Felhasználónév</InputLabel>
                                 <Input id="username" name="username"
-                                       onInvalid={this.setRequiredMessage}
-                                       onInput={this.clearRequiredMessage}
                                        autoComplete="username" autoFocus/>
                             </FormControl>
                             <FormControl margin="normal" required fullWidth>
                                 <InputLabel htmlFor="password">Jelszó</InputLabel>
                                 <Input id="password" name="password" type="password"
-                                       onInvalid={this.setRequiredMessage}
-                                       onInput={this.clearRequiredMessage}
                                        autoComplete="current-password"/>
                             </FormControl>
                             <FormControlLabel

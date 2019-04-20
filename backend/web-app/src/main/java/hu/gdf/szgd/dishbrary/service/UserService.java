@@ -14,7 +14,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 @Log4j2
@@ -29,6 +32,8 @@ public class UserService {
 	private PasswordEncoder passwordEncoder;
 	@Autowired
 	private UserTransformer userTransformer;
+
+	private static final ExecutorService REGISTER_USER_LOGIN_ACTION_EXECUTOR = Executors.newFixedThreadPool(5);
 
 	public DishbraryUser performLogin(String userName, String password) {
 		DishbraryUser dishbraryUser = SecurityUtils.getDishbraryUserFromContext();
@@ -53,6 +58,8 @@ public class UserService {
 
 		log.debug("User[{}] successfully authenticated", userName);
 
+		registerUserLoginAction(loggedInUser);
+
 		SecurityContextHolder.getContext().setAuthentication(auth);
 
 		return loggedInUser;
@@ -75,6 +82,18 @@ public class UserService {
 
 			return userTransformer.transformUser(newUser);
 		}
+	}
+
+	private void registerUserLoginAction(DishbraryUser user) {
+		Date lastLoginDate = new Date();
+		user.setLastLoginDate(lastLoginDate);
+
+		REGISTER_USER_LOGIN_ACTION_EXECUTOR.execute(() -> {
+			User dbUser = userRepository.findById(user.getId()).get();
+			dbUser.setLastLoginDate(lastLoginDate);
+			userRepository.save(dbUser);
+		});
+
 	}
 
 	private DishbraryUser validateUser(DishbraryUser dishbraryUser) {
