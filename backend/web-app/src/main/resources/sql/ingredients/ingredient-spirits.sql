@@ -1,0 +1,21 @@
+--forras: https://www.kalóriaguru.hu/kaloriatablazat/alkoholos-italok-kaloriatablazat.php
+INSERT INTO INGREDIENT(name,energyKcal,protein,fat,carbohydrate,unit) VALUES ('Alkoholmentes bor',6,0.5,0.0,1.1,'MILLILITRE');
+INSERT INTO INGREDIENT(name,energyKcal,protein,fat,carbohydrate,unit) VALUES ('Alkoholmentes sör',37,0.2,0.1,8.1,'MILLILITRE');
+INSERT INTO INGREDIENT(name,energyKcal,protein,fat,carbohydrate,unit) VALUES ('Almabor',56,0.0,0.0,5.9,'MILLILITRE');
+INSERT INTO INGREDIENT(name,energyKcal,protein,fat,carbohydrate,unit) VALUES ('Asztali bor',83,0.1,0.0,2.7,'MILLILITRE');
+INSERT INTO INGREDIENT(name,energyKcal,protein,fat,carbohydrate,unit) VALUES ('Barna sör',35,0.3,0.0,2.8,'MILLILITRE');
+INSERT INTO INGREDIENT(name,energyKcal,protein,fat,carbohydrate,unit) VALUES ('Fehérbor',82,0.1,0.0,2.6,'MILLILITRE');
+INSERT INTO INGREDIENT(name,energyKcal,protein,fat,carbohydrate,unit) VALUES ('Gin',263,0.0,0.0,0.0,'MILLILITRE');
+INSERT INTO INGREDIENT(name,energyKcal,protein,fat,carbohydrate,unit) VALUES ('Konyak',217,0.0,0.0,0.0,'MILLILITRE');
+INSERT INTO INGREDIENT(name,energyKcal,protein,fat,carbohydrate,unit) VALUES ('Likőr',336,0.1,0.3,46.8,'MILLILITRE');
+INSERT INTO INGREDIENT(name,energyKcal,protein,fat,carbohydrate,unit) VALUES ('Pálinka',260,0.0,0.0,0.0,'MILLILITRE');
+INSERT INTO INGREDIENT(name,energyKcal,protein,fat,carbohydrate,unit) VALUES ('Pezsgő',65,0.2,0.0,1.0,'MILLILITRE');
+INSERT INTO INGREDIENT(name,energyKcal,protein,fat,carbohydrate,unit) VALUES ('Rum',231,0.0,0.0,0.0,'MILLILITRE');
+INSERT INTO INGREDIENT(name,energyKcal,protein,fat,carbohydrate,unit) VALUES ('Sör',43,0.5,0.0,3.6,'MILLILITRE');
+INSERT INTO INGREDIENT(name,energyKcal,protein,fat,carbohydrate,unit) VALUES ('Sütőrum',140,0.0,0.0,0.0,'MILLILITRE');
+INSERT INTO INGREDIENT(name,energyKcal,protein,fat,carbohydrate,unit) VALUES ('Tequila',110,0.3,0.1,11.3,'MILLILITRE');
+INSERT INTO INGREDIENT(name,energyKcal,protein,fat,carbohydrate,unit) VALUES ('Unicum',323,0.0,0.0,19.0,'MILLILITRE');
+INSERT INTO INGREDIENT(name,energyKcal,protein,fat,carbohydrate,unit) VALUES ('Világos sör',41,0.4,0.0,3.0,'MILLILITRE');
+INSERT INTO INGREDIENT(name,energyKcal,protein,fat,carbohydrate,unit) VALUES ('Vodka',231,0.0,0.0,0.0,'MILLILITRE');
+INSERT INTO INGREDIENT(name,energyKcal,protein,fat,carbohydrate,unit) VALUES ('Vörösbor',85,0.1,0.0,2.6,'MILLILITRE');
+INSERT INTO INGREDIENT(name,energyKcal,protein,fat,carbohydrate,unit) VALUES ('Whisky',250,0.0,0.0,0.1,'MILLILITRE');

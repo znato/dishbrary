@@ -1,5 +1,6 @@
 package hu.gdf.szgd.dishbrary.web.exceptionhandlers;
 
+import hu.gdf.szgd.dishbrary.web.WebConstants;
 import hu.gdf.szgd.dishbrary.web.model.DishbraryResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -39,6 +40,7 @@ public class ClientErrorExceptionHandler implements ExceptionMapper<ClientErrorE
 		response.setMessage(CLIENT_ERROR_STATUS_CODE_MESSAGE_MAP.getOrDefault(statusCode, clientError.getMessage()));
 
 		return Response.status(statusCode)
+				.type(WebConstants.JSON_WITH_UTF8_ENCODING)
 				.entity(response)
 				.build();
 	}

@@ -10,3 +10,12 @@ spring:
     password:
     driver-class-name: org.h2.Driver
 
+
+dishbrary:
+  init:
+    ingredients: true
+  ingredients:
+    images:
+      basepath: /todo/define/this
+      default:
+        location: /todo/define/this/too

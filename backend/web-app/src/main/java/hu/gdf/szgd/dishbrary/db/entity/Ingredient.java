@@ -5,6 +5,9 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import java.math.BigDecimal;
 
 @Entity
 @Getter
@@ -13,14 +16,21 @@ public class Ingredient extends AbstractEntity {
 
 	@Column(nullable = false, unique = true)
 	private String name;
+	@Column(name = "ENERGYKCAL")
+	private Integer energyKcal;
 	@Column
-	private Integer energy;
+	private BigDecimal protein;
 	@Column
-	private Integer protein;
+	private BigDecimal fat;
 	@Column
-	private Integer fat;
-	@Column
-	private Integer carbohydrate;
+	private BigDecimal carbohydrate;
 	@Column
 	private String imageFileName;
+	@Column
+	@Enumerated(EnumType.STRING)
+	private Unit unit;
+
+	public enum Unit {
+		GRAM,MILLILITRE,PIECE
+	}
 }
