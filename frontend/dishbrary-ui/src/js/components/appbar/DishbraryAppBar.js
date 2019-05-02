@@ -10,7 +10,7 @@ import IconButton from '@material-ui/core/IconButton/index';
 import MenuIcon from '@material-ui/icons/Menu';
 
 import UserManagementBlock from "./UserManagementBlock";
-
+import DishbrarySideMenu from '../sidemenu/DishbrarySideMenu';
 
 const styles = {
     root: {
@@ -21,9 +21,12 @@ const styles = {
         boxShadow: "none",
     },
     title: {
-        flexGrow: 1,
+        // flexGrow: 1,
         fontWeight: 700,
         textTransform: "uppercase",
+    },
+    placeHolder: {
+        flexGrow: 1,
     },
     accountCircle: {
         fontSize: 24,
@@ -38,24 +41,40 @@ class DishbraryAppBar extends React.Component {
 
     constructor(props) {
         super(props);
+
+        this.state = {
+            sideMenuOpen: false,
+        }
+    }
+
+    openSideMenu = () => {
+        this.setState({sideMenuOpen: true});
+    }
+
+    closeSideMenu = () => {
+        this.setState({sideMenuOpen: false});
     }
 
     render() {
         const {classes} = this.props;
+        const {sideMenuOpen} = this.state;
 
         return (
             <div className={classes.root}>
                 <AppBar position="fixed" className={classes.appBar}>
                     <Toolbar>
-                        <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
-                            <MenuIcon/>
+                        <IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={this.openSideMenu}>
+                            <MenuIcon />
                         </IconButton>
                         <Typography variant="h6" color="inherit" align="center" className={classes.title}>
                             DISHBRARY
                         </Typography>
+                        <span className={classes.placeHolder}>&nbsp;</span>
                         <UserManagementBlock/>
                     </Toolbar>
                 </AppBar>
+
+                <DishbrarySideMenu open={sideMenuOpen} onMenuClose={this.closeSideMenu}/>
             </div>
         );
     }
