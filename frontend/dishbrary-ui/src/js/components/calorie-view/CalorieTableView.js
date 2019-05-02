@@ -1,14 +1,11 @@
 import React from 'react';
 
 import withStyles from '@material-ui/core/styles/withStyles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from "@material-ui/core/es/Typography/Typography";
+
+import {ReactMUIDatatable} from "react-material-ui-datatable";
 
 import ingredientService from '../../services/IngredientService';
 
@@ -38,6 +35,29 @@ const loadingState = {
     loaded: "loaded",
     error: "error"
 }
+
+const columns = [
+    {
+        name: "name",
+        label: "Név"
+    },
+    {
+        name: "energyKcal",
+        label: "Kalória (Kcal)"
+    },
+    {
+        name: "protein",
+        label: "Fehérje (g)"
+    },
+    {
+        name: "fat",
+        label: "Zsír (g)"
+    },
+    {
+        name: "carbohydrate",
+        label: "Szénhidrát (g)"
+    }
+];
 
 class CalorieTableView extends React.Component {
 
@@ -85,35 +105,16 @@ class CalorieTableView extends React.Component {
                             ?
                             ""
                             :
-                            loading === loadingState.error ? <Typography>Az oldal jelenleg nem elérhető! Kérjük próbálja később!</Typography>
+                            loading === loadingState.error ?
+                                <Typography>Az oldal jelenleg nem elérhető! Kérjük próbálja később!</Typography>
                                 :
                                 (
-                                    <Table className={classes.table}>
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell>Név</TableCell>
-                                                <TableCell align="right">Kalória (Kcal)</TableCell>
-                                                <TableCell align="right">Fehérje (g)</TableCell>
-                                                <TableCell align="right">Zsír (g)</TableCell>
-                                                <TableCell align="right">Szénhidrát (g)</TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {
-                                                ingredientList.map(ingredient => (
-                                                    <TableRow className={classes.tableRow} key={ingredient.id}>
-                                                        <TableCell component="th" scope="row">
-                                                            {ingredient.name}
-                                                        </TableCell>
-                                                        <TableCell align="right">{ingredient.energyKcal}</TableCell>
-                                                        <TableCell align="right">{ingredient.protein}</TableCell>
-                                                        <TableCell align="right">{ingredient.fat}</TableCell>
-                                                        <TableCell align="right">{ingredient.carbohydrate}</TableCell>
-                                                    </TableRow>
-                                                ))
-                                            }
-                                        </TableBody>
-                                    </Table>
+                                    <ReactMUIDatatable columns={columns} data={ingredientList}
+                                                       perPage={10}
+                                                       perPageOption={[10, 25, 50, 100]}
+                                                       sort={{columnName: "name", direction: "ASC"}}
+                                                       selectable={false}
+                                                       filterable={false}/>
                                 )
                 }
 
