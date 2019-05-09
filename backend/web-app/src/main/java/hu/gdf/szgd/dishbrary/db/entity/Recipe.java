@@ -38,4 +38,8 @@ public class Recipe extends AbstractEntity {
 	private List<Comment> comments;
 	@Column
 	private Long popularityIndex;
+	@Column
+	private Long preparationTimeInMillis;
+	@Column
+	private Long cookTimeInMillis;
 }
