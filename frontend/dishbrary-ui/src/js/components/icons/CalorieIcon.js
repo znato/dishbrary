@@ -4,8 +4,6 @@ import withStyles from '@material-ui/core/styles/withStyles';
 
 const styles = {
     icon: {
-        width: "2em",
-        height: "2em",
         fill: "#000000"
     },
 };

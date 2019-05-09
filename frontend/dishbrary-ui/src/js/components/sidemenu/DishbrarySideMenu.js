@@ -8,15 +8,29 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText'
 
 import {Link} from "react-router-dom";
-import  {calorieTablePath} from '../../config/ApplicationRoutes';
+import  {homePath,calorieTablePath} from '../../config/ApplicationRoutes';
 
-import CalorieIcon from '../icons/CalorieIcon'
+import {Home} from '@material-ui/icons';
+import CalorieIcon from '../icons/CalorieIcon';
 
 const styles = {
     link: {
         textDecoration: "none",
     }
 }
+
+const menuItems = [
+    {
+        title: 'Home',
+        icon: Home,
+        linkTo: homePath
+    },
+    {
+        title: 'Kalóriatáblázat',
+        icon: CalorieIcon,
+        linkTo: calorieTablePath
+    },
+]
 
 class DishbrarySideMenu extends React.Component {
 
@@ -41,11 +55,12 @@ class DishbrarySideMenu extends React.Component {
         return (
             <SwipeableDrawer onClose={this.onClose} onOpen={this.onOpen} open={open}>
                 <List>
-                    {['Kalóriatáblázat'].map((text, index) => (
-                        <ListItem button key={text} id={index} onClick={this.onClose}>
-                            <ListItemIcon><CalorieIcon/></ListItemIcon>
-                            <Link to={calorieTablePath} className={classes.link}>
-                                <ListItemText primary={text} />
+                    {
+                        menuItems.map((menuItem, index) => (
+                        <ListItem button key={menuItem.title} id={index} onClick={this.onClose}>
+                            <ListItemIcon>{<menuItem.icon/>}</ListItemIcon>
+                            <Link to={menuItem.linkTo} className={classes.link}>
+                                <ListItemText primary={menuItem.title} />
                             </Link>
                         </ListItem>
                     ))}
