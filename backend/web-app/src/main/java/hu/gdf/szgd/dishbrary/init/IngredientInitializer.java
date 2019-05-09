@@ -1,44 +1,29 @@
 package hu.gdf.szgd.dishbrary.init;
 
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.logging.log4j.Logger;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
 
-import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
-import java.sql.Connection;
+import java.io.IOException;
 
 @ConditionalOnProperty(prefix = "dishbrary.init", name = "ingredients", havingValue = "true")
 @Configuration
 @Log4j2
-public class IngredientInitializer {
+public class IngredientInitializer extends AbstractDatabaseInitializer {
 
-    private static final String INGREDIENT_INIT_SQL_DIRECTORY = "classpath:/sql/ingredients/*.sql";
+    private static final String INIT_SQL_FILES_PATTERN = "classpath:/sql/ingredients/*.sql";
 
-    @Autowired
-    private DataSource ds;
+    @Override
+    protected Resource[] getSqlResources() throws IOException {
+        PathMatchingResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
+        return resourceResolver.getResources(INIT_SQL_FILES_PATTERN);
+    }
 
-    @PostConstruct
-    private void loadData() {
-        try {
-            PathMatchingResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
-
-            Resource[] sqlFiles = resourceResolver.getResources(INGREDIENT_INIT_SQL_DIRECTORY);
-
-            for (Resource file : sqlFiles) {
-                try (Connection connection = ds.getConnection()){
-                    log.info("Executing sql file: {}", file.getFilename());
-
-                    ScriptUtils.executeSqlScript(connection, file);
-                }
-            }
-        } catch (Exception e) {
-            log.error("Cannot load ingredient sql files!", e);
-            throw new Error("Application failed to start!", e);
-        }
+    @Override
+    protected Logger getLogger() {
+        return log;
     }
 }

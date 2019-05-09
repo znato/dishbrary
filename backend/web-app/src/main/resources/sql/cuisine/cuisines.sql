@@ -1,0 +1,15 @@
+INSERT INTO CUISINE(name,icon_file_name) VALUES ('Francia konyha', 'France.png');
+INSERT INTO CUISINE(name,icon_file_name) VALUES ('Olasz konyha', 'Italy.png');
+INSERT INTO CUISINE(name,icon_file_name) VALUES ('Angol konyha', 'UnitedKingdom.png');
+INSERT INTO CUISINE(name,icon_file_name) VALUES ('Német konyha', 'Germany.png');
+INSERT INTO CUISINE(name,icon_file_name) VALUES ('Osztrák konyha', 'Austria.png');
+INSERT INTO CUISINE(name,icon_file_name) VALUES ('Svájci konyha', 'Switzerland.png');
+INSERT INTO CUISINE(name,icon_file_name) VALUES ('Spanyol konyha', 'Spain.png');
+INSERT INTO CUISINE(name,icon_file_name) VALUES ('Görög konyha', 'Greece.png');
+INSERT INTO CUISINE(name,icon_file_name) VALUES ('Török konyha', 'Turkey.png');
+INSERT INTO CUISINE(name,icon_file_name) VALUES ('Román konyha', 'Romania.png');
+INSERT INTO CUISINE(name,icon_file_name) VALUES ('Orosz konyha', 'Russia.png');
+INSERT INTO CUISINE(name,icon_file_name) VALUES ('Lengyel konyha', 'Poland.png');
+INSERT INTO CUISINE(name,icon_file_name) VALUES ('Japán konyha', 'Japan.png');
+INSERT INTO CUISINE(name,icon_file_name) VALUES ('Kínai konyha', 'China.png');
+INSERT INTO CUISINE(name,icon_file_name) VALUES ('Amerikai konyha', 'UnitedStates.png');

@@ -14,8 +14,16 @@ spring:
 dishbrary:
   init:
     ingredients: true
+    cuisines: true
   ingredients:
     images:
-      basepath: /todo/define/this
       default:
-        location: /todo/define/this/too
+        name: default.png
+  cuisine:
+    images:
+      default:
+        name: default.png
+  resources:
+    imageBasePathByComponentName:
+      cuisine: /home/znato/work/szakdolgozat/dishbrary/cuisine_icons/
+      ingredient: /path/to/ingredientImages/

@@ -36,4 +36,6 @@ public class Recipe extends AbstractEntity {
 	private String videoFileName;
 	@OneToMany(mappedBy = "recipe")
 	private List<Comment> comments;
+	@Column
+	private Long popularityIndex;
 }
