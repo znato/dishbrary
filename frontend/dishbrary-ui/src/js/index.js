@@ -6,7 +6,7 @@ import {HashRouter as Router, Route} from "react-router-dom";
 import * as ApplicationRoutes from './config/ApplicationRoutes';
 
 import DishbraryAppBar from './components/appbar/DishbraryAppBar';
-import CalorieTableView from './components/calorie-view/CalorieTableView';
+import CalorieTableView from './components/view/CalorieTableView';
 
 function DishbraryApp() {
     return (
