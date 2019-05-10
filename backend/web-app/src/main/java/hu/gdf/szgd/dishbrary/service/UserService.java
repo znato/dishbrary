@@ -1,6 +1,5 @@
 package hu.gdf.szgd.dishbrary.service;
 
-import hu.gdf.szgd.dishbrary.db.entity.Role;
 import hu.gdf.szgd.dishbrary.db.entity.User;
 import hu.gdf.szgd.dishbrary.db.repository.RoleRepository;
 import hu.gdf.szgd.dishbrary.db.repository.UserRepository;
