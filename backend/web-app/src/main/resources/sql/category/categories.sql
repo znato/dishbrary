@@ -11,3 +11,4 @@ INSERT INTO CATEGORY(id, name) VALUES (10, 'Saláta');
 INSERT INTO CATEGORY(id, name) VALUES (11, 'Csirkéből készült ételek');
 INSERT INTO CATEGORY(id, name) VALUES (12, 'Marhából készült ételek');
 INSERT INTO CATEGORY(id, name) VALUES (13, 'Sertésből készült ételek');
+INSERT INTO CATEGORY(id, name) VALUES (14, 'Vegetáriánus ételek');
