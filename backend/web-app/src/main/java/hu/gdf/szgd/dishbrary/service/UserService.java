@@ -1,6 +1,8 @@
 package hu.gdf.szgd.dishbrary.service;
 
+import hu.gdf.szgd.dishbrary.db.entity.Role;
 import hu.gdf.szgd.dishbrary.db.entity.User;
+import hu.gdf.szgd.dishbrary.db.repository.RoleRepository;
 import hu.gdf.szgd.dishbrary.db.repository.UserRepository;
 import hu.gdf.szgd.dishbrary.security.DishbraryUser;
 import hu.gdf.szgd.dishbrary.security.SecurityUtils;
@@ -28,6 +30,8 @@ public class UserService {
 
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	private RoleRepository roleRepository;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	@Autowired
@@ -76,12 +80,20 @@ public class UserService {
 
 		if (existingUser.isPresent()) {
 			throw new UserAlreadyExistsException("A megadott felhasználónév már foglalt!");
-		} else {
-			userData.setPassword(passwordEncoder.encode(userData.getPassword()));
-			User newUser = userRepository.save(userTransformer.transformDishbraryUser(validateUser(userData)));
-
-			return userTransformer.transformUser(newUser);
 		}
+
+		userData.setPassword(passwordEncoder.encode(userData.getPassword()));
+
+		validateUser(userData);
+
+		User newUser = userTransformer.transformDishbraryUser(userData);
+
+		newUser.setRole(roleRepository.findByName(RoleRepository.SIMPLE_USER_ROLE_NAME));
+
+		newUser = userRepository.save(newUser);
+
+		return userTransformer.transformUser(newUser);
+
 	}
 
 	private void registerUserLoginAction(DishbraryUser user) {

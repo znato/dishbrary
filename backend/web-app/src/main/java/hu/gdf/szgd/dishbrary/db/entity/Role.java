@@ -7,7 +7,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 import java.util.List;
 
 @Entity
@@ -17,7 +17,7 @@ public class Role extends AbstractEntity {
 
 	@Column(nullable = false, unique = true)
 	private String name;
-	@OneToMany(mappedBy = "role")
+	@ManyToMany
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private List<Right> rights;
 

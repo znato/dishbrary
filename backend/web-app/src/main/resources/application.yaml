@@ -13,6 +13,7 @@ spring:
 
 dishbrary:
   init:
+    security: true
     ingredients: true
     cuisines: true
     categories: true
