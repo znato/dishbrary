@@ -1,0 +1,13 @@
+INSERT INTO CATEGORY(id, name) VALUES (1, 'Reggeli');
+INSERT INTO CATEGORY(id, name) VALUES (2, 'Ebéd');
+INSERT INTO CATEGORY(id, name) VALUES (3, 'Vacsora');
+INSERT INTO CATEGORY(id, name) VALUES (4, 'Egészséges');
+INSERT INTO CATEGORY(id, name) VALUES (5, 'Könnyen elkészíthető');
+INSERT INTO CATEGORY(id, name) VALUES (6, 'Olcsó');
+INSERT INTO CATEGORY(id, name) VALUES (7, 'Gyors');
+INSERT INTO CATEGORY(id, name) VALUES (8, 'Előételek');
+INSERT INTO CATEGORY(id, name) VALUES (9, 'Levesek');
+INSERT INTO CATEGORY(id, name) VALUES (10, 'Saláta');
+INSERT INTO CATEGORY(id, name) VALUES (11, 'Csirkéből készült ételek');
+INSERT INTO CATEGORY(id, name) VALUES (12, 'Marhából készült ételek');
+INSERT INTO CATEGORY(id, name) VALUES (13, 'Sertésből készült ételek');

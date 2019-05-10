@@ -1,35 +1,29 @@
 package hu.gdf.szgd.dishbrary.init;
 
-import hu.gdf.szgd.dishbrary.db.entity.Category;
-import hu.gdf.szgd.dishbrary.db.repository.CategoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.Logger;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
-import javax.annotation.PostConstruct;
+import java.io.IOException;
 
+@ConditionalOnProperty(prefix = "dishbrary.init", name = "categories", havingValue = "true")
 @Configuration
-public class CategoryInitializer {
+@Log4j2
+public class CategoryInitializer extends AbstractDatabaseInitializer {
 
-	@Autowired
-	private CategoryRepository categoryRepository;
+	private static final String INIT_SQL_FILES_PATTERN = "classpath:/sql/category/*.sql";
 
-	@PostConstruct
-	public void initCategories() {
-		categoryRepository.save(new Category("Reggeli"));
-		categoryRepository.save(new Category("Ebéd"));
-		categoryRepository.save(new Category("Vacsora"));
+	@Override
+	protected Resource[] getSqlResources() throws IOException {
+		PathMatchingResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
+		return resourceResolver.getResources(INIT_SQL_FILES_PATTERN);
+	}
 
-		categoryRepository.save(new Category("Egészséges"));
-		categoryRepository.save(new Category("Könnyen elkészíthető"));
-		categoryRepository.save(new Category("Olcsó"));
-		categoryRepository.save(new Category("Gyors"));
-
-		categoryRepository.save(new Category("Előételek"));
-		categoryRepository.save(new Category("Levesek"));
-		categoryRepository.save(new Category("Saláta"));
-		categoryRepository.save(new Category("Csirke"));
-		categoryRepository.save(new Category("Marha"));
-		categoryRepository.save(new Category("Sertés"));
-
+	@Override
+	protected Logger getLogger() {
+		return log;
 	}
 }

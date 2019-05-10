@@ -15,6 +15,7 @@ dishbrary:
   init:
     ingredients: true
     cuisines: true
+    categories: true
   ingredients:
     images:
       default:
