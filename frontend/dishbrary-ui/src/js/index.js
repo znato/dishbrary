@@ -7,6 +7,7 @@ import * as ApplicationRoutes from './config/ApplicationRoutes';
 
 import DishbraryAppBar from './components/appbar/DishbraryAppBar';
 import CalorieTableView from './components/view/CalorieTableView';
+import CreateRecipeView from './components/view/CreateRecipeView';
 
 function DishbraryApp() {
     return (
@@ -16,6 +17,8 @@ function DishbraryApp() {
 
                 <div id="dishbrary-page-content" style={{marginTop: "70px"}}>
                     <Route path={ApplicationRoutes.calorieTablePath} component={CalorieTableView} />
+
+                    <Route path={ApplicationRoutes.createRecipePath} component={CreateRecipeView}/>
                 </div>
             </Router>
         </React.Fragment>

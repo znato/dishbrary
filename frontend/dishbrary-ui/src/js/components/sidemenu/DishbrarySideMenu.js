@@ -8,9 +8,9 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText'
 
 import {Link} from "react-router-dom";
-import  {homePath,calorieTablePath} from '../../config/ApplicationRoutes';
+import {homePath, calorieTablePath, createRecipePath} from '../../config/ApplicationRoutes';
 
-import {Home} from '@material-ui/icons';
+import {Home, Create} from '@material-ui/icons';
 import CalorieIcon from '../icons/CalorieIcon';
 
 const styles = {
@@ -30,6 +30,12 @@ const menuItems = [
         icon: CalorieIcon,
         linkTo: calorieTablePath
     },
+    {
+        title: 'Új recept',
+        icon: Create,
+        linkTo: createRecipePath,
+        color: "#2ecc71"
+    }
 ]
 
 class DishbrarySideMenu extends React.Component {
@@ -50,20 +56,28 @@ class DishbrarySideMenu extends React.Component {
     }
 
     render() {
-        const {open,classes} = this.props;
+        const {open, classes} = this.props;
 
         return (
             <SwipeableDrawer onClose={this.onClose} onOpen={this.onOpen} open={open}>
                 <List>
                     {
                         menuItems.map((menuItem, index) => (
-                        <ListItem button key={menuItem.title} id={index} onClick={this.onClose}>
-                            <ListItemIcon>{<menuItem.icon/>}</ListItemIcon>
-                            <Link to={menuItem.linkTo} className={classes.link}>
-                                <ListItemText primary={menuItem.title} />
-                            </Link>
-                        </ListItem>
-                    ))}
+                            <ListItem button key={menuItem.title} id={index} onClick={this.onClose}>
+                                <ListItemIcon>
+                                    {
+                                        typeof menuItem.color === 'undefined'
+                                            ?
+                                            <menuItem.icon/>
+                                            :
+                                            <menuItem.icon nativeColor={menuItem.color}/>
+                                    }
+                                </ListItemIcon>
+                                <Link to={menuItem.linkTo} className={classes.link}>
+                                    <ListItemText primary={menuItem.title}/>
+                                </Link>
+                            </ListItem>
+                        ))}
                 </List>
             </SwipeableDrawer>
         );
