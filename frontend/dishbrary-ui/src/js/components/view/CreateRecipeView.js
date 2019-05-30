@@ -6,7 +6,14 @@ import RecipeEditor from '../editor/RecipeEditor';
 import Typography from "@material-ui/core/Typography";
 import {Paper} from "@material-ui/core";
 
-const styles = {}
+const styles = theme => ({
+    root: {
+        width: '100%',
+        marginTop: theme.spacing.unit * 3,
+        overflowX: 'auto',
+        textAlign: "center",
+    }
+});
 
 class CreateRecipeView extends React.Component {
 
@@ -16,8 +23,10 @@ class CreateRecipeView extends React.Component {
     }
 
     render() {
+        const {classes} = this.props;
+
         return (
-            <Paper>
+            <Paper className={classes.root}>
                 <Typography component="h1" variant="h5">
                     Új recept felvétele
                 </Typography>

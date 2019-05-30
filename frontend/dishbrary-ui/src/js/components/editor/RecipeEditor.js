@@ -3,17 +3,28 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import FormControl from '@material-ui/core/FormControl/index';
 import Input from '@material-ui/core/Input/index';
 import InputLabel from '@material-ui/core/InputLabel/index';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import RichTextEditor from 'react-rte/lib/RichTextEditor';
 
 import SuggestionSelect from './SuggestionSelect';
 
-const styles =  theme => ({
+import categoryService from '../../services/CategoryService';
+import cuisineService from '../../services/CuisineService';
+import ingredientService from '../../services/IngredientService';
+
+import {LoadingState, LoadingStateByIndex} from '../../services/constants/LoadingState';
+import Typography from "@material-ui/core/es/Typography";
+
+const styles = theme => ({
     recipeInstructionLabel: {
         color: "rgba(0, 0, 0, 0.54)",
         padding: 0,
         fontFamily: ["Roboto", "Helvetica", "Arial", "sans-serif"],
         lineHeight: 1
+    },
+    progress: {
+        margin: theme.spacing.unit * 2,
     }
 });
 
@@ -36,18 +47,6 @@ const richTextEditorToolbarConfig = {
     ]
 };
 
-const suggestions = [
-    { label: 'Suggestion1' },
-    { label: 'Suggestion2' },
-    { label: 'Suggestion3' },
-    { label: 'Suggestion4' },
-    { label: 'Suggestion5' },
-
-].map(suggestion => ({
-    value: suggestion.label,
-    label: suggestion.label,
-}));
-
 class RecipeEditor extends React.Component {
 
     constructor(props) {
@@ -55,10 +54,73 @@ class RecipeEditor extends React.Component {
 
         this.state = {
             instructionValue: RichTextEditor.createEmptyValue(),
+            categoriesLoading: LoadingState.none,
             categories: [],
+            selectedCategories: [],
+            ingredientsLoading: LoadingState.none,
             ingredients: [],
-            cuisines: []
+            selectedIngredients: [],
+            cuisinesLoading: LoadingState.none,
+            cuisines: [],
+            selectedCuisines: []
         }
+    }
+
+    componentDidMount() {
+        this.fetchSuggestionData();
+    }
+
+    fetchSuggestionData = () => {
+        this.setState({
+            categoriesLoading: LoadingState.inProgress,
+            ingredientsLoading: LoadingState.inProgress,
+            cuisinesLoading: LoadingState.inProgress,
+        });
+
+        categoryService.getAllCategories()
+            .then(jsonResponse => {
+                if (jsonResponse.error) {
+                    this.setState({categoriesLoading: LoadingState.error});
+                } else {
+                    this.setState({
+                        categoriesLoading: LoadingState.loaded,
+                        categories: jsonResponse.content.map(category => ({
+                            value: category.id,
+                            label: category.name
+                        }))
+                    });
+                }
+            });
+
+        ingredientService.getAllIngredient()
+            .then(jsonResponse => {
+                if (jsonResponse.error) {
+                    this.setState({ingredientsLoading: LoadingState.error});
+                } else {
+                    this.setState({
+                        ingredientsLoading: LoadingState.loaded,
+                        ingredients: jsonResponse.content.map(ingredient => ({
+                            value: ingredient.id,
+                            label: ingredient.name
+                        }))
+                    });
+                }
+            });
+
+        cuisineService.getAllCuisines()
+            .then(jsonResponse => {
+                if (jsonResponse.error) {
+                    this.setState({cuisinesLoading: LoadingState.error});
+                } else {
+                    this.setState({
+                        cuisinesLoading: LoadingState.loaded,
+                        cuisines: jsonResponse.content.map(cuisine => ({
+                            value: cuisine.id,
+                            label: cuisine.name
+                        }))
+                    });
+                }
+            });
     }
 
     handleInputChange = name => value => {
@@ -72,51 +134,74 @@ class RecipeEditor extends React.Component {
     }
 
     render() {
-        const {instructionValue} = this.state;
+        const {
+            instructionValue, categoriesLoading,
+            categories, ingredientsLoading,
+            ingredients, cuisinesLoading, cuisines
+        } = this.state;
+
+        const highestLoadingStateIndex = Math.max(categoriesLoading.index, ingredientsLoading.index, cuisinesLoading.index);
+        const overallLoadingState = LoadingStateByIndex[highestLoadingStateIndex];
 
         const {classes} = this.props;
 
         return (
-            <form>
-                <FormControl margin="normal" required fullWidth>
-                    <InputLabel htmlFor="recipeName">Recept neve:</InputLabel>
-                    <Input id="recipeName" name="recipeName" autoFocus/>
-                </FormControl>
+            overallLoadingState === LoadingState.inProgress
+                ?
+                <CircularProgress disableShrink={true} className={classes.progress}/>
+                :
+                overallLoadingState === LoadingState.none
+                    ?
+                    ""
+                    :
+                    overallLoadingState === LoadingState.error ?
+                        <Typography>Az oldal jelenleg nem elérhető! Kérjük próbálja később!</Typography>
+                        :
+                        (
+                            <form>
+                                <FormControl margin="normal" required fullWidth>
+                                    <InputLabel htmlFor="recipeName">Recept neve:</InputLabel>
+                                    <Input id="recipeName" name="recipeName" autoFocus/>
+                                </FormControl>
 
-                <FormControl margin="normal" fullWidth>
-                    <InputLabel htmlFor="preparationTime">Előkészítési ido:</InputLabel>
-                    <Input id="preparationTime" name="preparationTime"/>
-                </FormControl>
+                                <FormControl margin="normal" fullWidth>
+                                    <InputLabel htmlFor="preparationTime">Előkészítési ido:</InputLabel>
+                                    <Input id="preparationTime" name="preparationTime"/>
+                                </FormControl>
 
-                <FormControl margin="normal" fullWidth>
-                    <InputLabel htmlFor="cookTime">Elkészítési ido:</InputLabel>
-                    <Input id="cookTime" name="cookTime"/>
-                </FormControl>
+                                <FormControl margin="normal" fullWidth>
+                                    <InputLabel htmlFor="cookTime">Elkészítési ido:</InputLabel>
+                                    <Input id="cookTime" name="cookTime"/>
+                                </FormControl>
 
-                <SuggestionSelect label={"Kategóriák:"}
-                                  placeholder="Válassz kategóriákat"
-                                  suggestions={suggestions}
-                                  multiSelect
-                                  onValueChange={this.handleInputChange('categories')}/>
+                                <SuggestionSelect label={"Kategóriák:"}
+                                                  placeholder="Válassz kategóriákat"
+                                                  suggestions={categories}
+                                                  multiSelect
+                                                  onValueChange={this.handleInputChange('selectedCategories')}/>
 
-                <SuggestionSelect label={"Hozzávalók:"}
-                                  placeholder="Válassz alapanyagokat"
-                                  suggestions={suggestions}
-                                  multiSelect
-                                  onValueChange={this.handleInputChange('ingredients')}/>
+                                <SuggestionSelect label={"Hozzávalók:"}
+                                                  placeholder="Válassz alapanyagokat"
+                                                  suggestions={ingredients}
+                                                  multiSelect
+                                                  onValueChange={this.handleInputChange('selectedIngredients')}/>
 
-                <SuggestionSelect label={"Konyha nemzetisége:"}
-                                  placeholder="Válassz országot"
-                                  suggestions={suggestions}
-                                  multiSelect
-                                  onValueChange={this.handleInputChange('cuisines')}/>
+                                <SuggestionSelect label={"Konyha nemzetisége:"}
+                                                  placeholder="Válassz országot"
+                                                  suggestions={cuisines}
+                                                  multiSelect
+                                                  onValueChange={this.handleInputChange('selectedCuisines')}/>
 
-                <FormControl margin="normal" required fullWidth>
-                    <div id="recipeInstructionLabel" className={classes.recipeInstructionLabel}>Leírás:</div>
-                    <RichTextEditor onChange={this.onInstructionValueChange} value={instructionValue} toolbarConfig={richTextEditorToolbarConfig}/>
-                </FormControl>
+                                <FormControl margin="normal" required fullWidth>
+                                    <div id="recipeInstructionLabel"
+                                         className={classes.recipeInstructionLabel}>Leírás:
+                                    </div>
+                                    <RichTextEditor onChange={this.onInstructionValueChange} value={instructionValue}
+                                                    toolbarConfig={richTextEditorToolbarConfig}/>
+                                </FormControl>
 
-            </form>
+                            </form>
+                        )
         );
     }
 }

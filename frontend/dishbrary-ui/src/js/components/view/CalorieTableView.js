@@ -8,6 +8,7 @@ import Typography from "@material-ui/core/es/Typography/Typography";
 import {ReactMUIDatatable} from "react-material-ui-datatable";
 
 import ingredientService from '../../services/IngredientService';
+import {LoadingState} from '../../services/constants/LoadingState';
 
 const styles = theme => ({
     root: {
@@ -28,13 +29,6 @@ const styles = theme => ({
         margin: theme.spacing.unit * 2,
     }
 });
-
-const loadingState = {
-    none: "none",
-    inProgress: "inProgress",
-    loaded: "loaded",
-    error: "error"
-}
 
 const columns = [
     {
@@ -65,7 +59,7 @@ class CalorieTableView extends React.Component {
         super(props);
 
         this.state = {
-            loading: loadingState.none,
+            loading: LoadingState.none,
             ingredientList: []
         };
     }
@@ -75,15 +69,15 @@ class CalorieTableView extends React.Component {
     }
 
     fetchAllIngredient = () => {
-        this.setState({loading: loadingState.inProgress});
+        this.setState({loading: LoadingState.inProgress});
 
         ingredientService.getAllIngredient()
             .then(jsonResponse => {
                 if (jsonResponse.error) {
-                    this.setState({loading: loadingState.error});
+                    this.setState({loading: LoadingState.error});
                 } else {
                     this.setState({
-                        loading: loadingState.loaded,
+                        loading: LoadingState.loaded,
                         ingredientList: jsonResponse.content
                     });
                 }
@@ -97,15 +91,15 @@ class CalorieTableView extends React.Component {
         return (
             <Paper className={classes.root}>
                 {
-                    loading === loadingState.inProgress
+                    loading === LoadingState.inProgress
                         ?
                         <CircularProgress disableShrink={true} className={classes.progress}/>
                         :
-                        loading === loadingState.none
+                        loading === LoadingState.none
                             ?
                             ""
                             :
-                            loading === loadingState.error ?
+                            loading === LoadingState.error ?
                                 <Typography>Az oldal jelenleg nem elérhető! Kérjük próbálja később!</Typography>
                                 :
                                 (
