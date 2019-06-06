@@ -8,6 +8,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import RichTextEditor from 'react-rte/lib/RichTextEditor';
 
 import SuggestionSelect from './SuggestionSelect';
+import IngredientEditor from './IngredientEditor';
 
 import categoryService from '../../services/CategoryService';
 import cuisineService from '../../services/CuisineService';
@@ -101,7 +102,8 @@ class RecipeEditor extends React.Component {
                         ingredientsLoading: LoadingState.loaded,
                         ingredients: jsonResponse.content.map(ingredient => ({
                             value: ingredient.id,
-                            label: ingredient.name
+                            label: ingredient.name,
+                            unit: ingredient.unit
                         }))
                     });
                 }
@@ -180,11 +182,7 @@ class RecipeEditor extends React.Component {
                                                   multiSelect
                                                   onValueChange={this.handleInputChange('selectedCategories')}/>
 
-                                <SuggestionSelect label={"Hozzávalók:"}
-                                                  placeholder="Válassz alapanyagokat"
-                                                  suggestions={ingredients}
-                                                  multiSelect
-                                                  onValueChange={this.handleInputChange('selectedIngredients')}/>
+                                <IngredientEditor ingredients={ingredients}/>
 
                                 <SuggestionSelect label={"Konyha nemzetisége:"}
                                                   placeholder="Válassz országot"

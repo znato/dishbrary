@@ -180,7 +180,7 @@ class SuggestionSelect extends React.Component {
         });
 
         //call additional callback if present
-        if (typeof this.props.onChange === "function") {
+        if (typeof this.props.onValueChange === "function") {
             this.props.onValueChange(value);
         }
     };
@@ -210,7 +210,7 @@ class SuggestionSelect extends React.Component {
                 }}
                 options={suggestions}
                 components={components}
-                value={this.state.categories}
+                value={this.state.value}
                 onChange={this.handleChange}
                 placeholder={placeholder}
                 isMulti={multiSelect === true}
