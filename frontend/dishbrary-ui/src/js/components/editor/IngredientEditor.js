@@ -9,53 +9,51 @@ import InputLabel from '@material-ui/core/InputLabel/index';
 import SuggestionSelect from './SuggestionSelect';
 import DishbraryNumberFormatInput from './DishbraryNumberFormatInput';
 
-function GramBasedUnitSelection() {
-    return (
-        [
-            <MenuItem key="gram" value="g">g</MenuItem>,
-            <MenuItem key="dkg" value="dkg">dkg</MenuItem>,
-            <MenuItem key="kg" value="kg">kg</MenuItem>
-        ]
-    );
-}
 
-function MilliBasedUnitSelection() {
-    return (
-        [
-            <MenuItem key="ml" value="ml">ml</MenuItem>,
-            <MenuItem key="dl" value="dl">dl</MenuItem>,
-            <MenuItem key="l" value="l">l</MenuItem>
-        ]
+const GRAM_BASED_UNIT_SELECTION = [
+    <MenuItem key="gram" value="g">g</MenuItem>,
+    <MenuItem key="dkg" value="dkg">dkg</MenuItem>,
+    <MenuItem key="kg" value="kg">kg</MenuItem>
+]
 
-    );
-}
+const MILLILITRE_BASED_UNIT_SELECTION = [
+    <MenuItem key="ml" value="ml">ml</MenuItem>,
+    <MenuItem key="dl" value="dl">dl</MenuItem>,
+    <MenuItem key="l" value="l">l</MenuItem>
+]
+
+const PIECE_UNIT = <MenuItem key="db" value="db">db</MenuItem>;
 
 function getUnitSelectionByUnit(unit) {
-    if (unit === "GRAM") {
-        return GramBasedUnitSelection();
-    } else if (unit === "MILLILITRE") {
-        return MilliBasedUnitSelection();
-    }
-
-    return null;
-}
-
-function getUnitByRenderedUnitName(renderedUnit) {
-    switch (renderedUnit) {
+    switch (unit) {
         case "GRAM":
         case "g":
         case "dkg":
         case "kg":
-            return "GRAM";
+            return GRAM_BASED_UNIT_SELECTION;
 
+        case "MILLILITRE":
         case "ml":
         case "dl":
         case "l":
-            return "MILLILITRE";
+            return MILLILITRE_BASED_UNIT_SELECTION;
 
         default:
-            return "PIECE";
+            return PIECE_UNIT;
     }
+}
+
+function convertUnitToRenderable(unit) {
+    switch (unit) {
+        case "GRAM":
+            return "g";
+        case "MILLILITRE":
+            return "ml";
+        case "PIECE" :
+            return "db";
+    }
+
+    return unit;
 }
 
 class IngredientEditor extends React.Component {
@@ -76,6 +74,7 @@ class IngredientEditor extends React.Component {
     handleIngredientChange = value => {
         this.setState({
             ingredient: value,
+            selectedUnit: null
         });
     };
 
@@ -95,7 +94,7 @@ class IngredientEditor extends React.Component {
         const {ingredient, quantity, selectedUnit} = this.state;
         const {ingredients} = this.props;
 
-        const unitToRender = selectedUnit || ingredient.unit || null;
+        const unitToRender = selectedUnit || convertUnitToRenderable(ingredient.unit);
 
         return (
             <div>
@@ -117,23 +116,18 @@ class IngredientEditor extends React.Component {
                                 }}
                             />
 
-                            {getUnitByRenderedUnitName(unitToRender) !== "PIECE"
-                                ?
-                                <FormControl>
-                                    <InputLabel shrink>
-                                        Egység:
-                                    </InputLabel>
-                                    <Select
-                                        value={unitToRender}
-                                        onChange={this.handleUnitChange}
-                                        name="unit"
-                                    >
-                                        {getUnitSelectionByUnit(getUnitByRenderedUnitName(unitToRender))}
-                                    </Select>
-                                </FormControl>
-                                :
-                                <span>db</span>
-                            }
+                            <FormControl>
+                                <InputLabel shrink>
+                                    Egység:
+                                </InputLabel>
+                                <Select
+                                    value={unitToRender}
+                                    onChange={this.handleUnitChange}
+                                    name="unit"
+                                >
+                                    {getUnitSelectionByUnit(unitToRender)}
+                                </Select>
+                            </FormControl>
                         </React.Fragment>
                     )
                     : ""
