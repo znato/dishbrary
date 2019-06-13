@@ -98,7 +98,7 @@ class IngredientEditorDialog extends React.Component {
 
         //call additional callback if present
         if (typeof this.props.onIngredientChange === "function") {
-            this.props.onIngredientChange(this.state.ingredient);
+            this.props.onIngredientChange(this.state);
         }
     }
 

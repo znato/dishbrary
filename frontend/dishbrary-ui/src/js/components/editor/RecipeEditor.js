@@ -4,6 +4,7 @@ import FormControl from '@material-ui/core/FormControl/index';
 import Input from '@material-ui/core/Input/index';
 import InputLabel from '@material-ui/core/InputLabel/index';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Chip from '@material-ui/core/Chip';
 
 import RichTextEditor from 'react-rte/lib/RichTextEditor';
 
@@ -145,9 +146,9 @@ class RecipeEditor extends React.Component {
         this.setState({ingredientEditorOpened: true})
     }
 
-    onIngredientChange = (ingredient) => {
+    onIngredientChange = (ingredientDescription) => {
         this.setState({
-            selectedIngredients: [...this.state.selectedIngredients, ingredient]
+            selectedIngredients: [...this.state.selectedIngredients, ingredientDescription]
         });
     }
 
@@ -206,8 +207,12 @@ class RecipeEditor extends React.Component {
                                 <div>
                                     <div>
                                         {
-                                            selectedIngredients.map((ingredient) => <span
-                                                key={ingredient.id}>{ingredient.name}, </span>)
+                                            selectedIngredients.map((ingredientDescription) => {
+                                                const ingredient = ingredientDescription.ingredient;
+                                                const chipLabel = ingredientDescription.quantity + " " + ingredientDescription.selectedUnit + " " + ingredient.name;
+
+                                                return <Chip key={ingredient.id} label={chipLabel}/>
+                                            })
                                         }
                                     </div>
                                     <Fab color="primary" className={classes.fab}
