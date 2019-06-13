@@ -7,8 +7,10 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 import RichTextEditor from 'react-rte/lib/RichTextEditor';
 
+import AddIcon from '@material-ui/icons/Add';
+import Fab from '@material-ui/core/Fab';
 import SuggestionSelect from './SuggestionSelect';
-import IngredientEditor from './IngredientEditor';
+import IngredientEditorDialog from './IngredientEditorDialog';
 
 import categoryService from '../../services/CategoryService';
 import cuisineService from '../../services/CuisineService';
@@ -26,7 +28,10 @@ const styles = theme => ({
     },
     progress: {
         margin: theme.spacing.unit * 2,
-    }
+    },
+    fab: {
+        margin: theme.spacing.unit * 2,
+    },
 });
 
 const richTextEditorToolbarConfig = {
@@ -54,6 +59,7 @@ class RecipeEditor extends React.Component {
         super(props);
 
         this.state = {
+            ingredientEditorOpened: false,
             instructionValue: RichTextEditor.createEmptyValue(),
             categoriesLoading: LoadingState.none,
             categories: [],
@@ -135,11 +141,26 @@ class RecipeEditor extends React.Component {
         this.setState({instructionValue});
     }
 
+    openIngredientEditorDialog = () => {
+        this.setState({ingredientEditorOpened: true})
+    }
+
+    onIngredientChange = (ingredient) => {
+        this.setState({
+            selectedIngredients: [...this.state.selectedIngredients, ingredient]
+        });
+    }
+
+    onIngredientDialogClose = () => {
+        this.setState({ingredientEditorOpened: false});
+    }
+
     render() {
         const {
             instructionValue, categoriesLoading,
             categories, ingredientsLoading,
-            ingredients, cuisinesLoading, cuisines
+            ingredients, cuisinesLoading, cuisines,
+            ingredientEditorOpened, selectedIngredients
         } = this.state;
 
         const highestLoadingStateIndex = Math.max(categoriesLoading.index, ingredientsLoading.index, cuisinesLoading.index);
@@ -182,7 +203,23 @@ class RecipeEditor extends React.Component {
                                                   multiSelect
                                                   onValueChange={this.handleInputChange('selectedCategories')}/>
 
-                                <IngredientEditor ingredients={ingredients}/>
+                                <div>
+                                    <div>
+                                        {
+                                            selectedIngredients.map((ingredient) => <span
+                                                key={ingredient.id}>{ingredient.name}, </span>)
+                                        }
+                                    </div>
+                                    <Fab color="primary" className={classes.fab}
+                                         onClick={this.openIngredientEditorDialog}>
+                                        <AddIcon/>
+                                    </Fab>
+                                </div>
+
+                                <IngredientEditorDialog dialogOpen={ingredientEditorOpened}
+                                                        onDialogClose={this.onIngredientDialogClose}
+                                                        ingredients={ingredients}
+                                                        onIngredientChange={this.onIngredientChange}/>
 
                                 <SuggestionSelect label={"Konyha nemzetisége:"}
                                                   placeholder="Válassz országot"
