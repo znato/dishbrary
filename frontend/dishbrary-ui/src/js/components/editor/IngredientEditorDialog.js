@@ -94,11 +94,17 @@ class IngredientEditorDialog extends React.Component {
     }
 
     handleIngredientSave = () => {
+        var ingredientData = this.state;
+
         this.closeDialog();
+
+        if (ingredientData.selectedUnit === null) {
+            ingredientData.selectedUnit = convertUnitToRenderable(ingredientData.ingredient.unit);
+        }
 
         //call additional callback if present
         if (typeof this.props.onIngredientChange === "function") {
-            this.props.onIngredientChange(this.state);
+            this.props.onIngredientChange(ingredientData);
         }
     }
 
@@ -176,7 +182,7 @@ class IngredientEditorDialog extends React.Component {
                         Mégse
                     </Button>
                     <Button onClick={this.handleIngredientSave} color="primary"
-                            disabled={ingredient == EMPTY_STATE.ingredient}>
+                            disabled={ingredient === EMPTY_STATE.ingredient}>
                         Hozzáad
                     </Button>
                 </DialogActions>

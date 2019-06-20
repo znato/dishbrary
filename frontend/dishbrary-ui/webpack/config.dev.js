@@ -1,5 +1,6 @@
 const merge = require("webpack-merge");
 const baseConfig = require("./config.base.js");
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
@@ -67,6 +68,9 @@ module.exports = merge(baseConfig, {
         new MiniCssExtractPlugin({
             filename: "[name].css",
             chunkFilename: "[id].css"
-        })
+        }),
+        new CopyWebpackPlugin([
+            {from: 'src/css/reactRteRestyle.css', to: 'css'}
+        ])
     ]
 });

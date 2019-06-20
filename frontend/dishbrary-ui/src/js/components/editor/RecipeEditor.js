@@ -21,18 +21,24 @@ import {LoadingState, LoadingStateByIndex} from '../../services/constants/Loadin
 import Typography from "@material-ui/core/es/Typography";
 
 const styles = theme => ({
-    recipeInstructionLabel: {
+    sectionTitle: {
         color: "rgba(0, 0, 0, 0.54)",
         padding: 0,
         fontFamily: ["Roboto", "Helvetica", "Arial", "sans-serif"],
         lineHeight: 1
     },
+    section: {
+        textAlign: "left",
+    },
     progress: {
         margin: theme.spacing.unit * 2,
     },
-    fab: {
-        margin: theme.spacing.unit * 2,
+    chip: {
+        margin: `${theme.spacing.unit / 2}px ${theme.spacing.unit / 4}px`,
     },
+    fab: {
+        margin: `${theme.spacing.unit / 2}px ${theme.spacing.unit / 4}px`,
+    }
 });
 
 const richTextEditorToolbarConfig = {
@@ -146,14 +152,29 @@ class RecipeEditor extends React.Component {
         this.setState({ingredientEditorOpened: true})
     }
 
-    onIngredientChange = (ingredientDescription) => {
+    onIngredientChange = (ingredientData) => {
         this.setState({
-            selectedIngredients: [...this.state.selectedIngredients, ingredientDescription]
+            selectedIngredients: [...this.state.selectedIngredients, ingredientData]
         });
     }
 
     onIngredientDialogClose = () => {
         this.setState({ingredientEditorOpened: false});
+    }
+
+    deleteIngredient = ingredientData => () => {
+        var ingredientArray = this.state.selectedIngredients;
+
+        for (var i = 0; i < ingredientArray.length; i++) {
+            if (ingredientArray[i] === ingredientData) {
+                ingredientArray.splice(i, 1);
+                break;
+            }
+        }
+
+        this.setState({
+            selectedIngredients: ingredientArray
+        })
     }
 
     render() {
@@ -204,21 +225,28 @@ class RecipeEditor extends React.Component {
                                                   multiSelect
                                                   onValueChange={this.handleInputChange('selectedCategories')}/>
 
-                                <div>
+                                <div className={classes.section}>
+                                    <Typography className={classes.sectionTitle}>Hozzávalók:*</Typography>
                                     <div>
                                         {
-                                            selectedIngredients.map((ingredientDescription) => {
-                                                const ingredient = ingredientDescription.ingredient;
-                                                const chipLabel = ingredientDescription.quantity + " " + ingredientDescription.selectedUnit + " " + ingredient.name;
+                                            selectedIngredients.map((ingredientData, index) => {
+                                                const ingredient = ingredientData.ingredient;
+                                                const chipLabel = ingredientData.quantity + " " + ingredientData.selectedUnit + " " + ingredient.name;
 
-                                                return <Chip key={ingredient.id} label={chipLabel}/>
+                                                return <Chip className={classes.chip}
+                                                             key={ingredient.id}
+                                                             label={chipLabel}
+                                                             onDelete={this.deleteIngredient(ingredientData)}/>
                                             })
                                         }
+
+                                        <Fab color="primary" className={classes.fab}
+                                             size={"small"}
+                                             onClick={this.openIngredientEditorDialog}>
+                                            <AddIcon/>
+                                        </Fab>
                                     </div>
-                                    <Fab color="primary" className={classes.fab}
-                                         onClick={this.openIngredientEditorDialog}>
-                                        <AddIcon/>
-                                    </Fab>
+                                    <hr/>
                                 </div>
 
                                 <IngredientEditorDialog dialogOpen={ingredientEditorOpened}
@@ -232,9 +260,10 @@ class RecipeEditor extends React.Component {
                                                   multiSelect
                                                   onValueChange={this.handleInputChange('selectedCuisines')}/>
 
-                                <FormControl margin="normal" required fullWidth>
+                                <FormControl margin="normal" required fullWidth className={classes.section}>
                                     <div id="recipeInstructionLabel"
-                                         className={classes.recipeInstructionLabel}>Leírás:
+                                         className={classes.sectionTitle}>
+                                        Leírás:*
                                     </div>
                                     <RichTextEditor onChange={this.onInstructionValueChange} value={instructionValue}
                                                     toolbarConfig={richTextEditorToolbarConfig}/>
