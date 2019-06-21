@@ -21,6 +21,10 @@ import {LoadingState, LoadingStateByIndex} from '../../services/constants/Loadin
 import Typography from "@material-ui/core/es/Typography";
 
 const styles = theme => ({
+    form: {
+        width: "80%",
+        margin: "0 10% 0 10%",
+    },
     sectionTitle: {
         color: "rgba(0, 0, 0, 0.54)",
         padding: 0,
@@ -203,7 +207,7 @@ class RecipeEditor extends React.Component {
                         <Typography>Az oldal jelenleg nem elérhető! Kérjük próbálja később!</Typography>
                         :
                         (
-                            <form>
+                            <form className={classes.form}>
                                 <FormControl margin="normal" required fullWidth>
                                     <InputLabel htmlFor="recipeName">Recept neve:</InputLabel>
                                     <Input id="recipeName" name="recipeName" autoFocus/>
