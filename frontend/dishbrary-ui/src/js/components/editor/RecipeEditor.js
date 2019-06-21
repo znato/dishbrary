@@ -19,6 +19,7 @@ import ingredientService from '../../services/IngredientService';
 
 import {LoadingState, LoadingStateByIndex} from '../../services/constants/LoadingState';
 import Typography from "@material-ui/core/es/Typography";
+import Button from "@material-ui/core/Button";
 
 const styles = theme => ({
     form: {
@@ -70,6 +71,7 @@ class RecipeEditor extends React.Component {
         super(props);
 
         this.state = {
+            recipeName: null,
             ingredientEditorOpened: false,
             instructionValue: RichTextEditor.createEmptyValue(),
             categoriesLoading: LoadingState.none,
@@ -181,8 +183,13 @@ class RecipeEditor extends React.Component {
         })
     }
 
+    onRecipeNameChange = (event) => {
+        this.setState({recipeName: event.target.value})
+    }
+
     render() {
         const {
+            recipeName,
             instructionValue, categoriesLoading,
             categories, ingredientsLoading,
             ingredients, cuisinesLoading, cuisines,
@@ -191,6 +198,8 @@ class RecipeEditor extends React.Component {
 
         const highestLoadingStateIndex = Math.max(categoriesLoading.index, ingredientsLoading.index, cuisinesLoading.index);
         const overallLoadingState = LoadingStateByIndex[highestLoadingStateIndex];
+
+        const readyToSave = recipeName && selectedIngredients.length > 0 && instructionValue.getEditorState().getCurrentContent().hasText();
 
         const {classes} = this.props;
 
@@ -210,7 +219,7 @@ class RecipeEditor extends React.Component {
                             <form className={classes.form}>
                                 <FormControl margin="normal" required fullWidth>
                                     <InputLabel htmlFor="recipeName">Recept neve:</InputLabel>
-                                    <Input id="recipeName" name="recipeName" autoFocus/>
+                                    <Input id="recipeName" name="recipeName" autoFocus onChange={this.onRecipeNameChange}/>
                                 </FormControl>
 
                                 <FormControl margin="normal" fullWidth>
@@ -273,6 +282,15 @@ class RecipeEditor extends React.Component {
                                                     toolbarConfig={richTextEditorToolbarConfig}/>
                                 </FormControl>
 
+                                <Button
+                                    disabled={!readyToSave}
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    color="primary"
+                                >
+                                    Mentés
+                                </Button>
                             </form>
                         )
         );
