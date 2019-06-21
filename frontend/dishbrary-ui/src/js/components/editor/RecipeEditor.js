@@ -5,21 +5,23 @@ import Input from '@material-ui/core/Input/index';
 import InputLabel from '@material-ui/core/InputLabel/index';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Chip from '@material-ui/core/Chip';
+import Typography from "@material-ui/core/es/Typography";
+import Button from "@material-ui/core/Button";
+import TextField from "@material-ui/core/TextField";
+import AddIcon from '@material-ui/icons/Add';
+import Fab from '@material-ui/core/Fab';
 
 import RichTextEditor from 'react-rte/lib/RichTextEditor';
 
-import AddIcon from '@material-ui/icons/Add';
-import Fab from '@material-ui/core/Fab';
 import SuggestionSelect from './SuggestionSelect';
 import IngredientEditorDialog from './IngredientEditorDialog';
+import DishbraryNumberFormatInput from "./DishbraryNumberFormatInput";
 
 import categoryService from '../../services/CategoryService';
 import cuisineService from '../../services/CuisineService';
 import ingredientService from '../../services/IngredientService';
 
 import {LoadingState, LoadingStateByIndex} from '../../services/constants/LoadingState';
-import Typography from "@material-ui/core/es/Typography";
-import Button from "@material-ui/core/Button";
 
 const styles = theme => ({
     form: {
@@ -72,6 +74,8 @@ class RecipeEditor extends React.Component {
 
         this.state = {
             recipeName: null,
+            preparationTime: null,
+            cookTime: null,
             ingredientEditorOpened: false,
             instructionValue: RichTextEditor.createEmptyValue(),
             categoriesLoading: LoadingState.none,
@@ -150,6 +154,11 @@ class RecipeEditor extends React.Component {
         });
     };
 
+    onEventBasedInputChange = name => event => {
+        this.setState({[name]: event.target.value})
+    }
+
+
     onInstructionValueChange = (instructionValue) => {
         this.setState({instructionValue});
     }
@@ -183,13 +192,9 @@ class RecipeEditor extends React.Component {
         })
     }
 
-    onRecipeNameChange = (event) => {
-        this.setState({recipeName: event.target.value})
-    }
-
     render() {
         const {
-            recipeName,
+            recipeName, cookTime, preparationTime,
             instructionValue, categoriesLoading,
             categories, ingredientsLoading,
             ingredients, cuisinesLoading, cuisines,
@@ -219,17 +224,30 @@ class RecipeEditor extends React.Component {
                             <form className={classes.form}>
                                 <FormControl margin="normal" required fullWidth>
                                     <InputLabel htmlFor="recipeName">Recept neve:</InputLabel>
-                                    <Input id="recipeName" name="recipeName" autoFocus onChange={this.onRecipeNameChange}/>
+                                    <Input id="recipeName" name="recipeName" autoFocus
+                                           onChange={this.onEventBasedInputChange('recipeName')}/>
                                 </FormControl>
 
                                 <FormControl margin="normal" fullWidth>
-                                    <InputLabel htmlFor="preparationTime">Előkészítési ido:</InputLabel>
-                                    <Input id="preparationTime" name="preparationTime"/>
+                                    <TextField
+                                        label="Előkészítési ido (perc):"
+                                        value={preparationTime}
+                                        onChange={this.onEventBasedInputChange('preparationTime')}
+                                        InputProps={{
+                                            inputComponent: DishbraryNumberFormatInput,
+                                        }}
+                                    />
                                 </FormControl>
 
                                 <FormControl margin="normal" fullWidth>
-                                    <InputLabel htmlFor="cookTime">Elkészítési ido:</InputLabel>
-                                    <Input id="cookTime" name="cookTime"/>
+                                    <TextField
+                                        label="Elkészítési ido (perc):"
+                                        value={cookTime}
+                                        onChange={this.onEventBasedInputChange('cookTime')}
+                                        InputProps={{
+                                            inputComponent: DishbraryNumberFormatInput,
+                                        }}
+                                    />
                                 </FormControl>
 
                                 <SuggestionSelect label={"Kategóriák:"}
