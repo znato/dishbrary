@@ -12,12 +12,27 @@ import java.util.List;
 @Log4j2
 public class CategoryTransformer {
 
+	public Category transform(CategoryRestModel restModel) {
+		Category category = new Category(restModel.getName());
+
+		category.setId(restModel.getId());
+
+		return category;
+	}
+
+	public List<Category> transformAllCategoryRestModel(Iterable<CategoryRestModel> restModels) {
+		List<Category> retVal = new ArrayList<>();
+
+		restModels.forEach(restModel -> retVal.add(transform(restModel)));
+
+		return retVal;
+	}
+
 	public CategoryRestModel transform(Category category) {
 		log.debug("Transform Category with name:{} and id: {}", category.getName(), category.getId());
 
 		return new CategoryRestModel(category.getId(), category.getName());
 	}
-
 
 	public List<CategoryRestModel> transformAll(Iterable<Category> categoryEntities) {
 		List<CategoryRestModel> retVal = new ArrayList<>();

@@ -9,6 +9,18 @@ export const get = (serviceUrl) => {
         .then(response => response.json());
 }
 
+export const put = (serviceUrl, data) => {
+    return fetch(buildServiceUrl(serviceUrl), {
+        credentials: ServerConstants.sameOrigin ? "same-origin" : "include",
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    })
+        .then((response => response.json()));
+}
+
 export const post = (serviceUrl, data) => {
     return fetch(buildServiceUrl(serviceUrl), {
         credentials: ServerConstants.sameOrigin ? "same-origin" : "include",

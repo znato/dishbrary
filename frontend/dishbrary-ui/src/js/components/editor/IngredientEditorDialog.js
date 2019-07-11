@@ -15,6 +15,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import SuggestionSelect from './SuggestionSelect';
 import DishbraryNumberFormatInput from './DishbraryNumberFormatInput';
 
+import * as ingredientUnitUtils from '../../services/utils/IngredientUnitUtils';
+
 const styles = theme => ({
     dialogPaper: {
         height: "520px",
@@ -30,52 +32,6 @@ const EMPTY_STATE = {
     quantity: 1,
     selectedUnit: null
 };
-
-const GRAM_BASED_UNIT_SELECTION = [
-    <MenuItem key="gram" value="g">g</MenuItem>,
-    <MenuItem key="dkg" value="dkg">dkg</MenuItem>,
-    <MenuItem key="kg" value="kg">kg</MenuItem>
-]
-
-const MILLILITRE_BASED_UNIT_SELECTION = [
-    <MenuItem key="ml" value="ml">ml</MenuItem>,
-    <MenuItem key="dl" value="dl">dl</MenuItem>,
-    <MenuItem key="l" value="l">l</MenuItem>
-]
-
-const PIECE_UNIT = <MenuItem key="db" value="db">db</MenuItem>;
-
-function getUnitSelectionByUnit(unit) {
-    switch (unit) {
-        case "GRAM":
-        case "g":
-        case "dkg":
-        case "kg":
-            return GRAM_BASED_UNIT_SELECTION;
-
-        case "MILLILITRE":
-        case "ml":
-        case "dl":
-        case "l":
-            return MILLILITRE_BASED_UNIT_SELECTION;
-
-        default:
-            return PIECE_UNIT;
-    }
-}
-
-function convertUnitToRenderable(unit) {
-    switch (unit) {
-        case "GRAM":
-            return "g";
-        case "MILLILITRE":
-            return "ml";
-        case "PIECE" :
-            return "db";
-    }
-
-    return unit;
-}
 
 class IngredientEditorDialog extends React.Component {
     constructor(props) {
@@ -99,7 +55,7 @@ class IngredientEditorDialog extends React.Component {
         this.closeDialog();
 
         if (ingredientData.selectedUnit === null) {
-            ingredientData.selectedUnit = convertUnitToRenderable(ingredientData.ingredient.unit);
+            ingredientData.selectedUnit = ingredientUnitUtils.convertUnitToRenderable(ingredientData.ingredient.unit);
         }
 
         //call additional callback if present
@@ -135,7 +91,7 @@ class IngredientEditorDialog extends React.Component {
         const {ingredient, quantity, selectedUnit} = this.state;
         const {dialogOpen, ingredients, classes} = this.props;
 
-        const unitToRender = selectedUnit || convertUnitToRenderable(ingredient.unit);
+        const unitToRender = selectedUnit || ingredientUnitUtils.convertUnitToRenderable(ingredient.unit);
 
         return (
             <Dialog classes={{paper: classes.dialogPaper}} disableBackdropClick disableEscapeKeyDown open={dialogOpen}
@@ -169,7 +125,7 @@ class IngredientEditorDialog extends React.Component {
                                         onChange={this.handleUnitChange}
                                         name="unit"
                                     >
-                                        {getUnitSelectionByUnit(unitToRender)}
+                                        {ingredientUnitUtils.getUnitSelectionByUnit(unitToRender)}
                                     </Select>
                                 </FormControl>
                             </React.Fragment>

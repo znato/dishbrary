@@ -15,13 +15,36 @@ import java.util.List;
 @Log4j2
 public class CuisineTransformer {
 
+	private static final String BASE_URL = StaticResourceComponentType.CUISINE.name() + "/";
+
 	@Value("${dishbrary.cuisine.images.default.name}")
 	private String defaultCuisineIconName;
+
+	public Cuisine transform(CuisineRestModel restModel) {
+		Cuisine cuisine = new Cuisine();
+
+		cuisine.setId(restModel.getId());
+		cuisine.setName(restModel.getName());
+
+		if (restModel.getIconUrl() != null && !restModel.getIconUrl().contains(defaultCuisineIconName)) {
+			cuisine.setIconFileName(restModel.getIconUrl().replace(BASE_URL, ""));
+		}
+
+		return cuisine;
+	}
+
+	public List<Cuisine> transformAllCuisineRestModel(Iterable<CuisineRestModel> restModels) {
+		List<Cuisine> retVal = new ArrayList<>();
+
+		restModels.forEach(restModel -> retVal.add(transform(restModel)));
+
+		return retVal;
+	}
 
 	public CuisineRestModel transform(Cuisine cuisine) {
 		log.debug("Transform Cuisine with name:{} and id: {}", cuisine.getName(), cuisine.getId());
 
-		StringBuilder iconUrl = new StringBuilder(StaticResourceComponentType.CUISINE.name()).append("/");
+		StringBuilder iconUrl = new StringBuilder(BASE_URL);
 
 		String imgFileName = cuisine.getIconFileName();
 		if (!StringUtils.isEmpty(imgFileName)) {

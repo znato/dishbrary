@@ -20,6 +20,9 @@ import DishbraryNumberFormatInput from "./DishbraryNumberFormatInput";
 import categoryService from '../../services/CategoryService';
 import cuisineService from '../../services/CuisineService';
 import ingredientService from '../../services/IngredientService';
+import recipeService from '../../services/RecipeService';
+
+import * as ingredientUnitUtils from '../../services/utils/IngredientUnitUtils';
 
 import {LoadingState, LoadingStateByIndex} from '../../services/constants/LoadingState';
 
@@ -192,6 +195,64 @@ class RecipeEditor extends React.Component {
         })
     }
 
+    saveRecipe = (formSubmitEvent) => {
+        formSubmitEvent.preventDefault();
+
+        // private String tags;
+        // private String coverImageFileName;
+        // private String videoFileName;
+
+        const {
+            recipeName, cookTime, preparationTime,
+            instructionValue, selectedCategories,
+            selectedCuisines, selectedIngredients
+        } = this.state;
+
+        const recipe = {
+                name: recipeName,
+                instruction: instructionValue.toString('html'),
+                preparationTimeInMinute: preparationTime,
+                cookTimeInMinute: cookTime,
+                ingredients: selectedIngredients.map((ingredientData) => {
+                    const ingredient = ingredientData.ingredient;
+
+                    return {
+                        ingredient: {
+                            id: ingredient.id,
+                            name: ingredient.name,
+                            unit: ingredientUnitUtils.convertRenderableUnitToUnit(ingredientData.selectedUnit),
+
+                        },
+                        quantity: ingredientData.quantity,
+                        selectedUnit: ingredientData.selectedUnit
+
+                    };
+                }),
+                categories: selectedCategories.map(category => {
+                    return {
+                        id: category.value,
+                        name: category.label
+                    };
+                }),
+                cuisines: selectedCuisines.map(cusine => {
+                    return {
+                        id: cusine.value,
+                        name: cusine.label
+                    };
+                })
+            }
+        ;
+
+        recipeService.saveRecipe(recipe)
+            .then(jsonResponse => {
+                if (jsonResponse.error) {
+
+                } else {
+
+                }
+            });
+    }
+
     render() {
         const {
             recipeName, cookTime, preparationTime,
@@ -221,7 +282,7 @@ class RecipeEditor extends React.Component {
                         <Typography>Az oldal jelenleg nem elérhető! Kérjük próbálja később!</Typography>
                         :
                         (
-                            <form className={classes.form}>
+                            <form className={classes.form} onSubmit={this.saveRecipe} autoComplete="off">
                                 <FormControl margin="normal" required fullWidth>
                                     <InputLabel htmlFor="recipeName">Recept neve:</InputLabel>
                                     <Input id="recipeName" name="recipeName" autoFocus

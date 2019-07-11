@@ -19,9 +19,9 @@ public class Recipe extends AbstractEntity {
 	private String name;
 	@Column
 	private String instruction;
-	@ManyToMany
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "ingredient")
 	@LazyCollection(LazyCollectionOption.FALSE)
-	private List<Ingredient> ingredients;
+	private List<RecipeIngredient> ingredients;
 	@Column
 	@ManyToMany
 	private List<Category> categories;

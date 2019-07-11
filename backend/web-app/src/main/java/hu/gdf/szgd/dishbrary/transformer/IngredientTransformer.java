@@ -16,20 +16,40 @@ import java.util.List;
 @Log4j2
 public class IngredientTransformer {
 
+    private static final String BASE_URL = StaticResourceComponentType.INGREDIENT.name() + "/";
+
     @Autowired
     private GenericReflectionBasedTransformer genericTransformer;
 
     @Value("${dishbrary.ingredients.images.default.name}")
     private String defaultIngredientImageName;
 
+    public Ingredient transform(IngredientRestModel restModel) {
+        Ingredient ingredient = genericTransformer.transform(restModel, new Ingredient());
+
+        if (restModel.getImageUrl() != null && !restModel.getImageUrl().contains(defaultIngredientImageName)) {
+            ingredient.setImageFileName(restModel.getImageUrl().replace(BASE_URL, ""));
+        }
+
+        return ingredient;
+    }
+
+    public List<Ingredient> transformAllIngredientRestModel(Iterable<IngredientRestModel> restModels) {
+        List<Ingredient> retVal = new ArrayList<>();
+
+        restModels.forEach(restModel -> retVal.add(transform(restModel)));
+
+        return retVal;
+    }
+
     public IngredientRestModel transform(Ingredient ingredient) {
         IngredientRestModel restModel = genericTransformer.transform(ingredient, new IngredientRestModel());
 
         String imgFileName = ingredient.getImageFileName();
         if (!StringUtils.isEmpty(imgFileName)) {
-            restModel.setImageUrl(StaticResourceComponentType.INGREDIENT.name() + "/" + imgFileName);
+            restModel.setImageUrl(BASE_URL + imgFileName);
         } else {
-            restModel.setImageUrl(StaticResourceComponentType.INGREDIENT.name() + "/" + defaultIngredientImageName);
+            restModel.setImageUrl(BASE_URL + defaultIngredientImageName);
         }
 
         return restModel;
