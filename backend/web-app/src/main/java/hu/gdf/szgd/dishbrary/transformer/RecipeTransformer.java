@@ -1,6 +1,7 @@
 package hu.gdf.szgd.dishbrary.transformer;
 
 import static hu.gdf.szgd.dishbrary.transformer.TransformerUtil.minuteToMillis;
+import static hu.gdf.szgd.dishbrary.transformer.TransformerUtil.millisToMinute;
 
 import hu.gdf.szgd.dishbrary.db.entity.Recipe;
 import hu.gdf.szgd.dishbrary.db.entity.RecipeIngredient;
@@ -57,18 +58,36 @@ public class RecipeTransformer {
 		return recipe;
 	}
 
-	public RecipeRestModel transform(Recipe ingredient) {
-		RecipeRestModel restModel = genericTransformer.transform(ingredient, new RecipeRestModel());
+	public RecipeRestModel transform(Recipe recipe) {
+		RecipeRestModel restModel = genericTransformer.transform(recipe, new RecipeRestModel());
 
-		//TODO: implement transformation
+		restModel.setPreparationTimeInMinute(millisToMinute(recipe.getPreparationTimeInMillis()));
+		restModel.setCookTimeInMinute(millisToMinute(recipe.getCookTimeInMillis()));
+
+		restModel.setCategories(categoryTransformer.transformAll(recipe.getCategories()));
+		restModel.setCuisines(cuisineTransformer.transformAll(recipe.getCuisines()));
+
+		List<RecipeIngredientRestModel> ingredientRestModels = new ArrayList<>(recipe.getIngredients().size());
+
+		for (RecipeIngredient recipeIngredient : recipe.getIngredients()) {
+			ingredientRestModels.add(new RecipeIngredientRestModel(
+					recipeIngredient.getId(),
+					null,
+					ingredientTransformer.transform(recipeIngredient.getIngredient()),
+					recipeIngredient.getQuantity(),
+					recipeIngredient.getSelectedUnit()
+			));
+		}
+
+		restModel.setIngredients(ingredientRestModels);
 
 		return restModel;
 	}
 
-	public List<RecipeRestModel> transformAll(Iterable<Recipe> ingredientEntities) {
+	public List<RecipeRestModel> transformAll(Iterable<Recipe> recipeEntities) {
 		List<RecipeRestModel> retVal = new ArrayList<>();
 
-		ingredientEntities.forEach(ingredient -> retVal.add(transform(ingredient)));
+		recipeEntities.forEach(recipeEntity -> retVal.add(transform(recipeEntity)));
 
 		return retVal;
 	}

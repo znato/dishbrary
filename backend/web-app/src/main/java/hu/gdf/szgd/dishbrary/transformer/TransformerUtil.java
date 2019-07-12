@@ -11,4 +11,12 @@ public class TransformerUtil {
 
 		return minute * MILLIS_IN_MINUTE;
 	}
+
+	public static Integer millisToMinute(Long millis) {
+		if (millis == null) {
+			return null;
+		}
+
+		return (int) (millis / MILLIS_IN_MINUTE);
+	}
 }

@@ -32,6 +32,8 @@ public class Recipe extends AbstractEntity {
 	private String tags;
 	@Column
 	private String coverImageFileName;
+	@ElementCollection
+	private List<String> additionalImagesFileNames;
 	@Column
 	private String videoFileName;
 	@OneToMany(mappedBy = "recipe")

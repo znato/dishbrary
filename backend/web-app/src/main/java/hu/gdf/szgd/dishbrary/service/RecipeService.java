@@ -2,6 +2,7 @@ package hu.gdf.szgd.dishbrary.service;
 
 import hu.gdf.szgd.dishbrary.db.entity.Recipe;
 import hu.gdf.szgd.dishbrary.db.repository.RecipeRepository;
+import hu.gdf.szgd.dishbrary.service.validation.RecipeValidatorUtil;
 import hu.gdf.szgd.dishbrary.transformer.RecipeTransformer;
 import hu.gdf.szgd.dishbrary.web.model.RecipeRestModel;
 import lombok.extern.log4j.Log4j2;
@@ -18,9 +19,9 @@ public class RecipeService {
 	private RecipeTransformer recipeTransformer;
 
 	public RecipeRestModel createRecipe(RecipeRestModel recipeRestModel) {
-		Recipe recipeToSave = recipeTransformer.transform(recipeRestModel);
+		RecipeValidatorUtil.validateRecipeForCreation(recipeRestModel);
 
-		//TODO: validate recipe
+		Recipe recipeToSave = recipeTransformer.transform(recipeRestModel);
 
 		return recipeTransformer.transform(recipeRepository.save(recipeToSave));
 	}
