@@ -17,4 +17,17 @@
         <module>web-app</module>
     </modules>
 
+    <properties>
+        <jersey.version>2.27</jersey.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-multipart</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

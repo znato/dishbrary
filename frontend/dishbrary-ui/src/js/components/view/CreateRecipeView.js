@@ -3,6 +3,7 @@ import React from 'react';
 import withStyles from '@material-ui/core/styles/withStyles';
 
 import RecipeEditor from '../editor/RecipeEditor';
+import RecipeImageFileUploader from '../editor/RecipeImageFileUploader';
 import Typography from "@material-ui/core/Typography";
 import {Paper} from "@material-ui/core";
 
@@ -32,6 +33,8 @@ class CreateRecipeView extends React.Component {
                 </Typography>
 
                 <RecipeEditor/>
+
+                <RecipeImageFileUploader recipeId={1}/>
             </Paper>
         )
     }

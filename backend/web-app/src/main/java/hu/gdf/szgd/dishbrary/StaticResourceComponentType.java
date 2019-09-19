@@ -2,5 +2,11 @@ package hu.gdf.szgd.dishbrary;
 
 public enum StaticResourceComponentType {
 	CUISINE,
-	INGREDIENT;
+	INGREDIENT,
+	RECIPE;
+
+	public enum StaticResourceComponentSubType {
+		IMAGE,
+		VIDEO
+	}
 }

@@ -2,6 +2,7 @@ package hu.gdf.szgd.dishbrary.web.config;
 
 import hu.gdf.szgd.dishbrary.web.WebConstants;
 import lombok.extern.log4j.Log4j2;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -17,6 +18,10 @@ import javax.ws.rs.ext.Provider;
 @Component
 @ApplicationPath(WebConstants.REST_ENDPOINT_BASE_PATH)
 public class ComponentScanningJerseyConfig extends ResourceConfig implements BeanPostProcessor {
+
+	public ComponentScanningJerseyConfig() {
+		super(MultiPartFeature.class);
+	}
 
 	@Override
 	public Object postProcessAfterInitialization(Object obj, String string) throws BeansException {
