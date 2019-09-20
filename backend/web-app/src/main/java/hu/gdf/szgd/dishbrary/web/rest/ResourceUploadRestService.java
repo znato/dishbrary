@@ -6,6 +6,7 @@ import hu.gdf.szgd.dishbrary.web.model.FileResource;
 import org.glassfish.jersey.media.multipart.BodyPart;
 import org.glassfish.jersey.media.multipart.BodyPartEntity;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,20 +31,26 @@ public class ResourceUploadRestService {
 	@Path("recipe/{recipeId}/image/upload")
 //	@PreAuthorize("hasAuthority('WRITE_RECIPE')")
 	public Response upload(@PathParam("recipeId") Long recipeId,
+						   @FormDataParam("selectedCoverImageFileName") String selectedCoverImageFileName,
 						   final FormDataMultiPart multiPart) {
 
-		String selectedCoverImageFileName = multiPart.getHeaders().getFirst("selectedCoverImageFileName");
 		List<BodyPart> bodyParts = multiPart.getBodyParts();
 		List<FileResource> fileResources = new ArrayList<>(bodyParts.size());
 
 		for (BodyPart bodyPart : bodyParts) {
 			String fileName = bodyPart.getContentDisposition().getFileName();
+
+			//if filename is not filled ignore the bodypart (it can be null for non image entries like selectedCoverImageFileName which appended manually)
+			if (fileName == null) {
+				continue;
+			}
+
 			BodyPartEntity bodyPartEntity = (BodyPartEntity) bodyPart.getEntity();
 
 			fileResources.add(new FileResource(fileName, bodyPartEntity.getInputStream()));
 		}
 
-		staticResourceService.uploadRecipeAdditionalImages(recipeId, fileResources);
+		staticResourceService.uploadRecipeImages(recipeId, selectedCoverImageFileName, fileResources);
 
 		return Response.ok(new DishbraryResponse<>("A kép(ek) sikeresen mentve!")).build();
 	}

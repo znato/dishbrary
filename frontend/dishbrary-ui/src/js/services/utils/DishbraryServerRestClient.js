@@ -33,12 +33,11 @@ export const post = (serviceUrl, data) => {
         .then((response => response.json()));
 }
 
-export const postFormData = (serviceUrl, data, headers) => {
+export const postFormData = (serviceUrl, data) => {
     return fetch(buildServiceUrl(serviceUrl), {
         credentials: ServerConstants.sameOrigin ? "same-origin" : "include",
         method: "POST",
         body: data,
-        headers: headers
     })
         .then((response => response.json()));
 }

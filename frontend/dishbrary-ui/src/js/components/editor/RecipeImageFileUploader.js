@@ -3,6 +3,9 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import InputLabel from '@material-ui/core/InputLabel/index';
 import Button from "@material-ui/core/Button";
 import FormControl from "@material-ui/core/FormControl";
+import Typography from "@material-ui/core/es/Typography";
+
+import DishbraryAlertDialog from "../general/DishbraryAlertDialog";
 
 import recipeService from '../../services/RecipeService';
 
@@ -31,8 +34,36 @@ class RecipeImageFileUploader extends React.Component {
 
         this.state = {
             selectedFiles: [],
-            selectedCoverImageFileName: null
+            selectedCoverImageFileName: null,
+            alertData: {
+                openAlert: false,
+                alertDialogTitle: "",
+                alertDialogContent: ""
+            }
         }
+
+    }
+
+    openAlertDialog = (title, message) => {
+        this.setState(
+            {
+                alertData: {
+                    openAlert: true,
+                    alertDialogTitle: title,
+                    alertDialogContent: message
+                }
+            })
+    }
+
+    closeAlertDialog = () => {
+        this.setState(
+            {
+                alertData: {
+                    openAlert: false,
+                    alertDialogTitle: "",
+                    alertDialogContent: ""
+                }
+            })
     }
 
     uploadRecipeImages = (recipeId) => (formSubmitEvent) => {
@@ -42,12 +73,14 @@ class RecipeImageFileUploader extends React.Component {
 
         const {selectedCoverImageFileName} = this.state;
 
-        recipeService.saveRecipeImages(recipeId, formData, {"selectedCoverImageFileName": selectedCoverImageFileName})
+        formData.set("selectedCoverImageFileName", selectedCoverImageFileName);
+
+        recipeService.saveRecipeImages(recipeId, formData)
             .then(jsonResponse => {
                 if (jsonResponse.error) {
-                    alert(jsonResponse.message);
+                    this.openAlertDialog("Hiba történt!", jsonResponse.message);
                 } else {
-                    alert(jsonResponse.message);
+                    this.openAlertDialog("", jsonResponse.content);
                 }
             });
     }
@@ -59,6 +92,7 @@ class RecipeImageFileUploader extends React.Component {
 
         //clearing selectedFiles array as we will rebuild it from the input component data
         this.state.selectedFiles = [];
+        this.state.selectedCoverImageFileName = null
 
         for (let i = 0; i < selectedFilesToUpload.length; i++) {
             let fileReader = new FileReader();
@@ -89,12 +123,20 @@ class RecipeImageFileUploader extends React.Component {
     render() {
         const {recipeId, classes} = this.props;
 
-        const {selectedFiles} = this.state;
+        const {selectedFiles, alertData} = this.state;
+
+        let imagePreviewInformation = null;
 
         let $imagePreviews = [];
         //if the selectedFiles is not empty
         if (selectedFiles && selectedFiles[0]) {
+            imagePreviewInformation = <Typography component="h1" variant="h5">A feltölteni kívant képek közül a kiválasztott lesz a recept borítóképe. Alapértelmezetten az első kép!</Typography>;
+
             //set the first image as checked by default
+            if (this.state.selectedCoverImageFileName === null) {
+                this.state.selectedCoverImageFileName = selectedFiles[0].file.name;
+            }
+
             $imagePreviews.push(
                 (
 
@@ -150,10 +192,17 @@ class RecipeImageFileUploader extends React.Component {
                     </FormControl>
                 </form>
 
+                {imagePreviewInformation}
+
                 <div id="recipeImageFileUploaderContainer-imagePreview"
                      className="recipeImageFileUploaderContainer-imagePreview">
                     {$imagePreviews}
                 </div>
+
+                <DishbraryAlertDialog open={alertData.openAlert}
+                                      dialogTitle={alertData.alertDialogTitle}
+                                      dialogContent={alertData.alertDialogContent}
+                                      onAlertDialogClose={this.closeAlertDialog}/>
             </div>
         )
     }

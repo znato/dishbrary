@@ -10,6 +10,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Service
@@ -21,6 +22,7 @@ public class RecipeService {
 	@Autowired
 	private RecipeTransformer recipeTransformer;
 
+	@Transactional
 	public RecipeRestModel findRecipeById(Long recipeId) {
 		Optional<Recipe> recipe = recipeRepository.findById(recipeId);
 
@@ -39,15 +41,19 @@ public class RecipeService {
 		return recipeTransformer.transform(recipeRepository.save(recipeToSave));
 	}
 
-	public void saveAdditionalImagesToRecipe(RecipeRestModel recipeRestModel) {
+	public void saveImagesToRecipe(RecipeRestModel recipeRestModel) {
 		Optional<Recipe> recipe = recipeRepository.findById(recipeRestModel.getId());
 
 		if (!recipe.isPresent()) {
 			throw new DishbraryValidationException("Nem létezik recept a következő azonosíto alatt: " + recipeRestModel.getId() + "!");
 		}
 
-		recipe.get().setAdditionalImagesFileNames(recipeRestModel.getAdditionalImagesFileNames());
+		Recipe recipeEntity = recipe.get();
 
-		recipeRepository.save(recipe.get());
+		recipeEntity.setCoverImageFileName(recipeRestModel.getCoverImageFileName());
+
+		recipeEntity.setAdditionalImagesFileNames(recipeRestModel.getAdditionalImagesFileNames());
+
+		recipeRepository.save(recipeEntity);
 	}
 }

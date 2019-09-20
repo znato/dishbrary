@@ -14,7 +14,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +53,7 @@ public class StaticResourceService {
 		return image;
 	}
 
-	public void uploadRecipeAdditionalImages(Long recipeId, List<FileResource> fileResources) {
+	public void uploadRecipeImages(Long recipeId, String selectedCoverImageFileName, List<FileResource> fileResources) {
 
 		RecipeRestModel recipe = recipeService.findRecipeById(recipeId);
 
@@ -66,7 +69,7 @@ public class StaticResourceService {
 			directoryToSaveIn.mkdirs();
 		}
 
-		List<String> recipeAdditionalimageFilenames = new ArrayList<>(fileResources.size());
+		List<String> recipeAdditionalImageFilenames = new ArrayList<>(fileResources.size());
 
 		for (FileResource fileResource : fileResources) {
 			InputStream inputStream = fileResource.getInputStream();
@@ -81,8 +84,14 @@ public class StaticResourceService {
 
 				log.info("The following image is saved for recipe with id: {}, image name: {}", recipeId, basePathToSaveResource + fileResource.getFileName());
 
-				recipeAdditionalimageFilenames.add(fileResource.getFileName());
-			} catch (IOException ex) {
+				if (fileResource.getFileName().equals(selectedCoverImageFileName)) {
+					log.info("The following cover image is selected for recipe with id: {}, image name: {}", recipeId, selectedCoverImageFileName);
+
+					recipe.setCoverImageFileName(fileResource.getFileName());
+				} else {
+					recipeAdditionalImageFilenames.add(fileResource.getFileName());
+				}
+			} catch (Exception ex) {
 				//clean up all files if some cannot be saved
 
 				log.error("An exception occurred while saving image(s) for recipe with id: {}! Cleaning up saved images if there was any", recipeId, ex);
@@ -90,7 +99,7 @@ public class StaticResourceService {
 				for (FileResource fr : fileResources) {
 					File file = new File(directoryToSaveIn, fr.getFileName());
 					if (file.exists()) {
-						log.debug("Cleaning up image due to IOException for recipe with id: {}, image: {}", recipeId, basePathToSaveResource + fr.getFileName());
+						log.debug("Cleaning up image due to an exception for recipe with id: {}, image: {}", recipeId, basePathToSaveResource + fr.getFileName());
 						file.delete();
 					} else {
 						break;
@@ -101,9 +110,9 @@ public class StaticResourceService {
 			}
 		}
 
-		recipe.setAdditionalImagesFileNames(recipeAdditionalimageFilenames);
+		recipe.setAdditionalImagesFileNames(recipeAdditionalImageFilenames);
 
-		recipeService.saveAdditionalImagesToRecipe(recipe);
+		recipeService.saveImagesToRecipe(recipe);
 	}
 
 	private String getBasePathForComponentType(StaticResourceComponentType componentType) {
