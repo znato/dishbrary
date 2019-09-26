@@ -51,6 +51,10 @@ const styles = theme => ({
     },
     fab: {
         margin: `${theme.spacing.unit / 2}px ${theme.spacing.unit / 4}px`,
+    },
+    skipButton: {
+        "width": "80%",
+        "marginBottom": "1em"
     }
 });
 
@@ -95,6 +99,7 @@ class RecipeEditor extends React.Component {
             cuisinesLoading: LoadingState.none,
             cuisines: [],
             selectedCuisines: [],
+            skipImageUpload: false,
             alertData: {
                 openAlert: false,
                 alertDialogTitle: "",
@@ -212,6 +217,10 @@ class RecipeEditor extends React.Component {
         this.setState({ingredientEditorOpened: false});
     }
 
+    setStateOf = (variable, newState) => () => {
+        this.setState({[variable]: newState});
+    }
+
     deleteIngredient = ingredientData => () => {
         var ingredientArray = this.state.selectedIngredients;
 
@@ -229,10 +238,6 @@ class RecipeEditor extends React.Component {
 
     saveRecipe = (formSubmitEvent) => {
         formSubmitEvent.preventDefault();
-
-        // private String tags;
-        // private String coverImageFileName;
-        // private String videoFileName;
 
         const {
             recipeName, cookTime, preparationTime,
@@ -280,7 +285,10 @@ class RecipeEditor extends React.Component {
                 if (jsonResponse.error) {
                     this.openAlertDialog("Hiba történt!", jsonResponse.message);
                 } else {
-                    this.setState({recipeId: jsonResponse.content.id});
+                    this.setState({
+                        recipeId: jsonResponse.content.id,
+                        skipImageUpload: false
+                    });
                 }
             });
     }
@@ -292,7 +300,7 @@ class RecipeEditor extends React.Component {
             categories, ingredientsLoading,
             ingredients, cuisinesLoading, cuisines,
             ingredientEditorOpened, selectedIngredients,
-            recipeId,alertData
+            recipeId, skipImageUpload, alertData
         } = this.state;
 
         const highestLoadingStateIndex = Math.max(categoriesLoading.index, ingredientsLoading.index, cuisinesLoading.index);
@@ -315,9 +323,20 @@ class RecipeEditor extends React.Component {
                         <Typography>Az oldal jelenleg nem elérhető! Kérjük próbálja később!</Typography>
                         :
                         (
-                            recipeId !== null
+                            recipeId !== null && !skipImageUpload
                                 ?
-                                <RecipeImageFileUploader recipeId={recipeId}/>
+                                <div id="recipeImageFileUploadContainer">
+                                    <RecipeImageFileUploader recipeId={recipeId}/>
+                                    <Button
+                                        className={classes.skipButton}
+                                        fullWidth
+                                        variant="outlined"
+                                        color="primary"
+                                        onClick={this.setStateOf("skipImageUpload", true)}
+                                    >
+                                        Tovább
+                                    </Button>
+                                </div>
                                 :
                                 <div id="recipeEditorContainer">
                                     <form className={classes.form} onSubmit={this.saveRecipe} autoComplete="off">

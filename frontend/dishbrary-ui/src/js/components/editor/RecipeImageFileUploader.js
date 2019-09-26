@@ -1,18 +1,53 @@
 import React from 'react';
 import withStyles from '@material-ui/core/styles/withStyles';
-import InputLabel from '@material-ui/core/InputLabel/index';
 import Button from "@material-ui/core/Button";
 import FormControl from "@material-ui/core/FormControl";
 import Typography from "@material-ui/core/es/Typography";
 
+import UploadIcon from "../icons/UploadIcon";
 import DishbraryAlertDialog from "../general/DishbraryAlertDialog";
 
 import recipeService from '../../services/RecipeService';
 
 const styles = theme => ({
+    recipeImageFileUploaderContainer: {
+        "marginBottom": "2em"
+    },
     form: {
         width: "80%",
         margin: "0 10% 0 10%",
+    },
+    imageInput: {
+        "width": "0.1px",
+        "height": "0.1px",
+        "opacity": 0,
+        "overflow": "hidden",
+        "position": "absolute",
+        "zIndex": -1
+    },
+    imageInputLabel: {
+        "maxWidth": "80%",
+        "fontSize": "1.25rem",
+        "fontWeight": 700,
+        "textOverflow": "ellipsis",
+        "whiteSpace": "nowrap",
+        "cursor": "pointer",
+        "display": "inline-block",
+        "overflow": "hidden",
+        "padding": "0.625rem 1.25rem",
+        "color": "#f1e5e6",
+        "backgroundColor": "#d3394c"
+    },
+    pageInfoText: {
+        "marginTop": "2em",
+        "marginBottom": "1em"
+    },
+    coverImageInfoText: {
+        "marginTop": "1em",
+        "marginBottom": "2em"
+    },
+    selectImagesButton: {
+        "marginBottom": "2em"
     },
     imagePreviewRadioGroupClass: {
         '&:checked + label>img': {
@@ -128,9 +163,13 @@ class RecipeImageFileUploader extends React.Component {
         let imagePreviewInformation = null;
 
         let $imagePreviews = [];
-        //if the selectedFiles is not empty
-        if (selectedFiles && selectedFiles[0]) {
-            imagePreviewInformation = <Typography component="h1" variant="h5">A feltölteni kívant képek közül a kiválasztott lesz a recept borítóképe. Alapértelmezetten az első kép!</Typography>;
+
+        let filesAreSelected = selectedFiles && selectedFiles[0];
+
+        if (filesAreSelected) {
+            imagePreviewInformation =
+                <Typography variant="subtitle2" className={classes.coverImageInfoText}>A feltölteni kívant képek közül a kiválasztott lesz a recept
+                    borítóképe. Alapértelmezetten az első kép!</Typography>;
 
             //set the first image as checked by default
             if (this.state.selectedCoverImageFileName === null) {
@@ -171,21 +210,34 @@ class RecipeImageFileUploader extends React.Component {
         }
 
         return (
-            <div id="recipeImageFileUploaderContainer" className="recipeImageFileUploaderContainer">
+            <div id="recipeImageFileUploaderContainer" className={classes.recipeImageFileUploaderContainer}>
+                <Typography variant="h6" className={classes.pageInfoText}>
+                    Ezen a felületen lehetőséged van a recepthez képeket feltölteni, amennyiben szeretnél. <br/>
+                    A képek feltöltése nem kötlező! Ha nem kívánsz képeket hozzáadni a receptedhez csak nyomj "TOVÁBB" gombra.
+                </Typography>
+
                 <form className={classes.form} onSubmit={this.uploadRecipeImages(recipeId)} autoComplete="off">
                     <FormControl margin="normal" required fullWidth>
-                        <InputLabel htmlFor="imagesInput">Képek kiválasztása:</InputLabel>
-                        <input id="imagesInput"
-                               name="imagesInput"
-                               type="file"
-                               accept="image/*"
-                               multiple
-                               onChange={this.handleImageInputChange}/>
+                        <div className={classes.selectImagesButton}>
+                            <label
+                                htmlFor="imagesInput" className={classes.imageInputLabel}>
+                                <UploadIcon/>
+                                Képek kiválasztása
+                            </label>
+                            <input id="imagesInput"
+                                   name="imagesInput"
+                                   type="file"
+                                   accept="image/*"
+                                   multiple
+                                   onChange={this.handleImageInputChange}
+                                   className={classes.imageInput}/>
+                        </div>
                         <Button
                             type="submit"
                             fullWidth
                             variant="contained"
                             color="primary"
+                            disabled={!filesAreSelected}
                         >
                             Feltőltés
                         </Button>

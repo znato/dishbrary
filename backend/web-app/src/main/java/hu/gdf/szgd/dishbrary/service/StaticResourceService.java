@@ -14,14 +14,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Log4j2
@@ -113,6 +115,32 @@ public class StaticResourceService {
 		recipe.setAdditionalImagesFileNames(recipeAdditionalImageFilenames);
 
 		recipeService.saveImagesToRecipe(recipe);
+
+		removeOldImagesFromDirectory(basePathToSaveResource, recipe);
+	}
+
+	private void removeOldImagesFromDirectory(String dirName, RecipeRestModel recipeWithNewFiles) {
+		try (Stream<Path> walk = Files.walk(Paths.get(dirName))) {
+
+			List<File> result = walk.filter(path -> {
+				String fileName = path.getFileName().toString();
+
+				return Files.isRegularFile(path) &&
+						!recipeWithNewFiles.getCoverImageFileName().equals(fileName) &&
+						!recipeWithNewFiles.getAdditionalImagesFileNames().contains(fileName);
+			}).map(x -> x.toFile()).collect(Collectors.toList());
+
+			result.forEach(file -> {
+				if (log.isDebugEnabled()) {
+					log.debug("Deleting old file for recipe! RecipeId: {}, fileName: {}", recipeWithNewFiles.getId(), file.getAbsolutePath());
+				}
+				file.delete();
+			});
+
+		} catch (IOException e) {
+			log.error("Could not delete old image files for recipe with id: {}", recipeWithNewFiles.getId(),e);
+		}
+
 	}
 
 	private String getBasePathForComponentType(StaticResourceComponentType componentType) {
