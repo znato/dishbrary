@@ -55,6 +55,43 @@ public class StaticResourceService {
 		return image;
 	}
 
+	public void uploadRecipeVideo(Long recipeId, FileResource videoResource) {
+		RecipeRestModel recipe = recipeService.findRecipeById(recipeId);
+
+		String basePathToSaveResource = getBasePathForComponentType(StaticResourceComponentType.RECIPE)
+				+ getRemainingPathForRecipeByComponentSubType(recipeId, StaticResourceComponentType.StaticResourceComponentSubType.VIDEO);
+
+		log.debug("Video upload base path for recipe with id: {} is {}", recipe, basePathToSaveResource);
+
+		File directoryToSaveIn = new File(basePathToSaveResource);
+
+		if (!directoryToSaveIn.exists()) {
+			log.info("Video directory does not exist for recipe with id: {}! Creating directory: {}", recipeId, basePathToSaveResource);
+			directoryToSaveIn.mkdirs();
+		}
+
+		InputStream inputStream = videoResource.getInputStream();
+
+		try (OutputStream out = new FileOutputStream(new File(directoryToSaveIn, videoResource.getFileName()))) {
+			int read = 0;
+			byte[] bytes = new byte[1024];
+
+			while ((read = inputStream.read(bytes)) != -1) {
+				out.write(bytes, 0, read);
+			}
+
+			recipe.setVideoFileName(videoResource.getFileName());
+
+			log.info("The following video is saved for recipe with id: {}, video name: {}", recipeId, basePathToSaveResource + videoResource.getFileName());
+		} catch (Exception ex) {
+			log.error("An exception occurred while saving video for recipe with id: {}! Cleaning up saved video", recipeId, ex);
+
+			throw new ResourceCannotBeSavedException("A kiválasztott videó fájl mentése közben hiba lépett fel. Kérlek próbald újra!");
+		}
+
+		recipeService.saveVideoToRecipe(recipe);
+	}
+
 	public void uploadRecipeImages(Long recipeId, String selectedCoverImageFileName, List<FileResource> fileResources) {
 
 		RecipeRestModel recipe = recipeService.findRecipeById(recipeId);
@@ -138,7 +175,7 @@ public class StaticResourceService {
 			});
 
 		} catch (IOException e) {
-			log.error("Could not delete old image files for recipe with id: {}", recipeWithNewFiles.getId(),e);
+			log.error("Could not delete old image files for recipe with id: {}", recipeWithNewFiles.getId(), e);
 		}
 
 	}

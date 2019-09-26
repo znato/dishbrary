@@ -41,6 +41,20 @@ public class RecipeService {
 		return recipeTransformer.transform(recipeRepository.save(recipeToSave));
 	}
 
+	public void saveVideoToRecipe(RecipeRestModel recipeRestModel) {
+		Optional<Recipe> recipe = recipeRepository.findById(recipeRestModel.getId());
+
+		if (!recipe.isPresent()) {
+			throw new DishbraryValidationException("Nem létezik recept a következő azonosíto alatt: " + recipeRestModel.getId() + "!");
+		}
+
+		Recipe recipeEntity = recipe.get();
+
+		recipeEntity.setVideoFileName(recipeRestModel.getVideoFileName());
+
+		recipeRepository.save(recipeEntity);
+	}
+
 	public void saveImagesToRecipe(RecipeRestModel recipeRestModel) {
 		Optional<Recipe> recipe = recipeRepository.findById(recipeRestModel.getId());
 

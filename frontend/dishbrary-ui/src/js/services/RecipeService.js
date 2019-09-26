@@ -12,6 +12,11 @@ class RecipeService {
         const uploadRecipeImagesPath = `resource/recipe/${recipeId}/image/upload`;
         return DishbraryServerRestClient.postFormData(uploadRecipeImagesPath, formData);
     }
+
+    saveRecipeVideo = (recipeId, formData) => {
+        const uploadRecipeVideoPath = `resource/recipe/${recipeId}/video/upload`;
+        return DishbraryServerRestClient.postFormData(uploadRecipeVideoPath, formData);
+    }
 }
 
 export default new RecipeService();
