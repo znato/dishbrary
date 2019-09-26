@@ -8,6 +8,7 @@ import org.glassfish.jersey.media.multipart.BodyPartEntity;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.*;
@@ -29,7 +30,7 @@ public class ResourceUploadRestService {
 
 	@POST
 	@Path("recipe/{recipeId}/image/upload")
-//	@PreAuthorize("hasAuthority('WRITE_RECIPE')")
+	@PreAuthorize("hasAuthority('WRITE_RECIPE')")
 	public Response upload(@PathParam("recipeId") Long recipeId,
 						   @FormDataParam("selectedCoverImageFileName") String selectedCoverImageFileName,
 						   final FormDataMultiPart multiPart) {
