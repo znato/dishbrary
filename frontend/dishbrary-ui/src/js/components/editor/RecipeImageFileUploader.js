@@ -115,7 +115,10 @@ class RecipeImageFileUploader extends React.Component {
                 if (jsonResponse.error) {
                     this.openAlertDialog("Hiba történt!", jsonResponse.message);
                 } else {
-                    this.openAlertDialog("", jsonResponse.content);
+                    //call additional callback if present
+                    if (typeof this.props.onUploadSuccess === "function") {
+                        this.props.onUploadSuccess();
+                    }
                 }
             });
     }

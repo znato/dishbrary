@@ -28,6 +28,7 @@ import * as ingredientUnitUtils from '../../services/utils/IngredientUnitUtils';
 
 import {LoadingState, LoadingStateByIndex} from '../../services/constants/LoadingState';
 import RecipeImageFileUploader from "./RecipeImageFileUploader";
+import RecipeVideoFileUploader from "./RecipeVideoFileUploader";
 
 const styles = theme => ({
     form: {
@@ -77,6 +78,12 @@ const richTextEditorToolbarConfig = {
     ]
 };
 
+const EDITOR_STEP = {
+    RECIPE: "RECIPE",
+    IMAGE_UPLOAD: "IMAGE_UPLOAD",
+    VIDEO_UPLOAD: "VIDEO_UPLOAD",
+}
+
 class RecipeEditor extends React.Component {
 
     constructor(props) {
@@ -84,6 +91,7 @@ class RecipeEditor extends React.Component {
 
         //recipeId will be set on save
         this.state = {
+            actualStep: EDITOR_STEP.RECIPE,
             recipeId: null,
             recipeName: null,
             preparationTime: null,
@@ -99,7 +107,6 @@ class RecipeEditor extends React.Component {
             cuisinesLoading: LoadingState.none,
             cuisines: [],
             selectedCuisines: [],
-            skipImageUpload: false,
             alertData: {
                 openAlert: false,
                 alertDialogTitle: "",
@@ -217,8 +224,8 @@ class RecipeEditor extends React.Component {
         this.setState({ingredientEditorOpened: false});
     }
 
-    setStateOf = (variable, newState) => () => {
-        this.setState({[variable]: newState});
+    setActualEditorStep = (step) => () => {
+        this.setState({actualStep: step});
     }
 
     deleteIngredient = ingredientData => () => {
@@ -287,10 +294,14 @@ class RecipeEditor extends React.Component {
                 } else {
                     this.setState({
                         recipeId: jsonResponse.content.id,
-                        skipImageUpload: false
+                        actualStep: EDITOR_STEP.IMAGE_UPLOAD
                     });
                 }
             });
+    }
+
+    handleImageUploadSuccess = () => {
+        this.setState({actualStep: EDITOR_STEP.VIDEO_UPLOAD});
     }
 
     render() {
@@ -300,7 +311,7 @@ class RecipeEditor extends React.Component {
             categories, ingredientsLoading,
             ingredients, cuisinesLoading, cuisines,
             ingredientEditorOpened, selectedIngredients,
-            recipeId, skipImageUpload, alertData
+            recipeId, alertData, actualStep
         } = this.state;
 
         const highestLoadingStateIndex = Math.max(categoriesLoading.index, ingredientsLoading.index, cuisinesLoading.index);
@@ -323,118 +334,132 @@ class RecipeEditor extends React.Component {
                         <Typography>Az oldal jelenleg nem elérhető! Kérjük próbálja később!</Typography>
                         :
                         (
-                            recipeId !== null && !skipImageUpload
+                            recipeId !== null && EDITOR_STEP.IMAGE_UPLOAD === actualStep
                                 ?
                                 <div id="recipeImageFileUploadContainer">
-                                    <RecipeImageFileUploader recipeId={recipeId}/>
+                                    <RecipeImageFileUploader recipeId={recipeId} onUploadSuccess={this.handleImageUploadSuccess}/>
                                     <Button
                                         className={classes.skipButton}
                                         fullWidth
                                         variant="outlined"
                                         color="primary"
-                                        onClick={this.setStateOf("skipImageUpload", true)}
+                                        onClick={this.setActualEditorStep(EDITOR_STEP.VIDEO_UPLOAD)}
                                     >
                                         Tovább
                                     </Button>
                                 </div>
                                 :
-                                <div id="recipeEditorContainer">
-                                    <form className={classes.form} onSubmit={this.saveRecipe} autoComplete="off">
-                                        <FormControl margin="normal" required fullWidth>
-                                            <InputLabel htmlFor="recipeName">Recept neve:</InputLabel>
-                                            <Input id="recipeName" name="recipeName" autoFocus
-                                                   onChange={this.onEventBasedInputChange('recipeName')}/>
-                                        </FormControl>
-
-                                        <FormControl margin="normal" fullWidth>
-                                            <TextField
-                                                label="Előkészítési ido (perc):"
-                                                value={preparationTime}
-                                                onChange={this.onEventBasedInputChange('preparationTime')}
-                                                InputProps={{
-                                                    inputComponent: DishbraryNumberFormatInput,
-                                                }}
-                                            />
-                                        </FormControl>
-
-                                        <FormControl margin="normal" fullWidth>
-                                            <TextField
-                                                label="Elkészítési ido (perc):"
-                                                value={cookTime}
-                                                onChange={this.onEventBasedInputChange('cookTime')}
-                                                InputProps={{
-                                                    inputComponent: DishbraryNumberFormatInput,
-                                                }}
-                                            />
-                                        </FormControl>
-
-                                        <SuggestionSelect label={"Kategóriák:"}
-                                                          placeholder="Válassz kategóriákat"
-                                                          suggestions={categories}
-                                                          multiSelect
-                                                          onValueChange={this.handleInputChange('selectedCategories')}/>
-
-                                        <div className={classes.section}>
-                                            <Typography className={classes.sectionTitle}>Hozzávalók:*</Typography>
-                                            <div>
-                                                {
-                                                    selectedIngredients.map((ingredientData, index) => {
-                                                        const ingredient = ingredientData.ingredient;
-                                                        const chipLabel = ingredientData.quantity + " " + ingredientData.selectedUnit + " " + ingredient.name;
-
-                                                        return <Chip className={classes.chip}
-                                                                     key={ingredient.id}
-                                                                     label={chipLabel}
-                                                                     onDelete={this.deleteIngredient(ingredientData)}/>
-                                                    })
-                                                }
-
-                                                <Fab color="primary" className={classes.fab}
-                                                     size={"small"}
-                                                     onClick={this.openIngredientEditorDialog}>
-                                                    <AddIcon/>
-                                                </Fab>
-                                            </div>
-                                            <hr/>
-                                        </div>
-
-                                        <IngredientEditorDialog dialogOpen={ingredientEditorOpened}
-                                                                onDialogClose={this.onIngredientDialogClose}
-                                                                ingredients={ingredients}
-                                                                onIngredientChange={this.onIngredientChange}/>
-
-                                        <SuggestionSelect label={"Konyha nemzetisége:"}
-                                                          placeholder="Válassz országot"
-                                                          suggestions={cuisines}
-                                                          multiSelect
-                                                          onValueChange={this.handleInputChange('selectedCuisines')}/>
-
-                                        <FormControl margin="normal" required fullWidth className={classes.section}>
-                                            <div id="recipeInstructionLabel"
-                                                 className={classes.sectionTitle}>
-                                                Leírás:*
-                                            </div>
-                                            <RichTextEditor onChange={this.onInstructionValueChange}
-                                                            value={instructionValue}
-                                                            toolbarConfig={richTextEditorToolbarConfig}/>
-                                        </FormControl>
-
+                                recipeId !== null && EDITOR_STEP.VIDEO_UPLOAD === actualStep
+                                    ?
+                                    <div id="recipeVideoFileUploadContainer">
+                                        <RecipeVideoFileUploader recipeId={recipeId}/>
                                         <Button
-                                            disabled={!readyToSave}
-                                            type="submit"
+                                            className={classes.skipButton}
                                             fullWidth
-                                            variant="contained"
+                                            variant="outlined"
                                             color="primary"
                                         >
-                                            Mentés
+                                            Befejez
                                         </Button>
-                                    </form>
+                                    </div>
+                                    :
+                                    <div id="recipeEditorContainer">
+                                        <form className={classes.form} onSubmit={this.saveRecipe} autoComplete="off">
+                                            <FormControl margin="normal" required fullWidth>
+                                                <InputLabel htmlFor="recipeName">Recept neve:</InputLabel>
+                                                <Input id="recipeName" name="recipeName" autoFocus
+                                                       onChange={this.onEventBasedInputChange('recipeName')}/>
+                                            </FormControl>
 
-                                    <DishbraryAlertDialog open={alertData.openAlert}
-                                                          dialogTitle={alertData.alertDialogTitle}
-                                                          dialogContent={alertData.alertDialogContent}
-                                                          onAlertDialogClose={this.closeAlertDialog}/>
-                                </div>
+                                            <FormControl margin="normal" fullWidth>
+                                                <TextField
+                                                    label="Előkészítési ido (perc):"
+                                                    value={preparationTime}
+                                                    onChange={this.onEventBasedInputChange('preparationTime')}
+                                                    InputProps={{
+                                                        inputComponent: DishbraryNumberFormatInput,
+                                                    }}
+                                                />
+                                            </FormControl>
+
+                                            <FormControl margin="normal" fullWidth>
+                                                <TextField
+                                                    label="Elkészítési ido (perc):"
+                                                    value={cookTime}
+                                                    onChange={this.onEventBasedInputChange('cookTime')}
+                                                    InputProps={{
+                                                        inputComponent: DishbraryNumberFormatInput,
+                                                    }}
+                                                />
+                                            </FormControl>
+
+                                            <SuggestionSelect label={"Kategóriák:"}
+                                                              placeholder="Válassz kategóriákat"
+                                                              suggestions={categories}
+                                                              multiSelect
+                                                              onValueChange={this.handleInputChange('selectedCategories')}/>
+
+                                            <div className={classes.section}>
+                                                <Typography className={classes.sectionTitle}>Hozzávalók:*</Typography>
+                                                <div>
+                                                    {
+                                                        selectedIngredients.map((ingredientData, index) => {
+                                                            const ingredient = ingredientData.ingredient;
+                                                            const chipLabel = ingredientData.quantity + " " + ingredientData.selectedUnit + " " + ingredient.name;
+
+                                                            return <Chip className={classes.chip}
+                                                                         key={ingredient.id}
+                                                                         label={chipLabel}
+                                                                         onDelete={this.deleteIngredient(ingredientData)}/>
+                                                        })
+                                                    }
+
+                                                    <Fab color="primary" className={classes.fab}
+                                                         size={"small"}
+                                                         onClick={this.openIngredientEditorDialog}>
+                                                        <AddIcon/>
+                                                    </Fab>
+                                                </div>
+                                                <hr/>
+                                            </div>
+
+                                            <IngredientEditorDialog dialogOpen={ingredientEditorOpened}
+                                                                    onDialogClose={this.onIngredientDialogClose}
+                                                                    ingredients={ingredients}
+                                                                    onIngredientChange={this.onIngredientChange}/>
+
+                                            <SuggestionSelect label={"Konyha nemzetisége:"}
+                                                              placeholder="Válassz országot"
+                                                              suggestions={cuisines}
+                                                              multiSelect
+                                                              onValueChange={this.handleInputChange('selectedCuisines')}/>
+
+                                            <FormControl margin="normal" required fullWidth className={classes.section}>
+                                                <div id="recipeInstructionLabel"
+                                                     className={classes.sectionTitle}>
+                                                    Leírás:*
+                                                </div>
+                                                <RichTextEditor onChange={this.onInstructionValueChange}
+                                                                value={instructionValue}
+                                                                toolbarConfig={richTextEditorToolbarConfig}/>
+                                            </FormControl>
+
+                                            <Button
+                                                disabled={!readyToSave}
+                                                type="submit"
+                                                fullWidth
+                                                variant="contained"
+                                                color="primary"
+                                            >
+                                                Mentés
+                                            </Button>
+                                        </form>
+
+                                        <DishbraryAlertDialog open={alertData.openAlert}
+                                                              dialogTitle={alertData.alertDialogTitle}
+                                                              dialogContent={alertData.alertDialogContent}
+                                                              onAlertDialogClose={this.closeAlertDialog}/>
+                                    </div>
                         )
         );
     }
