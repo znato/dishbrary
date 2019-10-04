@@ -68,8 +68,8 @@ class RecipeImageFileUploader extends React.Component {
         super(props);
 
         this.state = {
-            selectedFiles: [],
-            selectedCoverImageFileName: null,
+            selectedFiles: props.selectedImages || [],
+            selectedCoverImageFileName: props.selectedCoverImageFileName,
             alertData: {
                 openAlert: false,
                 alertDialogTitle: "",
@@ -106,7 +106,7 @@ class RecipeImageFileUploader extends React.Component {
 
         const formData = new FormData(formSubmitEvent.target);
 
-        const {selectedCoverImageFileName} = this.state;
+        const {selectedFiles, selectedCoverImageFileName} = this.state;
 
         formData.set("selectedCoverImageFileName", selectedCoverImageFileName);
 
@@ -117,7 +117,10 @@ class RecipeImageFileUploader extends React.Component {
                 } else {
                     //call additional callback if present
                     if (typeof this.props.onUploadSuccess === "function") {
-                        this.props.onUploadSuccess();
+                        this.props.onUploadSuccess({
+                            selectedImages: selectedFiles,
+                            selectedCoverImageFileName: selectedCoverImageFileName
+                        });
                     }
                 }
             });
@@ -161,7 +164,7 @@ class RecipeImageFileUploader extends React.Component {
     render() {
         const {recipeId, classes} = this.props;
 
-        const {selectedFiles, alertData} = this.state;
+        const {selectedFiles, alertData, selectedCoverImageFileName} = this.state;
 
         let imagePreviewInformation = null;
 
@@ -175,33 +178,18 @@ class RecipeImageFileUploader extends React.Component {
                     borítóképe. Alapértelmezetten az első kép!</Typography>;
 
             //set the first image as checked by default
-            if (this.state.selectedCoverImageFileName === null) {
+            if (selectedCoverImageFileName === null) {
                 this.state.selectedCoverImageFileName = selectedFiles[0].file.name;
             }
 
-            $imagePreviews.push(
-                (
-
-                    <label key={"selectedImageToUpload" + 0} className={classes.imagePreviewWrapper}>
-                        <input id={"selectedImageToUpload" + 0} className={classes.imagePreviewRadioGroupClass}
-                               type="radio" name="imagePreviewRadioGroup"
-                               value={selectedFiles[0].file.name}
-                               defaultChecked
-                               onChange={this.handleCoverImageSelectionChange}/>
-                        <label htmlFor={"selectedImageToUpload" + 0}>
-                            <img src={selectedFiles[0].imagePreviewUrl} className={classes.imagePreview}/>
-                        </label>
-                    </label>
-                )
-            );
-
-            for (let i = 1; i < selectedFiles.length; i++) {
+            for (let i = 0; i < selectedFiles.length; i++) {
                 $imagePreviews.push(
                     (
                         <label key={"selectedImageToUpload" + i} className={classes.imagePreviewWrapper}>
                             <input id={"selectedImageToUpload" + i} className={classes.imagePreviewRadioGroupClass}
                                    type="radio" name="imagePreviewRadioGroup"
                                    value={selectedFiles[i].file.name}
+                                   checked={selectedCoverImageFileName === selectedFiles[i].file.name}
                                    onChange={this.handleCoverImageSelectionChange}/>
                             <label htmlFor={"selectedImageToUpload" + i}>
                                 <img src={selectedFiles[i].imagePreviewUrl} className={classes.imagePreview}/>

@@ -107,6 +107,10 @@ class RecipeEditor extends React.Component {
             cuisinesLoading: LoadingState.none,
             cuisines: [],
             selectedCuisines: [],
+            imageFileUploaderData: {
+                selectedImages: [],
+                selectedCoverImageFileName: null
+            },
             alertData: {
                 openAlert: false,
                 alertDialogTitle: "",
@@ -300,8 +304,11 @@ class RecipeEditor extends React.Component {
             });
     }
 
-    handleImageUploadSuccess = () => {
-        this.setState({actualStep: EDITOR_STEP.VIDEO_UPLOAD});
+    handleImageUploadSuccess = (imageFileUploaderData) => {
+        this.setState({
+            imageFileUploaderData: imageFileUploaderData,
+            actualStep: EDITOR_STEP.VIDEO_UPLOAD
+        });
     }
 
     render() {
@@ -311,7 +318,7 @@ class RecipeEditor extends React.Component {
             categories, ingredientsLoading,
             ingredients, cuisinesLoading, cuisines,
             ingredientEditorOpened, selectedIngredients,
-            recipeId, alertData, actualStep
+            recipeId, alertData, actualStep, imageFileUploaderData
         } = this.state;
 
         const highestLoadingStateIndex = Math.max(categoriesLoading.index, ingredientsLoading.index, cuisinesLoading.index);
@@ -337,7 +344,19 @@ class RecipeEditor extends React.Component {
                             recipeId !== null && EDITOR_STEP.IMAGE_UPLOAD === actualStep
                                 ?
                                 <div id="recipeImageFileUploadContainer">
-                                    <RecipeImageFileUploader recipeId={recipeId} onUploadSuccess={this.handleImageUploadSuccess}/>
+                                    <RecipeImageFileUploader recipeId={recipeId}
+                                                             selectedImages={imageFileUploaderData.selectedImages}
+                                                             selectedCoverImageFileName={imageFileUploaderData.selectedCoverImageFileName}
+                                                             onUploadSuccess={this.handleImageUploadSuccess}/>
+                                    <Button
+                                        className={classes.skipButton}
+                                        fullWidth
+                                        variant="outlined"
+                                        color="primary"
+                                        onClick={this.setActualEditorStep(EDITOR_STEP.RECIPE)}
+                                    >
+                                        Vissza
+                                    </Button>
                                     <Button
                                         className={classes.skipButton}
                                         fullWidth
@@ -353,6 +372,15 @@ class RecipeEditor extends React.Component {
                                     ?
                                     <div id="recipeVideoFileUploadContainer">
                                         <RecipeVideoFileUploader recipeId={recipeId}/>
+                                        <Button
+                                            className={classes.skipButton}
+                                            fullWidth
+                                            variant="outlined"
+                                            color="primary"
+                                            onClick={this.setActualEditorStep(EDITOR_STEP.IMAGE_UPLOAD)}
+                                        >
+                                            Vissza
+                                        </Button>
                                         <Button
                                             className={classes.skipButton}
                                             fullWidth
