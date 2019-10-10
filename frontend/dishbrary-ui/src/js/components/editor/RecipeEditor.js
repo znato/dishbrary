@@ -233,9 +233,9 @@ class RecipeEditor extends React.Component {
     }
 
     deleteIngredient = ingredientData => () => {
-        var ingredientArray = this.state.selectedIngredients;
+        let ingredientArray = this.state.selectedIngredients;
 
-        for (var i = 0; i < ingredientArray.length; i++) {
+        for (let i = 0; i < ingredientArray.length; i++) {
             if (ingredientArray[i] === ingredientData) {
                 ingredientArray.splice(i, 1);
                 break;

@@ -1,6 +1,8 @@
 import React from 'react';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Button from "@material-ui/core/Button";
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
 import FormControl from "@material-ui/core/FormControl";
 import Typography from "@material-ui/core/es/Typography";
 
@@ -57,9 +59,13 @@ const styles = theme => ({
         },
         display: "none"
     },
+    imagePreviewWrapper: {
+        display: "inline-block",
+    },
     imagePreview: {
         width: "100px",
         height: "100px",
+        display: "block"
     }
 });
 
@@ -173,6 +179,34 @@ class RecipeImageFileUploader extends React.Component {
         })
     }
 
+    deleteImage = imageName => () => {
+        let {selectedFiles,selectedCoverImageFileName} = this.state;
+
+        let resetCoverImageFileName = false;
+
+        for (let i = 0; i < selectedFiles.length; i++) {
+            let actualFileData = selectedFiles[i].file;
+
+            if (actualFileData.name === imageName) {
+                if (actualFileData.name === selectedCoverImageFileName) {
+                    resetCoverImageFileName = true;
+                }
+
+                selectedFiles.splice(i, 1);
+                break;
+            }
+        }
+
+        let stateUpdate = resetCoverImageFileName && ArrayUtils.isNotEmpty(selectedFiles) ? {
+            selectedFiles,
+            selectedCoverImageFileName: selectedFiles[0].file.name
+        } : {
+            selectedFiles
+        };
+
+        this.setState(stateUpdate);
+    }
+
     render() {
         const {recipeId, classes} = this.props;
 
@@ -195,17 +229,21 @@ class RecipeImageFileUploader extends React.Component {
             }
 
             for (let i = 0; i < selectedFiles.length; i++) {
+                let imageName = selectedFiles[i].file.name;
                 $imagePreviews.push(
                     (
                         <label key={"selectedImageToUpload" + i} className={classes.imagePreviewWrapper}>
                             <input id={"selectedImageToUpload" + i} className={classes.imagePreviewRadioGroupClass}
                                    type="radio" name="imagePreviewRadioGroup"
-                                   value={selectedFiles[i].file.name}
-                                   checked={selectedCoverImageFileName === selectedFiles[i].file.name}
+                                   value={imageName}
+                                   checked={selectedCoverImageFileName === imageName}
                                    onChange={this.handleCoverImageSelectionChange}/>
                             <label htmlFor={"selectedImageToUpload" + i}>
                                 <img src={selectedFiles[i].imagePreviewUrl} className={classes.imagePreview}/>
                             </label>
+                            <IconButton className={classes.deleteButton} onClick={this.deleteImage(imageName)} aria-label="delete">
+                                <DeleteIcon />
+                            </IconButton>
                         </label>
                     )
                 );
