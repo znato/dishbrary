@@ -1,7 +1,7 @@
 package hu.gdf.szgd.dishbrary.db.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import hu.gdf.szgd.dishbrary.db.converter.RecipeAdditionalInfoJsonConverter;
+import lombok.*;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -44,4 +44,17 @@ public class Recipe extends AbstractEntity {
 	private Long preparationTimeInMillis;
 	@Column
 	private Long cookTimeInMillis;
+	@Column
+	@Convert(converter = RecipeAdditionalInfoJsonConverter.class)
+	private AdditionalInfo additionalInfo;
+
+	@AllArgsConstructor
+	@NoArgsConstructor
+	@Data
+	public static class AdditionalInfo {
+		private String energyKcal;
+		private String protein;
+		private String fat;
+		private String carbohydrate;
+	}
 }

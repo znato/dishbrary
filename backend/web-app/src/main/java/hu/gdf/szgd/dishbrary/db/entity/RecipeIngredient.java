@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Getter
@@ -21,8 +22,24 @@ public class RecipeIngredient extends AbstractEntity {
 	private SelectableUnit selectedUnit;
 
 	public enum SelectableUnit {
-		g,dkg,kg,
-		ml, dl, l,
-		db
+		g(1), dkg(10), kg(1000),
+		ml(1), dl(100), l(1000),
+		db(1);
+
+		private int multiplier;
+		private BigDecimal multiplierBigDecimalValue;
+
+		SelectableUnit(int multiplier) {
+			this.multiplier = multiplier;
+			this.multiplierBigDecimalValue = new BigDecimal(multiplier);
+		}
+
+		public int getMultiplier() {
+			return multiplier;
+		}
+
+		public BigDecimal getMultiplierBigDecimalValue() {
+			return multiplierBigDecimalValue;
+		}
 	}
 }

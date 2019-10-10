@@ -81,6 +81,17 @@ public class RecipeTransformer {
 
 		restModel.setIngredients(ingredientRestModels);
 
+		Recipe.AdditionalInfo additionalInfo = recipe.getAdditionalInfo();
+
+		if (additionalInfo != null) {
+			restModel.setCalorieInfo(new RecipeRestModel.CalorieInfo(
+					additionalInfo.getEnergyKcal(),
+					additionalInfo.getProtein(),
+					additionalInfo.getFat(),
+					additionalInfo.getCarbohydrate()
+			));
+		}
+
 		return restModel;
 	}
 

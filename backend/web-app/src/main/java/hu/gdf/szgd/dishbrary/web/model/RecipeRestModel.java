@@ -26,4 +26,15 @@ public class RecipeRestModel {
 	private Long popularityIndex;
 	private Integer preparationTimeInMinute;
 	private Integer cookTimeInMinute;
+	private CalorieInfo calorieInfo;
+
+	@AllArgsConstructor
+	@NoArgsConstructor
+	@Data
+	public static class CalorieInfo {
+		private String energyKcal;
+		private String protein;
+		private String fat;
+		private String carbohydrate;
+	}
 }
