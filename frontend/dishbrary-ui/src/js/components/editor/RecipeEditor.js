@@ -317,8 +317,8 @@ class RecipeEditor extends React.Component {
             instructionValue, categoriesLoading,
             categories, ingredientsLoading,
             ingredients, cuisinesLoading, cuisines,
-            ingredientEditorOpened, selectedIngredients,
-            recipeId, alertData, actualStep, imageFileUploaderData
+            ingredientEditorOpened, selectedIngredients, selectedCuisines,
+            selectedCategories, recipeId, alertData, actualStep, imageFileUploaderData
         } = this.state;
 
         const highestLoadingStateIndex = Math.max(categoriesLoading.index, ingredientsLoading.index, cuisinesLoading.index);
@@ -395,7 +395,7 @@ class RecipeEditor extends React.Component {
                                         <form className={classes.form} onSubmit={this.saveRecipe} autoComplete="off">
                                             <FormControl margin="normal" required fullWidth>
                                                 <InputLabel htmlFor="recipeName">Recept neve:</InputLabel>
-                                                <Input id="recipeName" name="recipeName" autoFocus
+                                                <Input id="recipeName" name="recipeName" value={recipeName ? recipeName : ""} autoFocus
                                                        onChange={this.onEventBasedInputChange('recipeName')}/>
                                             </FormControl>
 
@@ -424,6 +424,7 @@ class RecipeEditor extends React.Component {
                                             <SuggestionSelect label={"Kategóriák:"}
                                                               placeholder="Válassz kategóriákat"
                                                               suggestions={categories}
+                                                              value={selectedCategories}
                                                               multiSelect
                                                               onValueChange={this.handleInputChange('selectedCategories')}/>
 
@@ -459,6 +460,7 @@ class RecipeEditor extends React.Component {
                                             <SuggestionSelect label={"Konyha nemzetisége:"}
                                                               placeholder="Válassz országot"
                                                               suggestions={cuisines}
+                                                              value={selectedCuisines}
                                                               multiSelect
                                                               onValueChange={this.handleInputChange('selectedCuisines')}/>
 

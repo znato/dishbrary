@@ -8,6 +8,7 @@ import UploadIcon from "../icons/UploadIcon";
 import DishbraryAlertDialog from "../general/DishbraryAlertDialog";
 
 import recipeService from '../../services/RecipeService';
+import * as ArrayUtils from '../../services/utils/ArrayUtils';
 
 const styles = theme => ({
     recipeImageFileUploaderContainer: {
@@ -104,11 +105,15 @@ class RecipeImageFileUploader extends React.Component {
     uploadRecipeImages = (recipeId) => (formSubmitEvent) => {
         formSubmitEvent.preventDefault();
 
-        const formData = new FormData(formSubmitEvent.target);
+        const formData = new FormData();
 
         const {selectedFiles, selectedCoverImageFileName} = this.state;
 
         formData.set("selectedCoverImageFileName", selectedCoverImageFileName);
+
+        for (let i = 0; i < selectedFiles.length; i++) {
+            formData.append("recipeImage", selectedFiles[i].file, selectedFiles[i].file.name);
+        }
 
         recipeService.saveRecipeImages(recipeId, formData)
             .then(jsonResponse => {
@@ -130,6 +135,13 @@ class RecipeImageFileUploader extends React.Component {
         event.preventDefault();
 
         let selectedFilesToUpload = event.target.files;
+
+        //to support 'back' button functionality
+        //in case user goes back to imageUpload it is possible to re-select only the coverImage and press save
+        //in this case selectedFilesToUpload will be empty but we already have the file data to upload
+        if (ArrayUtils.isEmpty(selectedFilesToUpload) && ArrayUtils.isNotEmpty(this.state.selectedFiles)) {
+            return;
+        }
 
         //clearing selectedFiles array as we will rebuild it from the input component data
         this.state.selectedFiles = [];
