@@ -1,4 +1,6 @@
 import React from 'react';
+import { Redirect } from 'react-router'
+
 import withStyles from '@material-ui/core/styles/withStyles';
 import FormControl from '@material-ui/core/FormControl/index';
 import Input from '@material-ui/core/Input/index';
@@ -29,6 +31,8 @@ import * as ingredientUnitUtils from '../../services/utils/IngredientUnitUtils';
 import {LoadingState, LoadingStateByIndex} from '../../services/constants/LoadingState';
 import RecipeImageFileUploader from "./RecipeImageFileUploader";
 import RecipeVideoFileUploader from "./RecipeVideoFileUploader";
+
+import {userOwnRecipesPath} from '../../config/ApplicationRoutes';
 
 const styles = theme => ({
     form: {
@@ -115,7 +119,8 @@ class RecipeEditor extends React.Component {
                 openAlert: false,
                 alertDialogTitle: "",
                 alertDialogContent: ""
-            }
+            },
+            recipeEditingFinished: false
         }
     }
 
@@ -311,6 +316,10 @@ class RecipeEditor extends React.Component {
         });
     }
 
+    finishRecipeEditing = () => {
+        this.setState({recipeEditingFinished: true});
+    }
+
     render() {
         const {
             recipeName, cookTime, preparationTime,
@@ -318,7 +327,8 @@ class RecipeEditor extends React.Component {
             categories, ingredientsLoading,
             ingredients, cuisinesLoading, cuisines,
             ingredientEditorOpened, selectedIngredients, selectedCuisines,
-            selectedCategories, recipeId, alertData, actualStep, imageFileUploaderData
+            selectedCategories, recipeId, alertData, actualStep, imageFileUploaderData,
+            recipeEditingFinished
         } = this.state;
 
         const highestLoadingStateIndex = Math.max(categoriesLoading.index, ingredientsLoading.index, cuisinesLoading.index);
@@ -327,6 +337,10 @@ class RecipeEditor extends React.Component {
         const readyToSave = recipeName && selectedIngredients.length > 0 && instructionValue.getEditorState().getCurrentContent().hasText();
 
         const {classes} = this.props;
+
+        if (recipeEditingFinished) {
+            return <Redirect to={userOwnRecipesPath}/>
+        }
 
         return (
             overallLoadingState === LoadingState.inProgress
@@ -371,7 +385,8 @@ class RecipeEditor extends React.Component {
                                 recipeId !== null && EDITOR_STEP.VIDEO_UPLOAD === actualStep
                                     ?
                                     <div id="recipeVideoFileUploadContainer">
-                                        <RecipeVideoFileUploader recipeId={recipeId}/>
+                                        <RecipeVideoFileUploader recipeId={recipeId}
+                                                                 onUploadSuccess={this.finishRecipeEditing}/>
                                         <Button
                                             className={classes.skipButton}
                                             fullWidth
@@ -386,6 +401,7 @@ class RecipeEditor extends React.Component {
                                             fullWidth
                                             variant="outlined"
                                             color="primary"
+                                            onClick={this.finishRecipeEditing}
                                         >
                                             Befejez
                                         </Button>

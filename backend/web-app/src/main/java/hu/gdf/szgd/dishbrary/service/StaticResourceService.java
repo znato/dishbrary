@@ -1,7 +1,10 @@
 package hu.gdf.szgd.dishbrary.service;
 
 import hu.gdf.szgd.dishbrary.StaticResourceComponentType;
+import hu.gdf.szgd.dishbrary.db.entity.Recipe;
+import hu.gdf.szgd.dishbrary.db.entity.User;
 import hu.gdf.szgd.dishbrary.db.repository.RecipeRepository;
+import hu.gdf.szgd.dishbrary.db.repository.UserRepository;
 import hu.gdf.szgd.dishbrary.security.SecurityUtils;
 import hu.gdf.szgd.dishbrary.service.exception.ConfigurationErrorException;
 import hu.gdf.szgd.dishbrary.service.exception.ResourceCannotBeSavedException;
@@ -10,6 +13,7 @@ import hu.gdf.szgd.dishbrary.web.model.FileResource;
 import hu.gdf.szgd.dishbrary.web.model.RecipeRestModel;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -18,10 +22,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,6 +33,11 @@ public class StaticResourceService {
 
 	private Map<String, String> imageBasePathByComponentName = new HashMap<>();
 
+	@Value("${dishbrary.recipe.images.defaultCoverImage.name}")
+	private String defaultRecipeCoverImageFileName;
+
+	@Autowired
+	private UserRepository userRepository;
 	@Autowired
 	private RecipeRepository recipeRepository;
 	@Autowired
@@ -55,11 +61,36 @@ public class StaticResourceService {
 		return image;
 	}
 
+	public File getImageForRecipeByName(Long recipeId, String imgName) throws ResourceNotFoundException {
+		String basePathForComponent = getBasePathForComponentType(StaticResourceComponentType.RECIPE);
+
+		//recipe images stored separately in dedicated folders identified by the recipe owner and recipe id
+		//image upload for recipe is fully optional, in case user did not upload any image for the recipe a default will be shown
+		//the default image located in a general place so get the images full path for the recipe only if not the default is set
+		if (!defaultRecipeCoverImageFileName.equals(imgName)) {
+			User owner = userRepository.findUserByRecipesId(recipeId);
+
+			basePathForComponent += getRemainingPathForRecipeByComponentSubType(owner.getId(), recipeId, StaticResourceComponentType.StaticResourceComponentSubType.IMAGE);
+		}
+
+		File image = new File(basePathForComponent, imgName);
+
+		if (log.isDebugEnabled()) {
+			log.debug("Image requested from the following location: {}", image.getAbsolutePath());
+		}
+
+		if (!image.exists()) {
+			throw new ResourceNotFoundException("Cannot find resource: " + image.getAbsolutePath());
+		}
+
+		return image;
+	}
+
 	public void uploadRecipeVideo(Long recipeId, FileResource videoResource) {
 		RecipeRestModel recipe = recipeService.findRecipeById(recipeId);
 
 		String basePathToSaveResource = getBasePathForComponentType(StaticResourceComponentType.RECIPE)
-				+ getRemainingPathForRecipeByComponentSubType(recipeId, StaticResourceComponentType.StaticResourceComponentSubType.VIDEO);
+				+ getRemainingPathForRecipeByComponentSubType(SecurityUtils.getDishbraryUserFromContext().getId(), recipeId, StaticResourceComponentType.StaticResourceComponentSubType.VIDEO);
 
 		log.debug("Video upload base path for recipe with id: {} is {}", recipe, basePathToSaveResource);
 
@@ -97,7 +128,7 @@ public class StaticResourceService {
 		RecipeRestModel recipe = recipeService.findRecipeById(recipeId);
 
 		String basePathToSaveResource = getBasePathForComponentType(StaticResourceComponentType.RECIPE)
-				+ getRemainingPathForRecipeByComponentSubType(recipeId, StaticResourceComponentType.StaticResourceComponentSubType.IMAGE);
+				+ getRemainingPathForRecipeByComponentSubType(SecurityUtils.getDishbraryUserFromContext().getId(), recipeId, StaticResourceComponentType.StaticResourceComponentSubType.IMAGE);
 
 		log.debug("Image upload base path for recipe with id: {} is {}", recipe, basePathToSaveResource);
 
@@ -195,8 +226,8 @@ public class StaticResourceService {
 		return basePathForComponent;
 	}
 
-	private String getRemainingPathForRecipeByComponentSubType(Long recipeId, StaticResourceComponentType.StaticResourceComponentSubType componentSubType) {
-		return SecurityUtils.getDishbraryUserFromContext().getId() +
+	private String getRemainingPathForRecipeByComponentSubType(Long recipeOwnerId, Long recipeId, StaticResourceComponentType.StaticResourceComponentSubType componentSubType) {
+		return recipeOwnerId +
 				"/" + StaticResourceComponentType.RECIPE.name().toLowerCase() +
 				"/" + recipeId +
 				"/" + componentSubType.name().toLowerCase();

@@ -1,6 +1,7 @@
 import * as DishbraryServerRestClient from "./utils/DishbraryServerRestClient";
 
 const createRecipePath = "recipe/create";
+const getMyRecipesPath = "recipe/my-recipes"
 
 class RecipeService {
 
@@ -16,6 +17,20 @@ class RecipeService {
     saveRecipeVideo = (recipeId, formData) => {
         const uploadRecipeVideoPath = `resource/recipe/${recipeId}/video/upload`;
         return DishbraryServerRestClient.postFormData(uploadRecipeVideoPath, formData);
+    }
+
+    fetchLoggedInUserPageableRecipes = (pageNumber) => {
+        let fetchUrl = getMyRecipesPath;
+
+        if (pageNumber) {
+            fetchUrl += "?" + pageNumber;
+        }
+
+        return DishbraryServerRestClient.get(fetchUrl);
+    }
+
+    getRecipeImagePath = (recipeId, imageName) => {
+        return `rest/resource/image/recipe/${recipeId}/${imageName}`;
     }
 }
 

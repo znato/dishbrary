@@ -1,10 +1,12 @@
 package hu.gdf.szgd.dishbrary.web.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import hu.gdf.szgd.dishbrary.security.DishbraryUser;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -27,6 +29,8 @@ public class RecipeRestModel {
 	private Integer preparationTimeInMinute;
 	private Integer cookTimeInMinute;
 	private CalorieInfo calorieInfo;
+	private DishbraryUser owner;
+	private Date creationDate;
 
 	@AllArgsConstructor
 	@NoArgsConstructor

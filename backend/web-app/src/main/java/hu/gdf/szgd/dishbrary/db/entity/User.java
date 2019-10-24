@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -32,4 +33,6 @@ public class User extends AbstractEntity {
 	private boolean banned;
 	@ManyToOne
 	private Role role;
+	@OneToMany(mappedBy = "owner")
+	private List<Recipe> recipes;
 }

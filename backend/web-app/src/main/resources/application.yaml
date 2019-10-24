@@ -25,6 +25,10 @@ dishbrary:
     images:
       default:
         name: default.png
+  recipe:
+    images:
+      defaultCoverImage:
+        name: default-recipe-cover-image.png
   resources:
     imageBasePathByComponentName:
       cuisine: /home/znato/work/szakdolgozat/dishbrary/cuisine_icons/

@@ -10,7 +10,9 @@ import hu.gdf.szgd.dishbrary.web.model.RecipeIngredientRestModel;
 import hu.gdf.szgd.dishbrary.web.model.RecipeRestModel;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,9 @@ import java.util.List;
 @Component
 @Log4j2
 public class RecipeTransformer {
+
+	@Value("${dishbrary.recipe.images.defaultCoverImage.name}")
+	private String defaultCoverImageFileName;
 
 	@Autowired
 	private GenericReflectionBasedTransformer genericTransformer;
@@ -67,6 +72,14 @@ public class RecipeTransformer {
 		restModel.setCategories(categoryTransformer.transformAll(recipe.getCategories()));
 		restModel.setCuisines(cuisineTransformer.transformAll(recipe.getCuisines()));
 
+		if (StringUtils.isEmpty(recipe.getCoverImageFileName())) {
+			restModel.setCoverImageFileName(defaultCoverImageFileName);
+		}
+
+		if (recipe.getAdditionalImagesFileNames() != null) {
+			restModel.setAdditionalImagesFileNames(new ArrayList<>(recipe.getAdditionalImagesFileNames()));
+		}
+
 		List<RecipeIngredientRestModel> ingredientRestModels = new ArrayList<>(recipe.getIngredients().size());
 
 		for (RecipeIngredient recipeIngredient : recipe.getIngredients()) {
@@ -91,6 +104,8 @@ public class RecipeTransformer {
 					additionalInfo.getCarbohydrate()
 			));
 		}
+
+		restModel.setOwner(userTransformer.transformUser(recipe.getOwner()));
 
 		return restModel;
 	}

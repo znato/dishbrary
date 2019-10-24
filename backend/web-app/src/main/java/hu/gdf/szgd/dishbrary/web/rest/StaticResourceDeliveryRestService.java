@@ -32,4 +32,19 @@ public class StaticResourceDeliveryRestService {
 			throw new NotFoundException(e);
 		}
 	}
+
+	@GET
+	@Path("/image/recipe/{recipeId}/{imageName}")
+	@Produces("image/png")
+	public Response getFullImageForRecipe(
+			@PathParam("recipeId") Long recipeId,
+			@PathParam("imageName") String imageName) {
+		try {
+			return Response.ok(
+					staticResourceService.getImageForRecipeByName(recipeId, imageName)
+			).build();
+		} catch (ResourceNotFoundException e) {
+			throw new NotFoundException(e);
+		}
+	}
 }

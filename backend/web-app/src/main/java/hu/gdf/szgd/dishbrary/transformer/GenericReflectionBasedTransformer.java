@@ -142,6 +142,12 @@ public class GenericReflectionBasedTransformer {
 
 		log.debug("Computed field name from setter method[{}]: {}", setterName, fieldName);
 
-		return getMethodByFieldName(AccessorType.GETTER, fieldName, targetClass);
+		Optional<Method> optionalGetter = getMethodByFieldName(AccessorType.GETTER, fieldName, targetClass);
+
+		if (optionalGetter.isPresent() && !optionalGetter.get().getReturnType().equals(setterMethod.getParameterTypes()[0])) {
+			return Optional.empty();
+		}
+
+		return optionalGetter;
 	}
 }
