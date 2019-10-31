@@ -13,6 +13,10 @@ import {red} from '@material-ui/core/colors';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShareIcon from '@material-ui/icons/Share';
 
+import {Link} from "react-router-dom";
+
+import * as ApplicationRoutes from '../../config/ApplicationRoutes';
+
 import recipeService from "../../services/RecipeService";
 
 const styles = theme => ({
@@ -60,47 +64,49 @@ class DishbraryRecipeCard extends React.Component {
         }
 
         return (
-            <Card className={classes.card}>
-                <CardHeader
-                    avatar={
-                        <Avatar aria-label="recipe" className={classes.avatar}>
-                            {recipeData.owner.username.charAt(0)}
-                        </Avatar>
-                    }
-                    title={recipeName}
-                    subheader={recipeData.creationDate}
-                />
-                <CardMedia
-                    className={classes.media}
-                    image={recipeService.getRecipeImagePath(recipeData.id, recipeData.coverImageFileName)}
-                />
-                <CardContent>
-                    <Typography variant="body1" color="textSecondary" component="p">
-                        Tápértékek egy adagban
-                    </Typography>
+            <Link to={ApplicationRoutes.viewRecipePath + "/" + recipeData.id}>
+                <Card className={classes.card}>
+                    <CardHeader
+                        avatar={
+                            <Avatar aria-label="recipe" className={classes.avatar}>
+                                {recipeData.owner.username.charAt(0)}
+                            </Avatar>
+                        }
+                        title={recipeName}
+                        subheader={recipeData.creationDate}
+                    />
+                    <CardMedia
+                        className={classes.media}
+                        image={recipeService.getRecipeImagePath(recipeData.id, recipeData.coverImageFileName)}
+                    />
+                    <CardContent>
+                        <Typography variant="body1" color="textSecondary" component="p">
+                            Tápértékek egy adagban
+                        </Typography>
 
-                    <Typography variant="body2" color="textSecondary" component="p">
-                        Kalória: {energyKcal} kcal
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary" component="p">
-                        Fehérje: {protein} g
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary" component="p">
-                        Zsír: {fat} g
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary" component="p">
-                        Szénhidrát: {carbohydrate} g
-                    </Typography>
-                </CardContent>
-                <CardActions disableActionSpacing>
-                    <IconButton aria-label="add to favorites">
-                        <FavoriteIcon />
-                    </IconButton>
-                    <IconButton aria-label="share">
-                        <ShareIcon />
-                    </IconButton>
-                </CardActions>
-            </Card>
+                        <Typography variant="body2" color="textSecondary" component="p">
+                            Kalória: {energyKcal} kcal
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary" component="p">
+                            Fehérje: {protein} g
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary" component="p">
+                            Zsír: {fat} g
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary" component="p">
+                            Szénhidrát: {carbohydrate} g
+                        </Typography>
+                    </CardContent>
+                    <CardActions disableActionSpacing>
+                        <IconButton aria-label="add to favorites">
+                            <FavoriteIcon/>
+                        </IconButton>
+                        <IconButton aria-label="share">
+                            <ShareIcon/>
+                        </IconButton>
+                    </CardActions>
+                </Card>
+            </Link>
         );
     }
 }

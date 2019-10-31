@@ -15,7 +15,7 @@ import java.util.List;
 @Log4j2
 public class CuisineTransformer {
 
-	private static final String BASE_URL = StaticResourceComponentType.CUISINE.name() + "/";
+	private static final String BASE_URL = "/rest/resource/image/" + StaticResourceComponentType.CUISINE.name() + "/";
 
 	@Value("${dishbrary.cuisine.images.default.name}")
 	private String defaultCuisineIconName;

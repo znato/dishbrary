@@ -24,6 +24,14 @@ public class RecipeRestService {
 	private RecipeService recipeService;
 
 	@GET
+	@Path("/{recipeId}")
+	public Response getRecipeById(@PathParam("recipeId") Long recipeId) {
+		return Response.ok(
+				new DishbraryResponse<>(recipeService.findRecipeById(recipeId))
+		).build();
+	}
+
+	@GET
 	@Path("/my-recipes")
 	@PreAuthorize("hasRole('SIMPLE_USER')")
 	public Response getMyRecipes(@QueryParam("page") int pageNumber) {

@@ -9,6 +9,7 @@ import DishbraryAppBar from './components/appbar/DishbraryAppBar';
 import CalorieTableView from './components/view/CalorieTableView';
 import MyRecipesView from './components/view/MyRecipesView';
 import CreateRecipeView from './components/view/CreateRecipeView';
+import RecipeView from './components/view/RecipeView';
 
 function DishbraryApp() {
     return (
@@ -22,6 +23,8 @@ function DishbraryApp() {
                     <Route path={ApplicationRoutes.userOwnRecipesPath} component={MyRecipesView}/>
 
                     <Route path={ApplicationRoutes.createRecipePath} component={CreateRecipeView}/>
+
+                    <Route path={ApplicationRoutes.viewRecipePath + "/:recipeId"} component={RecipeView} />
                 </div>
             </Router>
         </React.Fragment>

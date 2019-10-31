@@ -37,7 +37,8 @@ class MyRecipesView extends React.Component {
             loadingState: LoadingState.none,
             recipes: [],
             totalElement: null,
-            totalPages: null
+            totalPages: null,
+            errorMessage: null
         }
     }
 
@@ -53,7 +54,10 @@ class MyRecipesView extends React.Component {
         recipeService.fetchLoggedInUserPageableRecipes()
             .then(jsonResponse => {
                 if (jsonResponse.error) {
-                    this.setState({loadingState: LoadingState.error});
+                    this.setState({
+                        loadingState: LoadingState.error,
+                        errorMessage: jsonResponse.message
+                    });
                 } else {
                     this.setState({
                         loadingState: LoadingState.loaded,
@@ -67,7 +71,7 @@ class MyRecipesView extends React.Component {
 
     render() {
         const {classes} = this.props;
-        const {loadingState, recipes, totalElement, totalPages} = this.state;
+        const {loadingState, recipes, totalElement, totalPages, errorMessage} = this.state;
 
         let recipeCards = [];
 
@@ -94,7 +98,7 @@ class MyRecipesView extends React.Component {
                         :
                         loadingState === LoadingState.error
                         ?
-                            <Typography>Az oldal jelenleg nem elérhető! Kérjük próbálja később!</Typography>
+                            <Typography>{errorMessage}</Typography>
                         :
                         (
                             <div id="recipe-card-container" className={classes.recipeCardContainer}>

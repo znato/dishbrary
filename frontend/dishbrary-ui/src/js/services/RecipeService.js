@@ -19,6 +19,11 @@ class RecipeService {
         return DishbraryServerRestClient.postFormData(uploadRecipeVideoPath, formData);
     }
 
+    fetchRecipeById = (recipeId) => {
+        const getRecipeByIdPath = `recipe/${recipeId}`;
+        return DishbraryServerRestClient.get(getRecipeByIdPath);
+    }
+
     fetchLoggedInUserPageableRecipes = (pageNumber) => {
         let fetchUrl = getMyRecipesPath;
 

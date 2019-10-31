@@ -17,10 +17,10 @@ public class Recipe extends AbstractEntity {
 	private User owner;
 	@Column(nullable = false)
 	private String name;
+	@Lob
 	@Column
 	private String instruction;
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "ingredient")
-	@LazyCollection(LazyCollectionOption.FALSE)
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "recipe", fetch = FetchType.EAGER)
 	private List<RecipeIngredient> ingredients;
 	@Column
 	@ManyToMany

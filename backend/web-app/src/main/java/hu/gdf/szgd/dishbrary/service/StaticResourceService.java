@@ -1,9 +1,7 @@
 package hu.gdf.szgd.dishbrary.service;
 
 import hu.gdf.szgd.dishbrary.StaticResourceComponentType;
-import hu.gdf.szgd.dishbrary.db.entity.Recipe;
 import hu.gdf.szgd.dishbrary.db.entity.User;
-import hu.gdf.szgd.dishbrary.db.repository.RecipeRepository;
 import hu.gdf.szgd.dishbrary.db.repository.UserRepository;
 import hu.gdf.szgd.dishbrary.security.SecurityUtils;
 import hu.gdf.szgd.dishbrary.service.exception.ConfigurationErrorException;
@@ -22,7 +20,10 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,8 +39,6 @@ public class StaticResourceService {
 
 	@Autowired
 	private UserRepository userRepository;
-	@Autowired
-	private RecipeRepository recipeRepository;
 	@Autowired
 	private RecipeService recipeService;
 
