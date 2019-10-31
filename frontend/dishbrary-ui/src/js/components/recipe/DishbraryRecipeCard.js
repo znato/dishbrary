@@ -19,7 +19,8 @@ const styles = theme => ({
     card: {
         maxWidth: 345,
         display: "inline-block",
-        margin: "0 5px 0 5px"
+        margin: "0 5px 0 5px",
+        textAlign: "center"
     },
     media: {
         height: 0,
@@ -74,6 +75,10 @@ class DishbraryRecipeCard extends React.Component {
                     image={recipeService.getRecipeImagePath(recipeData.id, recipeData.coverImageFileName)}
                 />
                 <CardContent>
+                    <Typography variant="body1" color="textSecondary" component="p">
+                        Tápértékek egy adagban
+                    </Typography>
+
                     <Typography variant="body2" color="textSecondary" component="p">
                         Kalória: {energyKcal} kcal
                     </Typography>

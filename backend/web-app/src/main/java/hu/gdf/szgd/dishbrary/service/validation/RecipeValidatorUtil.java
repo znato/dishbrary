@@ -17,6 +17,14 @@ public class RecipeValidatorUtil {
 					.append("\nA recept neve nincs kitöltve!");
 		}
 
+		if (recipeRestModel.getPortion() == null) {
+			createOrRetrieveErrorMessageBuilder(errorMessageBuilder, RECIPE_VALIDATION_BASE_MESAGE)
+					.append("\nAz adagok száma nincs kitöltve!");
+		} else if (recipeRestModel.getPortion() < 1) {
+			createOrRetrieveErrorMessageBuilder(errorMessageBuilder, RECIPE_VALIDATION_BASE_MESAGE)
+					.append("\nAz adagok száma nem lehet egynél kisebb!");
+		}
+
 		if (StringUtils.isEmpty(recipeRestModel.getInstruction())) {
 			createOrRetrieveErrorMessageBuilder(errorMessageBuilder, RECIPE_VALIDATION_BASE_MESAGE)
 					.append("\nA recept leírása hiányzik!");

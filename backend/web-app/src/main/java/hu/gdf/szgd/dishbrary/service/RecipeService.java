@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
 
@@ -94,6 +95,12 @@ public class RecipeService {
 			fatSum = fatSum.add(ingredient.getFat().multiply(actualQuantityMultiplier));
 			carbohydrateSum = carbohydrateSum.add(ingredient.getCarbohydrate().multiply(actualQuantityMultiplier));
 		}
+
+		BigDecimal portion = new BigDecimal(recipeRestModel.getPortion());
+		energyKcalSum = energyKcalSum.divide(portion, RoundingMode.HALF_UP);
+		proteinSum = proteinSum.divide(portion, RoundingMode.HALF_UP);
+		fatSum = fatSum.divide(portion, RoundingMode.HALF_UP);
+		carbohydrateSum.divide(portion, RoundingMode.HALF_UP);
 
 		return new Recipe.AdditionalInfo(energyKcalSum.toString(), proteinSum.toString(), fatSum.toString(), carbohydrateSum.toString());
 	}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Redirect } from 'react-router'
+import {Redirect} from 'react-router'
 
 import withStyles from '@material-ui/core/styles/withStyles';
 import FormControl from '@material-ui/core/FormControl/index';
@@ -100,6 +100,7 @@ class RecipeEditor extends React.Component {
             recipeName: null,
             preparationTime: null,
             cookTime: null,
+            portion: null,
             ingredientEditorOpened: false,
             instructionValue: RichTextEditor.createEmptyValue(),
             categoriesLoading: LoadingState.none,
@@ -258,7 +259,8 @@ class RecipeEditor extends React.Component {
         const {
             recipeName, cookTime, preparationTime,
             instructionValue, selectedCategories,
-            selectedCuisines, selectedIngredients
+            selectedCuisines, selectedIngredients,
+            portion
         } = this.state;
 
         const recipe = {
@@ -266,6 +268,7 @@ class RecipeEditor extends React.Component {
                 instruction: instructionValue.toString('html'),
                 preparationTimeInMinute: preparationTime,
                 cookTimeInMinute: cookTime,
+                portion: portion,
                 ingredients: selectedIngredients.map((ingredientData) => {
                     const ingredient = ingredientData.ingredient;
 
@@ -322,7 +325,7 @@ class RecipeEditor extends React.Component {
 
     render() {
         const {
-            recipeName, cookTime, preparationTime,
+            recipeName, cookTime, preparationTime, portion,
             instructionValue, categoriesLoading,
             categories, ingredientsLoading,
             ingredients, cuisinesLoading, cuisines,
@@ -334,7 +337,7 @@ class RecipeEditor extends React.Component {
         const highestLoadingStateIndex = Math.max(categoriesLoading.index, ingredientsLoading.index, cuisinesLoading.index);
         const overallLoadingState = LoadingStateByIndex[highestLoadingStateIndex];
 
-        const readyToSave = recipeName && selectedIngredients.length > 0 && instructionValue.getEditorState().getCurrentContent().hasText();
+        const readyToSave = recipeName && portion && selectedIngredients.length > 0 && instructionValue.getEditorState().getCurrentContent().hasText();
 
         const {classes} = this.props;
 
@@ -411,7 +414,8 @@ class RecipeEditor extends React.Component {
                                         <form className={classes.form} onSubmit={this.saveRecipe} autoComplete="off">
                                             <FormControl margin="normal" required fullWidth>
                                                 <InputLabel htmlFor="recipeName">Recept neve:</InputLabel>
-                                                <Input id="recipeName" name="recipeName" value={recipeName ? recipeName : ""} autoFocus
+                                                <Input id="recipeName" name="recipeName"
+                                                       value={recipeName ? recipeName : ""} autoFocus
                                                        onChange={this.onEventBasedInputChange('recipeName')}/>
                                             </FormControl>
 
@@ -431,6 +435,17 @@ class RecipeEditor extends React.Component {
                                                     label="Elkészítési ido (perc):"
                                                     value={cookTime}
                                                     onChange={this.onEventBasedInputChange('cookTime')}
+                                                    InputProps={{
+                                                        inputComponent: DishbraryNumberFormatInput,
+                                                    }}
+                                                />
+                                            </FormControl>
+
+                                            <FormControl margin="normal" required fullWidth>
+                                                <TextField
+                                                    label="Adagok száma:*"
+                                                    value={portion}
+                                                    onChange={this.onEventBasedInputChange('portion')}
                                                     InputProps={{
                                                         inputComponent: DishbraryNumberFormatInput,
                                                     }}

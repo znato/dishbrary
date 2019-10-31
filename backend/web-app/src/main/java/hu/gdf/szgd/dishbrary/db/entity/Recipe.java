@@ -45,6 +45,8 @@ public class Recipe extends AbstractEntity {
 	@Column
 	private Long cookTimeInMillis;
 	@Column
+	private Integer portion;
+	@Column
 	@Convert(converter = RecipeAdditionalInfoJsonConverter.class)
 	private AdditionalInfo additionalInfo;
 

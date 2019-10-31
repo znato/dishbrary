@@ -28,6 +28,7 @@ public class RecipeRestModel {
 	private Long popularityIndex;
 	private Integer preparationTimeInMinute;
 	private Integer cookTimeInMinute;
+	private Integer portion;
 	private CalorieInfo calorieInfo;
 	private DishbraryUser owner;
 	private Date creationDate;

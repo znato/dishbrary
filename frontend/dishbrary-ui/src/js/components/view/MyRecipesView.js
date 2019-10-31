@@ -23,6 +23,9 @@ const styles = theme => ({
     progress: {
         margin: theme.spacing.unit * 2,
     },
+    recipeCardContainer: {
+        textAlign: "left",
+    }
 });
 
 class MyRecipesView extends React.Component {
@@ -94,7 +97,7 @@ class MyRecipesView extends React.Component {
                             <Typography>Az oldal jelenleg nem elérhető! Kérjük próbálja később!</Typography>
                         :
                         (
-                            <div id="recipe-cards">
+                            <div id="recipe-card-container" className={classes.recipeCardContainer}>
                                 {recipeCards}
                             </div>
                         )
