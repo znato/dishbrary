@@ -8,4 +8,6 @@ public interface RoleRepository extends org.springframework.data.repository.Repo
 	String SIMPLE_USER_ROLE_NAME = "SIMPLE_USER";
 
 	Role findByName(String name);
+
+	long count();
 }

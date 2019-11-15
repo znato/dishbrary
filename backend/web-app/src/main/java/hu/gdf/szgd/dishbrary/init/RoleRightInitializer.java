@@ -3,14 +3,14 @@ package hu.gdf.szgd.dishbrary.init;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
 @ConditionalOnProperty(prefix = "dishbrary.init", name = "security", havingValue = "true")
-@Component
+@Configuration
 @Log4j2
 public class RoleRightInitializer extends AbstractDatabaseInitializer {
 

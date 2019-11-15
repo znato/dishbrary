@@ -17,20 +17,25 @@ public abstract class AbstractDatabaseInitializer {
 
 	@PostConstruct
 	private void loadData() {
-		try {
-			Resource[] sqlFiles = getSqlResources();
+		new Thread(
+				() -> {
+					try {
+						Resource[] sqlFiles = getSqlResources();
 
-			for (Resource file : sqlFiles) {
-				try (Connection connection = ds.getConnection()){
-					getLogger().info("Executing sql file: {}", file.getFilename());
+						try (Connection connection = ds.getConnection()) {
+							for (Resource file : sqlFiles) {
 
-					ScriptUtils.executeSqlScript(connection, file);
+								getLogger().info("Executing sql file: {}", file.getFilename());
+
+								ScriptUtils.executeSqlScript(connection, file);
+							}
+						}
+					} catch (Exception e) {
+						getLogger().error("Cannot load sql files!", e);
+						throw new Error("Application failed to start!", e);
+					}
 				}
-			}
-		} catch (Exception e) {
-			getLogger().error("Cannot load sql files!", e);
-			throw new Error("Application failed to start!", e);
-		}
+		).start();
 	}
 
 	protected abstract Resource[] getSqlResources() throws IOException;

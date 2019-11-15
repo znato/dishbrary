@@ -12,6 +12,12 @@ import ListItemText from '@material-ui/core/ListItemText'
 import {ArrowRight} from '@material-ui/icons';
 import Avatar from '@material-ui/core/Avatar';
 
+import { Carousel } from 'react-responsive-carousel';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import '../../../css/carouselRestyle.pure.css';
+
+import backgroundImg from '../../../images/recipe-view-background.jpg';
+
 import recipeService from "../../services/RecipeService";
 import {LoadingState} from "../../services/constants/LoadingState";
 
@@ -27,7 +33,19 @@ const styles = theme => ({
     progress: {
         margin: theme.spacing.unit * 2,
     },
-    recipeContainer: {}
+    carouselContainer: {
+        width: '30em',
+        margin: 'auto'
+    },
+    recipeContainer: {
+        background: 'url(\'' + backgroundImg + '\') no-repeat center center fixed',
+        backgroundSize: 'cover'
+    },
+    recipeDataContainer: {
+        width: '30em',
+        margin: 'auto',
+        textAlign: 'left'
+    }
 });
 
 class RecipeView extends React.Component {
@@ -79,6 +97,28 @@ class RecipeView extends React.Component {
                     {messageBeforeText} {text} {messageAfterText}
                 </Typography>
                 : ""
+        );
+    }
+
+    renderImagesIfDefined = (recipe) => {
+        if (ArrayUtils.isEmpty(recipe.additionalImagesFileNames)) {
+            return "";
+        }
+
+        const {classes} = this.props;
+
+        return (
+            <div className={classes.carouselContainer}>
+                <Carousel showThumbs={false} autoPlay infiniteLoop>
+                    {
+                        recipe.additionalImagesFileNames.map((fileName, index) => (
+                            <div key={index}>
+                                <img src={recipeService.getRecipeImagePath(recipe.id, fileName)}/>
+                            </div>
+                        ))
+                    }
+                </Carousel>
+            </div>
         );
     }
 
@@ -221,29 +261,33 @@ class RecipeView extends React.Component {
                                             {recipe.name}
                                         </Typography>
 
-                                        <Typography component="p" variant="body1">
-                                            Készítette: {recipe.owner.username}
-                                        </Typography>
+                                        {this.renderImagesIfDefined(recipe)}
 
-                                        <Typography component="p" variant="body1">
-                                            Készítés ideje: {creationDate}
-                                        </Typography>
+                                        <div className={classes.recipeDataContainer}>
+                                            <Typography component="p" variant="body1">
+                                                Készítette: {recipe.owner.username}
+                                            </Typography>
 
-                                        {this.renderCalorieInfo(calorieInfo)}
+                                            <Typography component="p" variant="body1">
+                                                Készítés ideje: {creationDate}
+                                            </Typography>
 
-                                        {this.renderTextIfDefined("Előkészítési idő:", preparationTimeInMinute, "perc")}
+                                            {this.renderCalorieInfo(calorieInfo)}
 
-                                        {this.renderTextIfDefined("Elkészítési idő:", cookTimeInMinute, "perc")}
+                                            {this.renderTextIfDefined("Előkészítési idő:", preparationTimeInMinute, "perc")}
 
-                                        {this.renderTextIfDefined("Adagok száma:", portion, "")}
+                                            {this.renderTextIfDefined("Elkészítési idő:", cookTimeInMinute, "perc")}
 
-                                        {this.renderCategoriesIfDefined(categories)}
+                                            {this.renderTextIfDefined("Adagok száma:", portion, "")}
 
-                                        {this.renderCuisinesIfDefined(cuisines)}
+                                            {this.renderCategoriesIfDefined(categories)}
 
-                                        {this.renderIngredients(ingredients)}
+                                            {this.renderCuisinesIfDefined(cuisines)}
 
-                                        {this.renderInstruction(instruction)}
+                                            {this.renderIngredients(ingredients)}
+
+                                            {this.renderInstruction(instruction)}
+                                        </div>
                                     </div>
                                 )
                 }

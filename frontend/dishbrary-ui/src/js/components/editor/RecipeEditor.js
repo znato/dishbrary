@@ -15,6 +15,8 @@ import Fab from '@material-ui/core/Fab';
 
 import RichTextEditor from 'react-rte/lib/RichTextEditor';
 
+import '../../../css/reactRteRestyle.pure.css';
+
 import SuggestionSelect from './SuggestionSelect';
 import IngredientEditorDialog from './IngredientEditorDialog';
 import DishbraryNumberFormatInput from "./DishbraryNumberFormatInput";

@@ -17,6 +17,7 @@ dishbrary:
     ingredients: true
     cuisines: true
     categories: true
+    generateMockData: true
   ingredients:
     images:
       default:

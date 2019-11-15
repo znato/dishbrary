@@ -50,7 +50,3 @@ INSERT INTO ROLE_RIGHTS (roles_id, rights_id) VALUES (2, 9);
 INSERT INTO ROLE_RIGHTS (roles_id, rights_id) VALUES (2, 10);
 INSERT INTO ROLE_RIGHTS (roles_id, rights_id) VALUES (2, 11);
 INSERT INTO ROLE_RIGHTS (roles_id, rights_id) VALUES (2, 12);
-
--- test user, password: qwe123
-INSERT INTO USER (ID, BANNED, EXPIRED, EMAIL, FIRST_NAME, LAST_NAME, PASSWORD, USERNAME, ROLE_ID)
-VALUES (9999, false, false, 'test@test.com', 'FirstName', 'LastName', '$2a$10$hkYYE/B9uGMNKLeaRCrEXunO.ePdWeu1yLiTb28X3WQIOOgq2TIm.', 'test', 2);
