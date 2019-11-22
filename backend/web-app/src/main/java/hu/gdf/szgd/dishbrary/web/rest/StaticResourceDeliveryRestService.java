@@ -1,6 +1,7 @@
 package hu.gdf.szgd.dishbrary.web.rest;
 
 import hu.gdf.szgd.dishbrary.StaticResourceComponentType;
+import hu.gdf.szgd.dishbrary.StaticResourceComponentType.StaticResourceComponentSubType;
 import hu.gdf.szgd.dishbrary.service.StaticResourceService;
 import hu.gdf.szgd.dishbrary.service.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class StaticResourceDeliveryRestService {
 	@GET
 	@Path("/image/{component}/{imageName}")
 	@Produces("image/png")
-	public Response getFullImage(
+	public Response getImage(
 			@PathParam("component") String component,
 			@PathParam("imageName") String imageName) {
 		StaticResourceComponentType componentType = StaticResourceComponentType.valueOf(component.toUpperCase());
@@ -36,12 +37,27 @@ public class StaticResourceDeliveryRestService {
 	@GET
 	@Path("/image/recipe/{recipeId}/{imageName}")
 	@Produces("image/png")
-	public Response getFullImageForRecipe(
+	public Response getImageForRecipe(
 			@PathParam("recipeId") Long recipeId,
 			@PathParam("imageName") String imageName) {
 		try {
 			return Response.ok(
-					staticResourceService.getImageForRecipeByName(recipeId, imageName)
+					staticResourceService.getResourceForRecipeByName(recipeId, imageName, StaticResourceComponentSubType.IMAGE)
+			).build();
+		} catch (ResourceNotFoundException e) {
+			throw new NotFoundException(e);
+		}
+	}
+
+	@GET
+	@Path("/video/recipe/{recipeId}/{videoName}")
+	@Produces({"video/mp4", "video/webm", "video/ogg"})
+	public Response getVideoForRecipe(
+			@PathParam("recipeId") Long recipeId,
+			@PathParam("videoName") String videoName) {
+		try {
+			return Response.ok(
+					staticResourceService.getResourceForRecipeByName(recipeId, videoName, StaticResourceComponentSubType.VIDEO)
 			).build();
 		} catch (ResourceNotFoundException e) {
 			throw new NotFoundException(e);

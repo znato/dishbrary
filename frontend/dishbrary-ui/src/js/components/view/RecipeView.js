@@ -11,6 +11,9 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText'
 import {ArrowRight} from '@material-ui/icons';
 import Avatar from '@material-ui/core/Avatar';
+import Collapse from '@material-ui/core/Collapse';
+
+import ReactPlayer from 'react-player'
 
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
@@ -32,6 +35,17 @@ const styles = theme => ({
     },
     progress: {
         margin: theme.spacing.unit * 2,
+    },
+    videoContainer: {
+        margin: "auto",
+    },
+    toggleVideoButton: {
+        border: 0,
+        background: "transparent",
+        cursor: "pointer"
+    },
+    videoPlayer: {
+        margin: "auto",
     },
     carouselContainer: {
         width: '30em',
@@ -55,6 +69,8 @@ class RecipeView extends React.Component {
 
         this.state = {
             loadingState: LoadingState.none,
+            showVideo: false,
+            selectedCarouselItemNumber: 0,
             recipe: {},
             errorMessage: null
         }
@@ -66,6 +82,11 @@ class RecipeView extends React.Component {
         } = this.props.match;
 
         this.fetchRecipeById(recipeId);
+    }
+
+    toggleVideo = () => {
+        const {showVideo} = this.state;
+        this.setState({showVideo: !showVideo})
     }
 
     fetchRecipeById = (recipeid) => {
@@ -100,16 +121,46 @@ class RecipeView extends React.Component {
         );
     }
 
+    renderVideoIfDefined = (recipe) => {
+        if (!recipe.videoFileName) {
+            return "";
+        }
+
+        const {classes} = this.props;
+        const {showVideo} = this.state;
+
+        return (
+            <div className={classes.videoContainer}>
+                <button id="hideOrShowVideo" onClick={this.toggleVideo} className={classes.toggleVideoButton}>
+                    <Typography component="p" variant="body2">
+                        {showVideo ? "Rejtsd el" : "Mutasd"} a videót
+                    </Typography>
+                </button>
+
+                <Collapse in={showVideo}>
+                    <ReactPlayer className={classes.videoPlayer}
+                                 url={recipeService.getRecipeVideoPath(recipe.id, recipe.videoFileName)}
+                                 controls={true}/>
+                </Collapse>
+            </div>
+        );
+    }
+
     renderImagesIfDefined = (recipe) => {
         if (ArrayUtils.isEmpty(recipe.additionalImagesFileNames)) {
             return "";
         }
 
         const {classes} = this.props;
+        const {selectedCarouselItemNumber} = this.state;
 
         return (
             <div className={classes.carouselContainer}>
-                <Carousel showThumbs={false} autoPlay infiniteLoop>
+                <Carousel showThumbs={false}
+                          autoPlay
+                          infiniteLoop
+                          selectedItem={selectedCarouselItemNumber}
+                          onChange={this.carouselChanged}>
                     {
                         recipe.additionalImagesFileNames.map((fileName, index) => (
                             <div key={index}>
@@ -120,6 +171,10 @@ class RecipeView extends React.Component {
                 </Carousel>
             </div>
         );
+    }
+
+    carouselChanged = (selectedCarouselItemNumber) => {
+        this.state.selectedCarouselItemNumber = selectedCarouselItemNumber;
     }
 
     renderCategoriesIfDefined = (categories) => {
@@ -260,6 +315,8 @@ class RecipeView extends React.Component {
                                         <Typography component="h1" variant="h5">
                                             {recipe.name}
                                         </Typography>
+
+                                        {this.renderVideoIfDefined(recipe)}
 
                                         {this.renderImagesIfDefined(recipe)}
 

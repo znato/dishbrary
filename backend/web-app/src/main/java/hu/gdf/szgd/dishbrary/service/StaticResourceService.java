@@ -1,6 +1,7 @@
 package hu.gdf.szgd.dishbrary.service;
 
 import hu.gdf.szgd.dishbrary.StaticResourceComponentType;
+import hu.gdf.szgd.dishbrary.StaticResourceComponentType.StaticResourceComponentSubType;
 import hu.gdf.szgd.dishbrary.db.entity.User;
 import hu.gdf.szgd.dishbrary.db.repository.UserRepository;
 import hu.gdf.szgd.dishbrary.security.SecurityUtils;
@@ -60,36 +61,36 @@ public class StaticResourceService {
 		return image;
 	}
 
-	public File getImageForRecipeByName(Long recipeId, String imgName) throws ResourceNotFoundException {
+	public File getResourceForRecipeByName(Long recipeId, String resourceName, StaticResourceComponentSubType resourceType) throws ResourceNotFoundException {
 		String basePathForComponent = getBasePathForComponentType(StaticResourceComponentType.RECIPE);
 
-		//recipe images stored separately in dedicated folders identified by the recipe owner and recipe id
+		//recipe images and videos are stored separately in dedicated folders identified by the recipe owner and recipe id
 		//image upload for recipe is fully optional, in case user did not upload any image for the recipe a default will be shown
 		//the default image located in a general place so get the images full path for the recipe only if not the default is set
-		if (!defaultRecipeCoverImageFileName.equals(imgName)) {
+		if (StaticResourceComponentSubType.VIDEO.equals(resourceType) || !defaultRecipeCoverImageFileName.equals(resourceName)) {
 			User owner = userRepository.findUserByRecipesId(recipeId);
 
-			basePathForComponent += getRemainingPathForRecipeByComponentSubType(owner.getId(), recipeId, StaticResourceComponentType.StaticResourceComponentSubType.IMAGE);
+			basePathForComponent += getRemainingPathForRecipeByComponentSubType(owner.getId(), recipeId, resourceType);
 		}
 
-		File image = new File(basePathForComponent, imgName);
+		File resource = new File(basePathForComponent, resourceName);
 
 		if (log.isDebugEnabled()) {
-			log.debug("Image requested from the following location: {}", image.getAbsolutePath());
+			log.debug("Resource requested from the following location: {}", resource.getAbsolutePath());
 		}
 
-		if (!image.exists()) {
-			throw new ResourceNotFoundException("Cannot find resource: " + image.getAbsolutePath());
+		if (!resource.exists()) {
+			throw new ResourceNotFoundException("Cannot find resource: " + resource.getAbsolutePath());
 		}
 
-		return image;
+		return resource;
 	}
 
 	public void uploadRecipeVideo(Long recipeId, FileResource videoResource) {
 		RecipeRestModel recipe = recipeService.findRecipeById(recipeId);
 
 		String basePathToSaveResource = getBasePathForComponentType(StaticResourceComponentType.RECIPE)
-				+ getRemainingPathForRecipeByComponentSubType(SecurityUtils.getDishbraryUserFromContext().getId(), recipeId, StaticResourceComponentType.StaticResourceComponentSubType.VIDEO);
+				+ getRemainingPathForRecipeByComponentSubType(SecurityUtils.getDishbraryUserFromContext().getId(), recipeId, StaticResourceComponentSubType.VIDEO);
 
 		log.debug("Video upload base path for recipe with id: {} is {}", recipe, basePathToSaveResource);
 

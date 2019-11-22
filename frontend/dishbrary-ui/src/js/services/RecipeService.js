@@ -37,6 +37,10 @@ class RecipeService {
     getRecipeImagePath = (recipeId, imageName) => {
         return `rest/resource/image/recipe/${recipeId}/${imageName}`;
     }
+
+    getRecipeVideoPath = (recipeId, videoName) => {
+        return `rest/resource/video/recipe/${recipeId}/${videoName}`;
+    }
 }
 
 export default new RecipeService();
