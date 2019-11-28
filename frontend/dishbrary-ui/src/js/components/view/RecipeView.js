@@ -15,7 +15,7 @@ import Collapse from '@material-ui/core/Collapse';
 
 import ReactPlayer from 'react-player'
 
-import { Carousel } from 'react-responsive-carousel';
+import {Carousel} from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import '../../../css/carouselRestyle.pure.css';
 
@@ -32,14 +32,16 @@ const styles = theme => ({
         marginTop: theme.spacing.unit * 3,
         overflowX: 'auto',
         textAlign: "center",
+        background: 'url(\'' + backgroundImg + '\') no-repeat center center fixed',
+        backgroundSize: 'cover'
     },
     progress: {
         margin: theme.spacing.unit * 2,
     },
     videoContainer: {
-        margin: "auto",
+        margin: "25px auto",
     },
-    toggleVideoButton: {
+    toggleButton: {
         border: 0,
         background: "transparent",
         cursor: "pointer"
@@ -52,12 +54,14 @@ const styles = theme => ({
         margin: 'auto'
     },
     recipeContainer: {
-        background: 'url(\'' + backgroundImg + '\') no-repeat center center fixed',
-        backgroundSize: 'cover'
+        width: "50em",
+        margin: "auto",
+        backgroundColor: "#c9c0b9"
     },
     recipeDataContainer: {
         width: '30em',
         margin: 'auto',
+        marginTop: "25px",
         textAlign: 'left'
     }
 });
@@ -70,6 +74,9 @@ class RecipeView extends React.Component {
         this.state = {
             loadingState: LoadingState.none,
             showVideo: false,
+            showCategories: true,
+            showCuisines: true,
+            showIngredients: true,
             selectedCarouselItemNumber: 0,
             recipe: {},
             errorMessage: null
@@ -84,9 +91,9 @@ class RecipeView extends React.Component {
         this.fetchRecipeById(recipeId);
     }
 
-    toggleVideo = () => {
-        const {showVideo} = this.state;
-        this.setState({showVideo: !showVideo})
+    toggle = (propName) => () => {
+        const prop = this.state[propName];
+        this.setState({[propName]: !prop})
     }
 
     fetchRecipeById = (recipeid) => {
@@ -131,7 +138,7 @@ class RecipeView extends React.Component {
 
         return (
             <div className={classes.videoContainer}>
-                <button id="hideOrShowVideo" onClick={this.toggleVideo} className={classes.toggleVideoButton}>
+                <button id="hideOrShowVideo" onClick={this.toggle('showVideo')} className={classes.toggleButton}>
                     <Typography component="p" variant="body2">
                         {showVideo ? "Rejtsd el" : "Mutasd"} a videót
                     </Typography>
@@ -182,23 +189,31 @@ class RecipeView extends React.Component {
             return "";
         }
 
+        const {classes} = this.props;
+        const {showCategories} = this.state;
+
         return (
             <div>
-                <Typography component="p" variant="body2">
-                    Kategóriák:
-                </Typography>
+                <button id="hideOrShowCategories" onClick={this.toggle('showCategories')}
+                        className={classes.toggleButton}>
+                    <Typography component="p" variant="body2">
+                        {showCategories ? "Rejtsd el" : "Mutasd"} a kategóriákat
+                    </Typography>
+                </button>
 
-                <List>
-                    {
-                        categories.map((category, index) => (
-                            <ListItem key={category.id} id={index}>
-                                <ListItemIcon>
-                                    <ArrowRight/>
-                                </ListItemIcon>
-                                <ListItemText primary={category.name}/>
-                            </ListItem>
-                        ))}
-                </List>
+                <Collapse in={showCategories}>
+                    <List>
+                        {
+                            categories.map((category, index) => (
+                                <ListItem key={category.id} id={index}>
+                                    <ListItemIcon>
+                                        <ArrowRight/>
+                                    </ListItemIcon>
+                                    <ListItemText primary={category.name}/>
+                                </ListItem>
+                            ))}
+                    </List>
+                </Collapse>
             </div>
         );
     }
@@ -208,23 +223,31 @@ class RecipeView extends React.Component {
             return "";
         }
 
+        const {classes} = this.props;
+        const {showCuisines} = this.state;
+
         return (
             <div>
-                <Typography component="p" variant="body2">
-                    Konyha nemzetisége:
-                </Typography>
+                <button id="hideOrShowCuisines" onClick={this.toggle('showCuisines')}
+                        className={classes.toggleButton}>
+                    <Typography component="p" variant="body2">
+                        {showCuisines ? "Rejtsd el" : "Mutasd"} konyha nemzetiségeket:
+                    </Typography>
+                </button>
 
-                <List>
-                    {
-                        cuisines.map((cuisine, index) => (
-                            <ListItem key={cuisine.id} id={index}>
-                                <ListItemIcon>
-                                    <Avatar src={cuisine.iconUrl}/>
-                                </ListItemIcon>
-                                <ListItemText primary={cuisine.name}/>
-                            </ListItem>
-                        ))}
-                </List>
+                <Collapse in={showCuisines}>
+                    <List>
+                        {
+                            cuisines.map((cuisine, index) => (
+                                <ListItem key={cuisine.id} id={index}>
+                                    <ListItemIcon>
+                                        <Avatar src={cuisine.iconUrl}/>
+                                    </ListItemIcon>
+                                    <ListItemText primary={cuisine.name}/>
+                                </ListItem>
+                            ))}
+                    </List>
+                </Collapse>
             </div>
         );
     }
@@ -243,24 +266,32 @@ class RecipeView extends React.Component {
     }
 
     renderIngredients = (ingredientDataList) => {
+        const {classes} = this.props;
+        const {showIngredients} = this.state;
+
         return (
             <div id="ingredient-enumeration-container">
-                <Typography component="p" variant="body2">
-                    Hozzávalók:
-                </Typography>
+                <button id="hideOrShowIngredients" onClick={this.toggle('showIngredients')}
+                        className={classes.toggleButton}>
+                    <Typography component="p" variant="body2">
+                        {showIngredients ? "Rejtsd el" : "Mutasd"} hozzávalókat:
+                    </Typography>
+                </button>
 
-                <List>
-                    {
-                        ingredientDataList.map((ingredientData, index) => (
-                            <ListItem key={ingredientData.id} id={index}>
-                                <ListItemIcon>
-                                    <ArrowRight/>
-                                </ListItemIcon>
-                                <ListItemText
-                                    primary={ingredientData.quantity + " " + ingredientData.selectedUnit + " " + ingredientData.ingredient.name}/>
-                            </ListItem>
-                        ))}
-                </List>
+                <Collapse in={showIngredients}>
+                    <List>
+                        {
+                            ingredientDataList.map((ingredientData, index) => (
+                                <ListItem key={ingredientData.id} id={index}>
+                                    <ListItemIcon>
+                                        <ArrowRight/>
+                                    </ListItemIcon>
+                                    <ListItemText
+                                        primary={ingredientData.quantity + " " + ingredientData.selectedUnit + " " + ingredientData.ingredient.name}/>
+                                </ListItem>
+                            ))}
+                    </List>
+                </Collapse>
             </div>
         );
     }
@@ -268,8 +299,8 @@ class RecipeView extends React.Component {
     renderInstruction = (instruction) => {
         return (
             <div id="instruction-container">
-                <Typography component="p" variant="body1">
-                    Leírás:
+                <Typography component="p" variant="body2">
+                    Elkészítés:
                 </Typography>
 
                 <div id="description">
@@ -294,6 +325,9 @@ class RecipeView extends React.Component {
             instruction,
             creationDate
         } = recipe;
+
+        const cDate = new Date(creationDate);
+        const formattedCreationDate = cDate.getFullYear() + "/" + (cDate.getMonth() + 1) + "/" + cDate.getDate();
 
         return (
             <Paper className={classes.root}>
@@ -321,12 +355,12 @@ class RecipeView extends React.Component {
                                         {this.renderImagesIfDefined(recipe)}
 
                                         <div className={classes.recipeDataContainer}>
-                                            <Typography component="p" variant="body1">
+                                            <Typography component="p" variant="body2">
                                                 Készítette: {recipe.owner.username}
                                             </Typography>
 
-                                            <Typography component="p" variant="body1">
-                                                Készítés ideje: {creationDate}
+                                            <Typography component="p" variant="body2">
+                                                Készítés ideje: {formattedCreationDate}
                                             </Typography>
 
                                             {this.renderCalorieInfo(calorieInfo)}
