@@ -34,6 +34,8 @@ import {LoadingState, LoadingStateByIndex} from '../../services/constants/Loadin
 import RecipeImageFileUploader from "./RecipeImageFileUploader";
 import RecipeVideoFileUploader from "./RecipeVideoFileUploader";
 
+import * as ArrayUtils from '../../services/utils/ArrayUtils';
+
 import {userOwnRecipesPath} from '../../config/ApplicationRoutes';
 
 const styles = theme => ({
@@ -95,28 +97,68 @@ class RecipeEditor extends React.Component {
     constructor(props) {
         super(props);
 
-        //recipeId will be set on save
-        this.state = {
+        const {recipe} = props;
+        // file: File
+            // lastModified: 1187692126000
+            // lastModifiedDate: Tue Aug 21 2007 12:28:46 GMT+0200 (Central European Summer Time) {}
+            // name: "Austria.png"
+            // size: 34000
+            // type: "image/png"
+            // webkitRelativePath: ""
+            // __proto__: File
+        // imagePreviewUrl:
+            this.state = {
             actualStep: EDITOR_STEP.RECIPE,
-            recipeId: null,
-            recipeName: null,
-            preparationTime: null,
-            cookTime: null,
-            portion: null,
+            recipeId: recipe ? recipe.id : null,
+            recipeName: recipe ? recipe.name : null,
+            preparationTime: recipe ? recipe.preparationTimeInMinute : null,
+            cookTime: recipe ? recipe.cookTimeInMinute : null,
+            portion: recipe ? recipe.portion : null,
             ingredientEditorOpened: false,
-            instructionValue: RichTextEditor.createEmptyValue(),
+            instructionValue: recipe ? RichTextEditor.createValueFromString(recipe.instruction, 'html') : RichTextEditor.createEmptyValue(),
             categoriesLoading: LoadingState.none,
             categories: [],
-            selectedCategories: [],
+            selectedCategories: recipe ? recipe.categories.map(category => {
+                return {
+                    value: category.id,
+                    label: category.name
+                };
+            }) : [],
             ingredientsLoading: LoadingState.none,
             ingredients: [],
-            selectedIngredients: [],
+            selectedIngredients: recipe ? recipe.ingredients.map((ingredientData) => {
+
+                const ingredient = ingredientData.ingredient;
+
+                return {
+                    ingredient: {
+                        id: ingredient.id,
+                        name: ingredient.name,
+                        unit: ingredientUnitUtils.convertUnitToRenderable(ingredientData.selectedUnit),
+
+                    },
+                    quantity: ingredientData.quantity,
+                    selectedUnit: ingredientData.selectedUnit
+                };
+            }) : [],
             cuisinesLoading: LoadingState.none,
             cuisines: [],
-            selectedCuisines: [],
+            selectedCuisines: recipe ? recipe.cuisines.map(cuisine => {
+                return {
+                    value: cuisine.id,
+                    label: cuisine.name
+                };
+            }) : [],
             imageFileUploaderData: {
-                selectedImages: [],
-                selectedCoverImageFileName: null
+                selectedImages: recipe && ArrayUtils.isNotEmpty(recipe.additionalImagesFileNames) ?
+                    recipe.additionalImagesFileNames.map(imageName => {
+                        return {
+                            file: new File([""], imageName),
+                            imagePreviewUrl: recipeService.getRecipeImagePath(recipe.id, imageName)
+                        };
+                    })
+                    : [],
+                selectedCoverImageFileName: recipe ? recipe.coverImageFileName : null
             },
             alertData: {
                 openAlert: false,
@@ -259,13 +301,14 @@ class RecipeEditor extends React.Component {
         formSubmitEvent.preventDefault();
 
         const {
-            recipeName, cookTime, preparationTime,
-            instructionValue, selectedCategories,
-            selectedCuisines, selectedIngredients,
-            portion
+            recipeId, recipeName, cookTime,
+            preparationTime, instructionValue,
+            selectedCategories, selectedCuisines,
+            selectedIngredients, portion
         } = this.state;
 
         const recipe = {
+                id:recipeId,
                 name: recipeName,
                 instruction: instructionValue.toString('html'),
                 preparationTimeInMinute: preparationTime,
@@ -283,7 +326,6 @@ class RecipeEditor extends React.Component {
                         },
                         quantity: ingredientData.quantity,
                         selectedUnit: ingredientData.selectedUnit
-
                     };
                 }),
                 categories: selectedCategories.map(category => {

@@ -49,7 +49,16 @@ public class RecipeRestService {
 	@PreAuthorize("hasAuthority('WRITE_RECIPE')")
 	public Response createRecipe(RecipeRestModel recipeToSave) {
 		return Response.ok(
-				new DishbraryResponse<>(recipeService.createRecipe(recipeToSave))
+				new DishbraryResponse<>(recipeService.saveRecipe(recipeToSave))
+		).build();
+	}
+
+	@POST
+	@Path("/update/{recipeId}")
+	@PreAuthorize("hasAuthority('WRITE_RECIPE')")
+	public Response createRecipe(@PathParam("recipeId") Long recipeId, RecipeRestModel recipeToUpdate) {
+		return Response.ok(
+				new DishbraryResponse<>(recipeService.updateRecipe(recipeToUpdate))
 		).build();
 	}
 }

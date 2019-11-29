@@ -5,6 +5,7 @@ import hu.gdf.szgd.dishbrary.db.entity.Recipe;
 import hu.gdf.szgd.dishbrary.db.entity.RecipeIngredient;
 import hu.gdf.szgd.dishbrary.db.repository.IngredientRepository;
 import hu.gdf.szgd.dishbrary.db.repository.RecipeRepository;
+import hu.gdf.szgd.dishbrary.security.SecurityUtils;
 import hu.gdf.szgd.dishbrary.service.exception.DishbraryValidationException;
 import hu.gdf.szgd.dishbrary.service.validation.RecipeValidatorUtil;
 import hu.gdf.szgd.dishbrary.transformer.RecipeTransformer;
@@ -22,6 +23,7 @@ import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -59,13 +61,44 @@ public class RecipeService {
 		return new PageableRestModel<>(restModels, userRecipesPage.getTotalElements(), userRecipesPage.getTotalPages());
 	}
 
-	public RecipeRestModel createRecipe(RecipeRestModel recipeRestModel) {
+	@Transactional
+	public RecipeRestModel saveRecipe(RecipeRestModel recipeRestModel) {
+		if (recipeRestModel.getId() != null) {
+			return updateRecipe(recipeRestModel);
+		}
+
 		RecipeValidatorUtil.validateRecipeForCreation(recipeRestModel);
 
 		Recipe recipeToSave = recipeTransformer.transform(recipeRestModel);
 		recipeToSave.setAdditionalInfo(createAdditionalInfo(recipeRestModel));
 
 		return recipeTransformer.transform(recipeRepository.save(recipeToSave));
+	}
+
+	@Transactional
+	public RecipeRestModel updateRecipe(RecipeRestModel recipeRestModel) {
+		Objects.requireNonNull(recipeRestModel.getId(), "A receptet nem sikerült azonosítani mert hiányzik az id mező!");
+
+		RecipeValidatorUtil.validateRecipeForCreation(recipeRestModel);
+
+		Optional<Recipe> recipeToUpdateHolder = recipeRepository.findById(recipeRestModel.getId());
+		if (!recipeToUpdateHolder.isPresent()) {
+			throw new DishbraryValidationException("Nem létezik recept a következő azonosíto alatt: " + recipeRestModel.getId() + "!");
+		}
+
+		Recipe recipeToUpdate = recipeToUpdateHolder.get();
+
+		//users can update only their own recipe if they are logged in
+		boolean updatable = SecurityUtils.isSessionAuthenticated() && SecurityUtils.getDishbraryUserFromContext().getId().equals(recipeToUpdate.getOwner().getId());
+
+		if (!updatable) {
+			throw new DishbraryValidationException("A receptet nem tudod módosítani, mert nem hozzád tartozik!");
+		}
+
+		recipeToUpdate = recipeTransformer.transformForUpdate(recipeToUpdateHolder.get(), recipeRestModel);
+		recipeToUpdate.setAdditionalInfo(createAdditionalInfo(recipeRestModel));
+
+		return recipeTransformer.transform(recipeRepository.save(recipeToUpdate));
 	}
 
 	private Recipe.AdditionalInfo createAdditionalInfo(RecipeRestModel recipeRestModel) {

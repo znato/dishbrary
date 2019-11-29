@@ -20,7 +20,6 @@ public class RecipeRestModel {
 	private List<RecipeIngredientRestModel> ingredients;
 	private List<CategoryRestModel> categories;
 	private List<CuisineRestModel> cuisines;
-	private String tags;
 	private String coverImageFileName;
 	private List<String> additionalImagesFileNames;
 	private String videoFileName;
@@ -32,6 +31,7 @@ public class RecipeRestModel {
 	private CalorieInfo calorieInfo;
 	private DishbraryUser owner;
 	private Date creationDate;
+	private boolean editable = false;
 
 	@AllArgsConstructor
 	@NoArgsConstructor

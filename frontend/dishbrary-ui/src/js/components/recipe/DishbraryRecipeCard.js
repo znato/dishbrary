@@ -11,7 +11,7 @@ import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import {red} from '@material-ui/core/colors';
 import FavoriteIcon from '@material-ui/icons/Favorite';
-import ShareIcon from '@material-ui/icons/Share';
+import EditIcon from '@material-ui/icons/Edit';
 
 import {Link} from "react-router-dom";
 
@@ -64,8 +64,8 @@ class DishbraryRecipeCard extends React.Component {
         }
 
         return (
-            <Link to={ApplicationRoutes.viewRecipePath + "/" + recipeData.id}>
-                <Card className={classes.card}>
+            <Card className={classes.card}>
+                <Link to={ApplicationRoutes.viewRecipePath + "/" + recipeData.id}>
                     <CardHeader
                         avatar={
                             <Avatar aria-label="recipe" className={classes.avatar}>
@@ -97,16 +97,23 @@ class DishbraryRecipeCard extends React.Component {
                             Szénhidrát: {carbohydrate} g
                         </Typography>
                     </CardContent>
-                    <CardActions disableActionSpacing>
-                        <IconButton aria-label="add to favorites">
-                            <FavoriteIcon/>
-                        </IconButton>
-                        <IconButton aria-label="share">
-                            <ShareIcon/>
-                        </IconButton>
-                    </CardActions>
-                </Card>
-            </Link>
+                </Link>
+                <CardActions disableActionSpacing>
+                    <IconButton aria-label="add to favorites">
+                        <FavoriteIcon/>
+                    </IconButton>
+                    {
+                        recipeData.editable ?
+                            <Link to={ApplicationRoutes.editRecipePath + "/" + recipeData.id}>
+                                <IconButton aria-label="edit recipe">
+                                    <EditIcon/>
+                                </IconButton>
+                            </Link>
+                            : ""
+                    }
+                </CardActions>
+            </Card>
+
         );
     }
 }

@@ -29,8 +29,6 @@ public class Recipe extends AbstractEntity {
 	@ManyToMany
 	private List<Cuisine> cuisines;
 	@Column
-	private String tags;
-	@Column
 	private String coverImageFileName;
 	@ElementCollection
 	private List<String> additionalImagesFileNames;

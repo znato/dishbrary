@@ -35,6 +35,33 @@ public class RecipeTransformer {
 	@Autowired
 	private CuisineTransformer cuisineTransformer;
 
+	public Recipe transformForUpdate(Recipe recipeToUpdate, RecipeRestModel recipeRestModel) {
+		recipeToUpdate.setName(recipeRestModel.getName());
+		recipeToUpdate.setInstruction(recipeRestModel.getInstruction());
+		recipeToUpdate.setPortion(recipeRestModel.getPortion());
+		recipeToUpdate.setPreparationTimeInMillis(minuteToMillis(recipeRestModel.getPreparationTimeInMinute()));
+		recipeToUpdate.setCookTimeInMillis(minuteToMillis(recipeRestModel.getCookTimeInMinute()));
+
+		recipeToUpdate.setCategories(categoryTransformer.transformAllCategoryRestModel(recipeRestModel.getCategories()));
+		recipeToUpdate.setCuisines(cuisineTransformer.transformAllCuisineRestModel(recipeRestModel.getCuisines()));
+
+		List<RecipeIngredient> recipeIngredients = new ArrayList<>(recipeRestModel.getIngredients().size());
+		for (RecipeIngredientRestModel ingredientRestModel : recipeRestModel.getIngredients()) {
+			RecipeIngredient recipeIngredient = new RecipeIngredient();
+
+			recipeIngredient.setRecipe(recipeToUpdate);
+			recipeIngredient.setIngredient(ingredientTransformer.transform(ingredientRestModel.getIngredient()));
+			recipeIngredient.setQuantity(ingredientRestModel.getQuantity());
+			recipeIngredient.setSelectedUnit(ingredientRestModel.getSelectedUnit());
+
+			recipeIngredients.add(recipeIngredient);
+		}
+
+		recipeToUpdate.setIngredients(recipeIngredients);
+
+		return recipeToUpdate;
+	}
+
 	public Recipe transform(RecipeRestModel recipeRestModel) {
 		Recipe recipe = genericTransformer.transform(recipeRestModel, new Recipe());
 
@@ -106,6 +133,10 @@ public class RecipeTransformer {
 		}
 
 		restModel.setOwner(userTransformer.transformUser(recipe.getOwner()));
+
+		//users can edit their own recipe if they are logged in
+		boolean editable = SecurityUtils.isSessionAuthenticated() && SecurityUtils.getDishbraryUserFromContext().getId().equals(recipe.getOwner().getId());
+		restModel.setEditable(editable);
 
 		return restModel;
 	}
