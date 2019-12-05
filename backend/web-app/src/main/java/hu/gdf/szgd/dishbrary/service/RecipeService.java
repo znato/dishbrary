@@ -138,6 +138,7 @@ public class RecipeService {
 		return new Recipe.AdditionalInfo(energyKcalSum.toString(), proteinSum.toString(), fatSum.toString(), carbohydrateSum.toString());
 	}
 
+	@Transactional
 	public void saveVideoToRecipe(RecipeRestModel recipeRestModel) {
 		Optional<Recipe> recipe = recipeRepository.findById(recipeRestModel.getId());
 
@@ -147,11 +148,19 @@ public class RecipeService {
 
 		Recipe recipeEntity = recipe.get();
 
+		//users can update only their own recipe if they are logged in
+		boolean updatable = SecurityUtils.isSessionAuthenticated() && SecurityUtils.getDishbraryUserFromContext().getId().equals(recipeEntity.getOwner().getId());
+
+		if (!updatable) {
+			throw new DishbraryValidationException("A receptet nem tudod módosítani, mert nem hozzád tartozik!");
+		}
+
 		recipeEntity.setVideoFileName(recipeRestModel.getVideoFileName());
 
 		recipeRepository.save(recipeEntity);
 	}
 
+	@Transactional
 	public void saveImagesToRecipe(RecipeRestModel recipeRestModel) {
 		Optional<Recipe> recipe = recipeRepository.findById(recipeRestModel.getId());
 
@@ -160,6 +169,13 @@ public class RecipeService {
 		}
 
 		Recipe recipeEntity = recipe.get();
+
+		//users can update only their own recipe if they are logged in
+		boolean updatable = SecurityUtils.isSessionAuthenticated() && SecurityUtils.getDishbraryUserFromContext().getId().equals(recipeEntity.getOwner().getId());
+
+		if (!updatable) {
+			throw new DishbraryValidationException("A receptet nem tudod módosítani, mert nem hozzád tartozik!");
+		}
 
 		recipeEntity.setCoverImageFileName(recipeRestModel.getCoverImageFileName());
 

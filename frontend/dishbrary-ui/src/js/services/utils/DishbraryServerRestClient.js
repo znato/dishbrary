@@ -41,3 +41,11 @@ export const postFormData = (serviceUrl, data) => {
     })
         .then((response => response.json()));
 }
+
+export const del = (serviceUrl) => {
+    return fetch(buildServiceUrl(serviceUrl), {
+        credentials: ServerConstants.sameOrigin ? "same-origin" : "include",
+        method: "DELETE"
+    })
+        .then(response => response.json());
+}

@@ -34,6 +34,11 @@ class RecipeService {
         return DishbraryServerRestClient.get(fetchUrl);
     }
 
+    deleteRecipeVideo = (recipeId) => {
+        const deleteRecipeVideoPath = `resource/recipe/${recipeId}/video`;
+        return DishbraryServerRestClient.del(deleteRecipeVideoPath);
+    }
+
     getRecipeImagePath = (recipeId, imageName) => {
         return `rest/resource/image/recipe/${recipeId}/${imageName}`;
     }

@@ -121,6 +121,21 @@ public class StaticResourceService {
 		}
 
 		recipeService.saveVideoToRecipe(recipe);
+
+		removeOldVideoFromDirectory(basePathToSaveResource, recipe);
+	}
+
+	public void deleteRecipeVideo(Long recipeId) {
+		RecipeRestModel recipe = recipeService.findRecipeById(recipeId);
+
+		recipe.setVideoFileName(null);
+
+		recipeService.saveVideoToRecipe(recipe);
+
+		String recipeVideoDirectory = getBasePathForComponentType(StaticResourceComponentType.RECIPE)
+				+ getRemainingPathForRecipeByComponentSubType(SecurityUtils.getDishbraryUserFromContext().getId(), recipeId, StaticResourceComponentSubType.VIDEO);
+
+		removeOldVideoFromDirectory(recipeVideoDirectory, recipe);
 	}
 
 	public void uploadRecipeImages(Long recipeId, String selectedCoverImageFileName, List<FileResource> fileResources) {
@@ -187,6 +202,28 @@ public class StaticResourceService {
 		removeOldImagesFromDirectory(basePathToSaveResource, recipe);
 	}
 
+	private void removeOldVideoFromDirectory(String dirName,  RecipeRestModel recipeWithNewVideo) {
+		try (Stream<Path> walk = Files.walk(Paths.get(dirName))) {
+
+			List<File> result = walk.filter(path -> {
+				String fileName = path.getFileName().toString();
+
+				return Files.isRegularFile(path) &&
+						!fileName.equals(recipeWithNewVideo.getVideoFileName());
+			}).map(x -> x.toFile()).collect(Collectors.toList());
+
+			result.forEach(file -> {
+				if (log.isDebugEnabled()) {
+					log.debug("Deleting old file for recipe! RecipeId: {}, fileName: {}", recipeWithNewVideo.getId(), file.getAbsolutePath());
+				}
+				file.delete();
+			});
+
+		} catch (IOException e) {
+			log.error("Could not delete old video file for recipe with id: {}", recipeWithNewVideo.getId(), e);
+		}
+	}
+
 	private void removeOldImagesFromDirectory(String dirName, RecipeRestModel recipeWithNewFiles) {
 		try (Stream<Path> walk = Files.walk(Paths.get(dirName))) {
 
@@ -208,7 +245,6 @@ public class StaticResourceService {
 		} catch (IOException e) {
 			log.error("Could not delete old image files for recipe with id: {}", recipeWithNewFiles.getId(), e);
 		}
-
 	}
 
 	private String getBasePathForComponentType(StaticResourceComponentType componentType) {

@@ -149,6 +149,10 @@ class RecipeEditor extends React.Component {
                     label: cuisine.name
                 };
             }) : [],
+            videoFileUploaderData: recipe && recipe.videoFileName ? {
+                file: new File([""], recipe.videoFileName),
+                videoPreviewUrl: recipeService.getRecipeVideoPath(recipe.id, recipe.videoFileName)
+            } : null,
             imageFileUploaderData: {
                 selectedImages: recipe && ArrayUtils.isNotEmpty(recipe.additionalImagesFileNames) ?
                     recipe.additionalImagesFileNames.map(imageName => {
@@ -374,8 +378,8 @@ class RecipeEditor extends React.Component {
             categories, ingredientsLoading,
             ingredients, cuisinesLoading, cuisines,
             ingredientEditorOpened, selectedIngredients, selectedCuisines,
-            selectedCategories, recipeId, alertData, actualStep, imageFileUploaderData,
-            recipeEditingFinished
+            selectedCategories, recipeId, alertData, actualStep,
+            imageFileUploaderData, videoFileUploaderData, recipeEditingFinished
         } = this.state;
 
         const highestLoadingStateIndex = Math.max(categoriesLoading.index, ingredientsLoading.index, cuisinesLoading.index);
@@ -433,6 +437,7 @@ class RecipeEditor extends React.Component {
                                     ?
                                     <div id="recipeVideoFileUploadContainer">
                                         <RecipeVideoFileUploader recipeId={recipeId}
+                                                                 selectedVideo={videoFileUploaderData}
                                                                  onUploadSuccess={this.finishRecipeEditing}/>
                                         <Button
                                             className={classes.skipButton}

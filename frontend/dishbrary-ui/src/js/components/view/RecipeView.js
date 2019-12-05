@@ -13,7 +13,7 @@ import {ArrowRight} from '@material-ui/icons';
 import Avatar from '@material-ui/core/Avatar';
 import Collapse from '@material-ui/core/Collapse';
 
-import ReactPlayer from 'react-player'
+import ReactPlayer from 'react-player';
 
 import {Carousel} from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';

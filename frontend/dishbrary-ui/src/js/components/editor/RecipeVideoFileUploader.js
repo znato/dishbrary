@@ -8,6 +8,9 @@ import UploadIcon from "../icons/UploadIcon";
 import DishbraryAlertDialog from "../general/DishbraryAlertDialog";
 
 import recipeService from '../../services/RecipeService';
+import ReactPlayer from "react-player";
+import DeleteIcon from '@material-ui/icons/Delete';
+import IconButton from "@material-ui/core/IconButton";
 
 const styles = theme => ({
     recipeVideoFileUploaderContainer: {
@@ -16,6 +19,9 @@ const styles = theme => ({
     form: {
         width: "80%",
         margin: "0 10% 0 10%",
+    },
+    videoPlayer: {
+        margin: "auto",
     },
     videoInput: {
         "width": "0.1px",
@@ -53,7 +59,10 @@ class RecipeVideoFileUploader extends React.Component {
         super(props);
 
         this.state = {
-            videoSelected: false,
+            selectedVideo: props.selectedVideo || null,
+            isModeEditing: props.selectedVideo ? true : false,
+            newVideoSelected: false,
+            videoDeleted: false,
             alertData: {
                 openAlert: false,
                 alertDialogTitle: "",
@@ -108,19 +117,91 @@ class RecipeVideoFileUploader extends React.Component {
 
         let selectedFilesToUpload = event.target.files;
 
-        this.setState({videoSelected: selectedFilesToUpload && selectedFilesToUpload[0]})
+        if (selectedFilesToUpload && selectedFilesToUpload[0]) {
+            let fileReader = new FileReader();
+
+            const fileData = {
+                file: selectedFilesToUpload[0],
+                videoPreviewUrl: fileReader.result
+            }
+
+            fileReader.onloadend = (event) => {
+                fileData.videoPreviewUrl = event.target.result;
+
+                this.setState({
+                    selectedVideo: fileData
+                });
+            }
+
+            fileReader.readAsDataURL(fileData.file);
+
+            this.setState({newVideoSelected: true})
+        }
+    }
+
+    removeVideo = () => {
+        const {isModeEditing} = this.state;
+        //in case we are in editing mode and video is removed we will show the save button instead of upload
+        this.setState({
+            videoDeleted: isModeEditing,
+            selectedVideo: null
+        });
+    }
+
+    deleteVideoFromServer = () => {
+        const {recipeId} = this.props;
+
+        recipeService.deleteRecipeVideo(recipeId)
+            .then(jsonResponse => {
+                if (jsonResponse.error) {
+                    this.openAlertDialog("Hiba történt!", jsonResponse.message);
+                } else {
+                    //call additional callback if present
+                    if (typeof this.props.onUploadSuccess === "function") {
+                        this.props.onUploadSuccess();
+                    }
+                }
+            });
+    }
+
+    getVideoPreview = (selectedVideo) => {
+        if (!selectedVideo) {
+            return null;
+        }
+
+        const {classes} = this.props;
+
+        return (
+            <div id="video-preview-container">
+                <Typography variant="subtitle2">
+                    {selectedVideo.file.name}
+                </Typography>
+
+                <ReactPlayer className={classes.videoPlayer}
+                             url={selectedVideo.videoPreviewUrl}
+                             controls={true}/>
+
+                <IconButton className={classes.deleteButton} onClick={this.removeVideo} aria-label="delete">
+                    <DeleteIcon />
+                </IconButton>
+            </div>
+        );
     }
 
     render() {
         const {recipeId, classes} = this.props;
 
-        const {videoSelected, alertData} = this.state;
+        const {selectedVideo, newVideoSelected, videoDeleted, alertData} = this.state;
+
+        const videoSelected = selectedVideo && selectedVideo.file && selectedVideo.videoPreviewUrl;
+
+        let videoPreview = videoSelected ? this.getVideoPreview(selectedVideo) : null;
 
         return (
             <div id="recipeVideoFileUploaderContainer" className={classes.recipeVideoFileUploaderContainer}>
                 <Typography variant="h6" className={classes.pageInfoText}>
                     Ezen a felületen lehetőséged van a recepthez videót feltölteni, amennyiben szeretnél. <br/>
-                    A videó feltöltése nem kötlező! Ha nem kívánsz videót hozzáadni a receptedhez csak nyomj "BEFEJEZ"
+                    A videó feltöltése nem kötlező! Ha nem kívánsz videót hozzáadni a receptedhez csak nyomj a "BEFEJEZ"
                     gombra.
                 </Typography>
 
@@ -139,15 +220,32 @@ class RecipeVideoFileUploader extends React.Component {
                                    onChange={this.handleVideoInputChange}
                                    className={classes.videoInput}/>
                         </div>
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            color="primary"
-                            disabled={!videoSelected}
-                        >
-                            Feltőltés
-                        </Button>
+
+                        {videoPreview}
+
+                        {
+
+
+                            videoDeleted ?
+                                <Button
+                                    onClick={this.deleteVideoFromServer}
+                                    fullWidth
+                                    variant="contained"
+                                    color="primary"
+                                >
+                                    Mentés
+                                </Button>
+                                :
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={!(selectedVideo && newVideoSelected)}
+                                >
+                                    Feltöltés
+                                </Button>
+                        }
                     </FormControl>
                 </form>
 

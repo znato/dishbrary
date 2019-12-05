@@ -254,7 +254,7 @@ class RecipeImageFileUploader extends React.Component {
             <div id="recipeImageFileUploaderContainer" className={classes.recipeImageFileUploaderContainer}>
                 <Typography variant="h6" className={classes.pageInfoText}>
                     Ezen a felületen lehetőséged van a recepthez képeket feltölteni, amennyiben szeretnél. <br/>
-                    A képek feltöltése nem kötlező! Ha nem kívánsz képeket hozzáadni a receptedhez csak nyomj "TOVÁBB" gombra.
+                    A képek feltöltése nem kötlező! Ha nem kívánsz képeket hozzáadni a receptedhez csak nyomj a "TOVÁBB" gombra.
                 </Typography>
 
                 <form className={classes.form} onSubmit={this.uploadRecipeImages(recipeId)} autoComplete="off">

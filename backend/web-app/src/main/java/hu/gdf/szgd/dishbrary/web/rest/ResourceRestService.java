@@ -21,7 +21,7 @@ import static hu.gdf.szgd.dishbrary.web.WebConstants.JSON_WITH_UTF8_ENCODING;
 @Path("/resource/")
 @Consumes({MediaType.MULTIPART_FORM_DATA})
 @Produces(JSON_WITH_UTF8_ENCODING)
-public class ResourceUploadRestService {
+public class ResourceRestService {
 
 	@Autowired
 	private StaticResourceService staticResourceService;
@@ -80,5 +80,17 @@ public class ResourceUploadRestService {
 		staticResourceService.uploadRecipeVideo(recipeId, videoResource);
 
 		return Response.ok(new DishbraryResponse<>("A videó sikeresen mentve!")).build();
+	}
+
+	@DELETE
+	@Path("recipe/{recipeId}/video")
+	@PreAuthorize("hasAuthority('WRITE_RECIPE')")
+	public Response deleteVideo(@PathParam("recipeId") Long recipeId) {
+
+		staticResourceService.deleteRecipeVideo(recipeId);
+
+		return Response.ok(
+				new DishbraryResponse<>("A videó sikeresen törölve!")
+		).build();
 	}
 }
