@@ -54,6 +54,15 @@ public class ResourceRestService {
 		return Response.ok(new DishbraryResponse<>("A kép(ek) sikeresen mentve!")).build();
 	}
 
+	@DELETE
+	@Path("recipe/{recipeId}/image/deleteAll")
+	@PreAuthorize("hasAuthority('WRITE_RECIPE')")
+	public Response uploadImage(@PathParam("recipeId") Long recipeId) {
+		staticResourceService.deleteAllRecipeImages(recipeId);
+
+		return Response.ok(new DishbraryResponse<>("A kép(ek) sikeresen törölve!")).build();
+	}
+
 	@POST
 	@Path("recipe/{recipeId}/video/upload")
 	@PreAuthorize("hasAuthority('WRITE_RECIPE')")

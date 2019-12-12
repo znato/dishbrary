@@ -45,6 +45,8 @@ public class RecipeTransformer {
 		recipeToUpdate.setCategories(categoryTransformer.transformAllCategoryRestModel(recipeRestModel.getCategories()));
 		recipeToUpdate.setCuisines(cuisineTransformer.transformAllCuisineRestModel(recipeRestModel.getCuisines()));
 
+		recipeToUpdate.getIngredients().clear();
+
 		List<RecipeIngredient> recipeIngredients = new ArrayList<>(recipeRestModel.getIngredients().size());
 		for (RecipeIngredientRestModel ingredientRestModel : recipeRestModel.getIngredients()) {
 			RecipeIngredient recipeIngredient = new RecipeIngredient();
@@ -57,7 +59,7 @@ public class RecipeTransformer {
 			recipeIngredients.add(recipeIngredient);
 		}
 
-		recipeToUpdate.setIngredients(recipeIngredients);
+		recipeToUpdate.getIngredients().addAll(recipeIngredients);
 
 		return recipeToUpdate;
 	}

@@ -20,7 +20,7 @@ public class Recipe extends AbstractEntity {
 	@Lob
 	@Column
 	private String instruction;
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "recipe", fetch = FetchType.EAGER)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "recipe", fetch = FetchType.EAGER)
 	private List<RecipeIngredient> ingredients;
 	@Column
 	@ManyToMany

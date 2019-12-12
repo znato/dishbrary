@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.*;
@@ -138,6 +139,24 @@ public class StaticResourceService {
 		removeOldVideoFromDirectory(recipeVideoDirectory, recipe);
 	}
 
+	public void deleteAllRecipeImages(Long recipeId) {
+		RecipeRestModel recipe = recipeService.findRecipeById(recipeId);
+
+		if (CollectionUtils.isEmpty(recipe.getAdditionalImagesFileNames())) {
+			return;
+		}
+
+		recipe.setCoverImageFileName(null);
+		recipe.setAdditionalImagesFileNames(null);
+
+		recipeService.saveImagesToRecipe(recipe);
+
+		String basePathToImages = getBasePathForComponentType(StaticResourceComponentType.RECIPE)
+				+ getRemainingPathForRecipeByComponentSubType(SecurityUtils.getDishbraryUserFromContext().getId(), recipeId, StaticResourceComponentType.StaticResourceComponentSubType.IMAGE);
+
+		removeOldImagesFromDirectory(basePathToImages, recipe);
+	}
+
 	public void uploadRecipeImages(Long recipeId, String selectedCoverImageFileName, List<FileResource> fileResources) {
 
 		RecipeRestModel recipe = recipeService.findRecipeById(recipeId);
@@ -225,14 +244,17 @@ public class StaticResourceService {
 	}
 
 	private void removeOldImagesFromDirectory(String dirName, RecipeRestModel recipeWithNewFiles) {
+		boolean coverImageRemoved = StringUtils.isEmpty(recipeWithNewFiles.getCoverImageFileName());
+		boolean additionalImagesRemoved = CollectionUtils.isEmpty(recipeWithNewFiles.getAdditionalImagesFileNames());
+
 		try (Stream<Path> walk = Files.walk(Paths.get(dirName))) {
 
 			List<File> result = walk.filter(path -> {
 				String fileName = path.getFileName().toString();
 
 				return Files.isRegularFile(path) &&
-						!recipeWithNewFiles.getCoverImageFileName().equals(fileName) &&
-						!recipeWithNewFiles.getAdditionalImagesFileNames().contains(fileName);
+						(coverImageRemoved || !recipeWithNewFiles.getCoverImageFileName().equals(fileName)) &&
+						(additionalImagesRemoved || !recipeWithNewFiles.getAdditionalImagesFileNames().contains(fileName));
 			}).map(x -> x.toFile()).collect(Collectors.toList());
 
 			result.forEach(file -> {

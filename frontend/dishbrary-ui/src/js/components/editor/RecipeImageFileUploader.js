@@ -76,6 +76,8 @@ class RecipeImageFileUploader extends React.Component {
 
         this.state = {
             selectedFiles: props.selectedImages || [],
+            isEditMode: props.selectedImages ? true : false,
+            imageDataChanged: false,
             selectedCoverImageFileName: props.selectedCoverImageFileName,
             alertData: {
                 openAlert: false,
@@ -108,9 +110,7 @@ class RecipeImageFileUploader extends React.Component {
             })
     }
 
-    uploadRecipeImages = (recipeId) => (formSubmitEvent) => {
-        formSubmitEvent.preventDefault();
-
+    uploadRecipeImages = (recipeId) => {
         const formData = new FormData();
 
         const {selectedFiles, selectedCoverImageFileName} = this.state;
@@ -135,6 +135,37 @@ class RecipeImageFileUploader extends React.Component {
                     }
                 }
             });
+    }
+
+    deleteAllRecipeImages = (recipeId) => {
+        recipeService.deleteAllRecipeImages(recipeId)
+            .then(jsonResponse => {
+                if (jsonResponse.error) {
+                    this.openAlertDialog("Hiba történt!", jsonResponse.message);
+                } else {
+                    //call additional callback if present
+                    if (typeof this.props.onUploadSuccess === "function") {
+                        this.props.onUploadSuccess({
+                            selectedImages: [],
+                            selectedCoverImageFileName: null
+                        });
+                    }
+                }
+            });
+    }
+
+    handleFormSubmit = (recipeId) => (formSubmitEvent) => {
+        formSubmitEvent.preventDefault();
+
+        const {isEditMode, selectedFiles, selectedCoverImageFileName} = this.state;
+
+        const imagesRemoved = isEditMode && !selectedCoverImageFileName && ArrayUtils.isEmpty(selectedFiles);
+
+        if (imagesRemoved) {
+            this.deleteAllRecipeImages(recipeId);
+        } else {
+            this.uploadRecipeImages(recipeId);
+        }
     }
 
     handleImageInputChange = (event) => {
@@ -171,10 +202,13 @@ class RecipeImageFileUploader extends React.Component {
 
             fileReader.readAsDataURL(fileData.file);
         }
+
+        this.setState({imageDataChanged: true})
     }
 
     handleCoverImageSelectionChange = (event) => {
         this.setState({
+            imageDataChanged: true,
             selectedCoverImageFileName: event.target.value
         })
     }
@@ -198,10 +232,13 @@ class RecipeImageFileUploader extends React.Component {
         }
 
         let stateUpdate = resetCoverImageFileName && ArrayUtils.isNotEmpty(selectedFiles) ? {
+            imageDataChanged: true,
             selectedFiles,
             selectedCoverImageFileName: selectedFiles[0].file.name
         } : {
-            selectedFiles
+            imageDataChanged: true,
+            selectedFiles,
+            selectedCoverImageFileName: null
         };
 
         this.setState(stateUpdate);
@@ -210,7 +247,7 @@ class RecipeImageFileUploader extends React.Component {
     render() {
         const {recipeId, classes} = this.props;
 
-        const {selectedFiles, alertData, selectedCoverImageFileName} = this.state;
+        const {selectedFiles, alertData, selectedCoverImageFileName, imageDataChanged, isEditMode} = this.state;
 
         let imagePreviewInformation = null;
 
@@ -257,7 +294,7 @@ class RecipeImageFileUploader extends React.Component {
                     A képek feltöltése nem kötlező! Ha nem kívánsz képeket hozzáadni a receptedhez csak nyomj a "TOVÁBB" gombra.
                 </Typography>
 
-                <form className={classes.form} onSubmit={this.uploadRecipeImages(recipeId)} autoComplete="off">
+                <form className={classes.form} onSubmit={this.handleFormSubmit(recipeId)} autoComplete="off">
                     <FormControl margin="normal" required fullWidth>
                         <div className={classes.selectImagesButton}>
                             <label
@@ -278,9 +315,9 @@ class RecipeImageFileUploader extends React.Component {
                             fullWidth
                             variant="contained"
                             color="primary"
-                            disabled={!filesAreSelected}
+                            disabled={ ! ((!isEditMode && filesAreSelected) || (isEditMode && imageDataChanged)) }
                         >
-                            Feltőltés
+                            {isEditMode ? "Mentés" : "Feltőltés"}
                         </Button>
                     </FormControl>
                 </form>

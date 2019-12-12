@@ -98,16 +98,7 @@ class RecipeEditor extends React.Component {
         super(props);
 
         const {recipe} = props;
-        // file: File
-            // lastModified: 1187692126000
-            // lastModifiedDate: Tue Aug 21 2007 12:28:46 GMT+0200 (Central European Summer Time) {}
-            // name: "Austria.png"
-            // size: 34000
-            // type: "image/png"
-            // webkitRelativePath: ""
-            // __proto__: File
-        // imagePreviewUrl:
-            this.state = {
+        this.state = {
             actualStep: EDITOR_STEP.RECIPE,
             recipeId: recipe ? recipe.id : null,
             recipeName: recipe ? recipe.name : null,
@@ -154,15 +145,8 @@ class RecipeEditor extends React.Component {
                 videoPreviewUrl: recipeService.getRecipeVideoPath(recipe.id, recipe.videoFileName)
             } : null,
             imageFileUploaderData: {
-                selectedImages: recipe && ArrayUtils.isNotEmpty(recipe.additionalImagesFileNames) ?
-                    recipe.additionalImagesFileNames.map(imageName => {
-                        return {
-                            file: new File([""], imageName),
-                            imagePreviewUrl: recipeService.getRecipeImagePath(recipe.id, imageName)
-                        };
-                    })
-                    : [],
-                selectedCoverImageFileName: recipe ? recipe.coverImageFileName : null
+                selectedImages: null,
+                selectedCoverImageFileName: null
             },
             alertData: {
                 openAlert: false,
@@ -170,6 +154,26 @@ class RecipeEditor extends React.Component {
                 alertDialogContent: ""
             },
             recipeEditingFinished: false
+        };
+
+        //in case we are in edit mode and images are not empty fill imageFileUploaderData with all images (also put cover image inside)
+        if (recipe && ArrayUtils.isNotEmpty(recipe.additionalImagesFileNames)) {
+            this.state.imageFileUploaderData = {
+                selectedImages: recipe.additionalImagesFileNames.map(imageName => {
+                    return {
+                        file: new File([""], imageName),
+                        imagePreviewUrl: recipeService.getRecipeImagePath(recipe.id, imageName)
+                    };
+                }),
+                selectedCoverImageFileName: recipe.coverImageFileName
+            };
+
+            this.state.imageFileUploaderData.selectedImages.push(
+                {
+                    file: new File([""], recipe.coverImageFileName),
+                    imagePreviewUrl: recipeService.getRecipeImagePath(recipe.id, recipe.coverImageFileName)
+                }
+            )
         }
     }
 
@@ -312,40 +316,39 @@ class RecipeEditor extends React.Component {
         } = this.state;
 
         const recipe = {
-                id:recipeId,
-                name: recipeName,
-                instruction: instructionValue.toString('html'),
-                preparationTimeInMinute: preparationTime,
-                cookTimeInMinute: cookTime,
-                portion: portion,
-                ingredients: selectedIngredients.map((ingredientData) => {
-                    const ingredient = ingredientData.ingredient;
+            id: recipeId,
+            name: recipeName,
+            instruction: instructionValue.toString('html'),
+            preparationTimeInMinute: preparationTime,
+            cookTimeInMinute: cookTime,
+            portion: portion,
+            ingredients: selectedIngredients.map((ingredientData) => {
+                const ingredient = ingredientData.ingredient;
 
-                    return {
-                        ingredient: {
-                            id: ingredient.id,
-                            name: ingredient.name,
-                            unit: ingredientUnitUtils.convertRenderableUnitToUnit(ingredientData.selectedUnit),
+                return {
+                    ingredient: {
+                        id: ingredient.id,
+                        name: ingredient.name,
+                        unit: ingredientUnitUtils.convertRenderableUnitToUnit(ingredientData.selectedUnit),
 
-                        },
-                        quantity: ingredientData.quantity,
-                        selectedUnit: ingredientData.selectedUnit
-                    };
-                }),
-                categories: selectedCategories.map(category => {
-                    return {
-                        id: category.value,
-                        name: category.label
-                    };
-                }),
-                cuisines: selectedCuisines.map(cusine => {
-                    return {
-                        id: cusine.value,
-                        name: cusine.label
-                    };
-                })
-            }
-        ;
+                    },
+                    quantity: ingredientData.quantity,
+                    selectedUnit: ingredientData.selectedUnit
+                };
+            }),
+            categories: selectedCategories.map(category => {
+                return {
+                    id: category.value,
+                    name: category.label
+                };
+            }),
+            cuisines: selectedCuisines.map(cusine => {
+                return {
+                    id: cusine.value,
+                    name: cusine.label
+                };
+            })
+        };
 
         recipeService.saveRecipe(recipe)
             .then(jsonResponse => {

@@ -95,7 +95,7 @@ public class RecipeService {
 			throw new DishbraryValidationException("A receptet nem tudod módosítani, mert nem hozzád tartozik!");
 		}
 
-		recipeToUpdate = recipeTransformer.transformForUpdate(recipeToUpdateHolder.get(), recipeRestModel);
+		recipeToUpdate = recipeTransformer.transformForUpdate(recipeToUpdate, recipeRestModel);
 		recipeToUpdate.setAdditionalInfo(createAdditionalInfo(recipeRestModel));
 
 		return recipeTransformer.transform(recipeRepository.save(recipeToUpdate));

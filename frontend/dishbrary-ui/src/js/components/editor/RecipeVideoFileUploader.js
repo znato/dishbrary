@@ -224,8 +224,6 @@ class RecipeVideoFileUploader extends React.Component {
                         {videoPreview}
 
                         {
-
-
                             videoDeleted ?
                                 <Button
                                     onClick={this.deleteVideoFromServer}
