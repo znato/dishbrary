@@ -29,9 +29,10 @@ import * as ArrayUtils from '../../services/utils/ArrayUtils';
 const styles = theme => ({
     root: {
         width: '100%',
+        minHeight: '100vh',
         marginTop: theme.spacing.unit * 3,
         overflowX: 'auto',
-        textAlign: "center",
+        textAlign: 'center',
         background: 'url(\'' + backgroundImg + '\') no-repeat center center fixed',
         backgroundSize: 'cover'
     },
@@ -39,29 +40,34 @@ const styles = theme => ({
         margin: theme.spacing.unit * 2,
     },
     videoContainer: {
-        margin: "25px auto",
+        margin: '25px auto',
     },
     toggleButton: {
         border: 0,
-        background: "transparent",
-        cursor: "pointer"
+        background: 'transparent',
+        cursor: 'pointer'
     },
     videoPlayer: {
-        margin: "auto",
+        margin: 'auto',
     },
     carouselContainer: {
         width: '30em',
         margin: 'auto'
     },
     recipeContainer: {
-        width: "50em",
-        margin: "auto",
-        backgroundColor: "#c9c0b9"
+        width: '50em',
+        minHeight: '100vh',
+        margin: '20px auto 20px auto',
+        padding: '10px 0 10px 0',
+        backgroundColor: 'white',
+        boxShadow: '0px 0px 40px 10px',
+        // backgroundColor: '#c9c0b9'
+        // backgroundColor: 'rgba(201, 192, 185, 0.5)'
     },
     recipeDataContainer: {
         width: '30em',
         margin: 'auto',
-        marginTop: "25px",
+        marginTop: '25px',
         textAlign: 'left'
     }
 });
