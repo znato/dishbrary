@@ -6,6 +6,7 @@ import {HashRouter as Router, Route} from "react-router-dom";
 import * as ApplicationRoutes from './config/ApplicationRoutes';
 
 import DishbraryAppBar from './components/appbar/DishbraryAppBar';
+import HomeView from './components/view/HomeView';
 import CalorieTableView from './components/view/CalorieTableView';
 import MyRecipesView from './components/view/MyRecipesView';
 import CreateRecipeView from './components/view/CreateRecipeView';
@@ -19,6 +20,9 @@ function DishbraryApp() {
                 <DishbraryAppBar/>
 
                 <div id="dishbrary-page-content" style={{marginTop: "70px"}}>
+
+                    <Route exact path={ApplicationRoutes.homePath} component={HomeView} />
+
                     <Route path={ApplicationRoutes.calorieTablePath} component={CalorieTableView} />
 
                     <Route path={ApplicationRoutes.userOwnRecipesPath} component={MyRecipesView}/>

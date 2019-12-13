@@ -24,6 +24,7 @@ import javax.transaction.Transactional;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -52,6 +53,26 @@ public class RecipeService {
 		}
 
 		return recipeTransformer.transform(recipe.get());
+	}
+
+	@Transactional
+	public List<RecipeRestModel> findRandomRecipes() {
+		Long minRecipeId = recipeRepository.findMinId();
+		Long maxRecipeId = recipeRepository.findMaxId();
+
+		int resultCount = maxRecipeId < 10 ? (int)(long) maxRecipeId : 10;
+
+		List<Long> randomIds = new ArrayList<>(resultCount);
+
+		while (randomIds.size() < resultCount) {
+			Long randomId = (long)(Math.random() * ((maxRecipeId - minRecipeId) + 1)) + minRecipeId;
+
+			if (!randomIds.contains(randomId)) {
+				randomIds.add(randomId);
+			}
+		}
+
+		return recipeTransformer.transformAll(recipeRepository.findAllById(randomIds));
 	}
 
 	@Transactional

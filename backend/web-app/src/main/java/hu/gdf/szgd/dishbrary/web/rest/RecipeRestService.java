@@ -34,6 +34,14 @@ public class RecipeRestService {
 	}
 
 	@GET
+	@Path("/recipes/random")
+	public Response getRandomRecipes() {
+		return Response.ok(
+				new DishbraryResponse<>(recipeService.findRandomRecipes())
+		).build();
+	}
+
+	@GET
 	@Path("/my-recipes")
 	@PreAuthorize("hasRole('SIMPLE_USER')")
 	public Response getMyRecipes(@QueryParam("page") int pageNumber) {

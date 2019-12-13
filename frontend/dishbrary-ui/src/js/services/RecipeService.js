@@ -1,7 +1,8 @@
 import * as DishbraryServerRestClient from "./utils/DishbraryServerRestClient";
 
 const createRecipePath = "recipe/create";
-const getMyRecipesPath = "recipe/my-recipes"
+const getMyRecipesPath = "recipe/my-recipes";
+const getRandomRecipesPath = "recipe/recipes/random";
 
 class RecipeService {
 
@@ -42,6 +43,10 @@ class RecipeService {
         }
 
         return DishbraryServerRestClient.get(fetchUrl);
+    }
+
+    fetchRandomRecipes = () => {
+        return DishbraryServerRestClient.get(getRandomRecipesPath);
     }
 
     deleteAllRecipeImages = (recipeId) => {
