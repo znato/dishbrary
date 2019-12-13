@@ -2,7 +2,6 @@ package hu.gdf.szgd.dishbrary.service;
 
 import hu.gdf.szgd.dishbrary.StaticResourceComponentType;
 import hu.gdf.szgd.dishbrary.StaticResourceComponentType.StaticResourceComponentSubType;
-import hu.gdf.szgd.dishbrary.db.entity.User;
 import hu.gdf.szgd.dishbrary.db.repository.UserRepository;
 import hu.gdf.szgd.dishbrary.security.SecurityUtils;
 import hu.gdf.szgd.dishbrary.service.exception.ConfigurationErrorException;
@@ -69,9 +68,9 @@ public class StaticResourceService {
 		//image upload for recipe is fully optional, in case user did not upload any image for the recipe a default will be shown
 		//the default image located in a general place so get the images full path for the recipe only if not the default is set
 		if (StaticResourceComponentSubType.VIDEO.equals(resourceType) || !defaultRecipeCoverImageFileName.equals(resourceName)) {
-			User owner = userRepository.findUserByRecipesId(recipeId);
+			Long ownerId = userRepository.findUserIdByRecipesId(recipeId);
 
-			basePathForComponent += getRemainingPathForRecipeByComponentSubType(owner.getId(), recipeId, resourceType);
+			basePathForComponent += getRemainingPathForRecipeByComponentSubType(ownerId, recipeId, resourceType);
 		}
 
 		File resource = new File(basePathForComponent, resourceName);

@@ -2,6 +2,8 @@ package hu.gdf.szgd.dishbrary.web.rest;
 
 import hu.gdf.szgd.dishbrary.security.DishbraryUser;
 import hu.gdf.szgd.dishbrary.security.SecurityUtils;
+import hu.gdf.szgd.dishbrary.security.annotation.RecipeId;
+import hu.gdf.szgd.dishbrary.security.annotation.ValidateRecipeBelongsToLoggedInUser;
 import hu.gdf.szgd.dishbrary.service.RecipeService;
 import hu.gdf.szgd.dishbrary.web.model.DishbraryResponse;
 import hu.gdf.szgd.dishbrary.web.model.RecipeRestModel;
@@ -56,7 +58,8 @@ public class RecipeRestService {
 	@POST
 	@Path("/update/{recipeId}")
 	@PreAuthorize("hasAuthority('WRITE_RECIPE')")
-	public Response createRecipe(@PathParam("recipeId") Long recipeId, RecipeRestModel recipeToUpdate) {
+	@ValidateRecipeBelongsToLoggedInUser
+	public Response createRecipe(@PathParam("recipeId") @RecipeId Long recipeId, RecipeRestModel recipeToUpdate) {
 		return Response.ok(
 				new DishbraryResponse<>(recipeService.updateRecipe(recipeToUpdate))
 		).build();

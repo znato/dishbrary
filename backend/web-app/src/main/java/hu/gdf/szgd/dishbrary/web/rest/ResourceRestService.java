@@ -1,5 +1,7 @@
 package hu.gdf.szgd.dishbrary.web.rest;
 
+import hu.gdf.szgd.dishbrary.security.annotation.RecipeId;
+import hu.gdf.szgd.dishbrary.security.annotation.ValidateRecipeBelongsToLoggedInUser;
 import hu.gdf.szgd.dishbrary.service.StaticResourceService;
 import hu.gdf.szgd.dishbrary.web.model.DishbraryResponse;
 import hu.gdf.szgd.dishbrary.web.model.FileResource;
@@ -11,7 +13,6 @@ import org.springframework.stereotype.Service;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,8 @@ public class ResourceRestService {
 	@POST
 	@Path("recipe/{recipeId}/image/upload")
 	@PreAuthorize("hasAuthority('WRITE_RECIPE')")
-	public Response uploadImage(@PathParam("recipeId") Long recipeId,
+	@ValidateRecipeBelongsToLoggedInUser
+	public Response uploadImage(@PathParam("recipeId") @RecipeId Long recipeId,
 						   @FormDataParam("selectedCoverImageFileName") String selectedCoverImageFileName,
 						   final FormDataMultiPart multiPart) {
 
@@ -57,7 +59,8 @@ public class ResourceRestService {
 	@DELETE
 	@Path("recipe/{recipeId}/image/deleteAll")
 	@PreAuthorize("hasAuthority('WRITE_RECIPE')")
-	public Response uploadImage(@PathParam("recipeId") Long recipeId) {
+	@ValidateRecipeBelongsToLoggedInUser
+	public Response uploadImage(@PathParam("recipeId") @RecipeId Long recipeId) {
 		staticResourceService.deleteAllRecipeImages(recipeId);
 
 		return Response.ok(new DishbraryResponse<>("A kép(ek) sikeresen törölve!")).build();
@@ -66,7 +69,8 @@ public class ResourceRestService {
 	@POST
 	@Path("recipe/{recipeId}/video/upload")
 	@PreAuthorize("hasAuthority('WRITE_RECIPE')")
-	public Response uploadVideo(@PathParam("recipeId") Long recipeId,
+	@ValidateRecipeBelongsToLoggedInUser
+	public Response uploadVideo(@PathParam("recipeId") @RecipeId Long recipeId,
 								final FormDataMultiPart multiPart) {
 
 		FileResource videoResource = null;
@@ -94,7 +98,8 @@ public class ResourceRestService {
 	@DELETE
 	@Path("recipe/{recipeId}/video")
 	@PreAuthorize("hasAuthority('WRITE_RECIPE')")
-	public Response deleteVideo(@PathParam("recipeId") Long recipeId) {
+	@ValidateRecipeBelongsToLoggedInUser
+	public Response deleteVideo(@PathParam("recipeId") @RecipeId Long recipeId) {
 
 		staticResourceService.deleteRecipeVideo(recipeId);
 

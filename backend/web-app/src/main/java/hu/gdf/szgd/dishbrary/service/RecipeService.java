@@ -88,13 +88,6 @@ public class RecipeService {
 
 		Recipe recipeToUpdate = recipeToUpdateHolder.get();
 
-		//users can update only their own recipe if they are logged in
-		boolean updatable = SecurityUtils.isSessionAuthenticated() && SecurityUtils.getDishbraryUserFromContext().getId().equals(recipeToUpdate.getOwner().getId());
-
-		if (!updatable) {
-			throw new DishbraryValidationException("A receptet nem tudod módosítani, mert nem hozzád tartozik!");
-		}
-
 		recipeToUpdate = recipeTransformer.transformForUpdate(recipeToUpdate, recipeRestModel);
 		recipeToUpdate.setAdditionalInfo(createAdditionalInfo(recipeRestModel));
 
@@ -148,13 +141,6 @@ public class RecipeService {
 
 		Recipe recipeEntity = recipe.get();
 
-		//users can update only their own recipe if they are logged in
-		boolean updatable = SecurityUtils.isSessionAuthenticated() && SecurityUtils.getDishbraryUserFromContext().getId().equals(recipeEntity.getOwner().getId());
-
-		if (!updatable) {
-			throw new DishbraryValidationException("A receptet nem tudod módosítani, mert nem hozzád tartozik!");
-		}
-
 		recipeEntity.setVideoFileName(recipeRestModel.getVideoFileName());
 
 		recipeRepository.save(recipeEntity);
@@ -169,13 +155,6 @@ public class RecipeService {
 		}
 
 		Recipe recipeEntity = recipe.get();
-
-		//users can update only their own recipe if they are logged in
-		boolean updatable = SecurityUtils.isSessionAuthenticated() && SecurityUtils.getDishbraryUserFromContext().getId().equals(recipeEntity.getOwner().getId());
-
-		if (!updatable) {
-			throw new DishbraryValidationException("A receptet nem tudod módosítani, mert nem hozzád tartozik!");
-		}
 
 		recipeEntity.setCoverImageFileName(recipeRestModel.getCoverImageFileName());
 
