@@ -158,24 +158,34 @@ class RecipeEditor extends React.Component {
             recipeEditingFinished: false
         };
 
-        //in case we are in edit mode and images are not empty fill imageFileUploaderData with all images (also put cover image inside)
-        if (recipe && ArrayUtils.isNotEmpty(recipe.additionalImagesFileNames)) {
-            this.state.imageFileUploaderData = {
-                selectedImages: recipe.additionalImagesFileNames.map(imageName => {
-                    return {
-                        file: new File([""], imageName),
-                        imagePreviewUrl: recipeService.getRecipeImagePath(recipe.id, imageName)
-                    };
-                }),
-                selectedCoverImageFileName: recipe.coverImageFileName
-            };
+        //in case we are in edit mode and images are not empty fill imageFileUploaderData with all images
+        if (recipe) {
+            if (ArrayUtils.isNotEmpty(recipe.additionalImagesFileNames)) {
+                this.state.imageFileUploaderData = {
+                    selectedImages: recipe.additionalImagesFileNames.map(imageName => {
+                        return {
+                            file: new File([""], imageName),
+                            imagePreviewUrl: recipeService.getRecipeImagePath(recipe.id, imageName)
+                        };
+                    })
+                };
+            }
 
-            this.state.imageFileUploaderData.selectedImages.push(
-                {
-                    file: new File([""], recipe.coverImageFileName),
-                    imagePreviewUrl: recipeService.getRecipeImagePath(recipe.id, recipe.coverImageFileName)
+            //add also the cover image to the list
+            if (recipe.coverImageFileName) {
+                this.state.imageFileUploaderData.selectedCoverImageFileName = recipe.coverImageFileName;
+
+                if (!this.state.imageFileUploaderData.selectedImages) {
+                    this.state.imageFileUploaderData.selectedImages = [];
                 }
-            )
+
+                this.state.imageFileUploaderData.selectedImages.push(
+                    {
+                        file: new File([""], recipe.coverImageFileName),
+                        imagePreviewUrl: recipeService.getRecipeImagePath(recipe.id, recipe.coverImageFileName)
+                    }
+                )
+            }
         }
     }
 

@@ -4,7 +4,6 @@ import hu.gdf.szgd.dishbrary.StaticResourceComponentType;
 import hu.gdf.szgd.dishbrary.StaticResourceComponentType.StaticResourceComponentSubType;
 import hu.gdf.szgd.dishbrary.db.repository.UserRepository;
 import hu.gdf.szgd.dishbrary.security.SecurityUtils;
-import hu.gdf.szgd.dishbrary.service.exception.ConfigurationErrorException;
 import hu.gdf.szgd.dishbrary.service.exception.ResourceCannotBeSavedException;
 import hu.gdf.szgd.dishbrary.service.exception.ResourceNotFoundException;
 import hu.gdf.szgd.dishbrary.web.model.FileResource;
@@ -12,7 +11,6 @@ import hu.gdf.szgd.dishbrary.web.model.RecipeRestModel;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -22,18 +20,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
 @Log4j2
-@ConfigurationProperties(prefix = "dishbrary.resources")
 public class StaticResourceService {
-
-	private Map<String, String> imageBasePathByComponentName = new HashMap<>();
 
 	@Value("${dishbrary.recipe.images.defaultCoverImage.name}")
 	private String defaultRecipeCoverImageFileName;
@@ -42,11 +35,13 @@ public class StaticResourceService {
 	private UserRepository userRepository;
 	@Autowired
 	private RecipeService recipeService;
+	@Autowired
+	private ResourcePathService resourcePathService;
 
 	public File getImageForComponentByName(StaticResourceComponentType componentType, String imgName) throws ResourceNotFoundException {
 		log.debug("Image requested for component: {} with name: {}", componentType.name(), imgName);
 
-		String basePathForComponent = getBasePathForComponentType(componentType);
+		String basePathForComponent = resourcePathService.getBasePathForComponentType(componentType);
 
 		File image = new File(basePathForComponent, imgName);
 
@@ -62,7 +57,7 @@ public class StaticResourceService {
 	}
 
 	public File getResourceForRecipeByName(Long recipeId, String resourceName, StaticResourceComponentSubType resourceType) throws ResourceNotFoundException {
-		String basePathForComponent = getBasePathForComponentType(StaticResourceComponentType.RECIPE);
+		String basePathForComponent = resourcePathService.getBasePathForComponentType(StaticResourceComponentType.RECIPE);
 
 		//recipe images and videos are stored separately in dedicated folders identified by the recipe owner and recipe id
 		//image upload for recipe is fully optional, in case user did not upload any image for the recipe a default will be shown
@@ -70,7 +65,7 @@ public class StaticResourceService {
 		if (StaticResourceComponentSubType.VIDEO.equals(resourceType) || !defaultRecipeCoverImageFileName.equals(resourceName)) {
 			Long ownerId = userRepository.findUserIdByRecipesId(recipeId);
 
-			basePathForComponent += getRemainingPathForRecipeByComponentSubType(ownerId, recipeId, resourceType);
+			basePathForComponent += resourcePathService.getRemainingPathForRecipeByComponentSubType(ownerId, recipeId, resourceType);
 		}
 
 		File resource = new File(basePathForComponent, resourceName);
@@ -89,8 +84,8 @@ public class StaticResourceService {
 	public void uploadRecipeVideo(Long recipeId, FileResource videoResource) {
 		RecipeRestModel recipe = recipeService.findRecipeById(recipeId);
 
-		String basePathToSaveResource = getBasePathForComponentType(StaticResourceComponentType.RECIPE)
-				+ getRemainingPathForRecipeByComponentSubType(SecurityUtils.getDishbraryUserFromContext().getId(), recipeId, StaticResourceComponentSubType.VIDEO);
+		String basePathToSaveResource = resourcePathService.getFullResourceDirectoryPathForRecipeByComponentType(SecurityUtils.getDishbraryUserFromContext().getId(), recipeId,
+						StaticResourceComponentType.RECIPE, StaticResourceComponentSubType.VIDEO);
 
 		log.debug("Video upload base path for recipe with id: {} is {}", recipe, basePathToSaveResource);
 
@@ -132,8 +127,8 @@ public class StaticResourceService {
 
 		recipeService.saveVideoToRecipe(recipe);
 
-		String recipeVideoDirectory = getBasePathForComponentType(StaticResourceComponentType.RECIPE)
-				+ getRemainingPathForRecipeByComponentSubType(SecurityUtils.getDishbraryUserFromContext().getId(), recipeId, StaticResourceComponentSubType.VIDEO);
+		String recipeVideoDirectory = resourcePathService.getFullResourceDirectoryPathForRecipeByComponentType(SecurityUtils.getDishbraryUserFromContext().getId(), recipeId,
+				StaticResourceComponentType.RECIPE, StaticResourceComponentSubType.VIDEO);;
 
 		removeOldVideoFromDirectory(recipeVideoDirectory, recipe);
 	}
@@ -141,7 +136,7 @@ public class StaticResourceService {
 	public void deleteAllRecipeImages(Long recipeId) {
 		RecipeRestModel recipe = recipeService.findRecipeById(recipeId);
 
-		if (CollectionUtils.isEmpty(recipe.getAdditionalImagesFileNames())) {
+		if (CollectionUtils.isEmpty(recipe.getAdditionalImagesFileNames()) && StringUtils.isEmpty(recipe.getCoverImageFileName())) {
 			return;
 		}
 
@@ -150,8 +145,8 @@ public class StaticResourceService {
 
 		recipeService.saveImagesToRecipe(recipe);
 
-		String basePathToImages = getBasePathForComponentType(StaticResourceComponentType.RECIPE)
-				+ getRemainingPathForRecipeByComponentSubType(SecurityUtils.getDishbraryUserFromContext().getId(), recipeId, StaticResourceComponentType.StaticResourceComponentSubType.IMAGE);
+		String basePathToImages = resourcePathService.getFullResourceDirectoryPathForRecipeByComponentType(SecurityUtils.getDishbraryUserFromContext().getId(), recipeId,
+				StaticResourceComponentType.RECIPE, StaticResourceComponentSubType.IMAGE);
 
 		removeOldImagesFromDirectory(basePathToImages, recipe);
 	}
@@ -160,8 +155,8 @@ public class StaticResourceService {
 
 		RecipeRestModel recipe = recipeService.findRecipeById(recipeId);
 
-		String basePathToSaveResource = getBasePathForComponentType(StaticResourceComponentType.RECIPE)
-				+ getRemainingPathForRecipeByComponentSubType(SecurityUtils.getDishbraryUserFromContext().getId(), recipeId, StaticResourceComponentType.StaticResourceComponentSubType.IMAGE);
+		String basePathToSaveResource = resourcePathService.getFullResourceDirectoryPathForRecipeByComponentType(SecurityUtils.getDishbraryUserFromContext().getId(), recipeId,
+				StaticResourceComponentType.RECIPE, StaticResourceComponentSubType.IMAGE);;
 
 		log.debug("Image upload base path for recipe with id: {} is {}", recipe, basePathToSaveResource);
 
@@ -266,31 +261,5 @@ public class StaticResourceService {
 		} catch (IOException e) {
 			log.error("Could not delete old image files for recipe with id: {}", recipeWithNewFiles.getId(), e);
 		}
-	}
-
-	private String getBasePathForComponentType(StaticResourceComponentType componentType) {
-		String basePathForComponent = imageBasePathByComponentName.get(componentType.name().toLowerCase());
-
-		if (StringUtils.isEmpty(basePathForComponent)) {
-			String errorStr = "Cannot find image base path configuration for the following component: "
-					+ componentType.name().toLowerCase()
-					+ ". Expected configuration is most likely missing: [dishbrary.images.basePath." + componentType.name().toLowerCase() + "]";
-
-			log.error(errorStr);
-			throw new ConfigurationErrorException(errorStr);
-		}
-
-		return basePathForComponent;
-	}
-
-	private String getRemainingPathForRecipeByComponentSubType(Long recipeOwnerId, Long recipeId, StaticResourceComponentType.StaticResourceComponentSubType componentSubType) {
-		return recipeOwnerId +
-				"/" + StaticResourceComponentType.RECIPE.name().toLowerCase() +
-				"/" + recipeId +
-				"/" + componentSubType.name().toLowerCase();
-	}
-
-	public Map<String, String> getImageBasePathByComponentName() {
-		return imageBasePathByComponentName;
 	}
 }

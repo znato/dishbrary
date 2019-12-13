@@ -64,4 +64,16 @@ public class RecipeRestService {
 				new DishbraryResponse<>(recipeService.updateRecipe(recipeToUpdate))
 		).build();
 	}
+
+	@DELETE
+	@Path("/delete/{recipeId}")
+	@PreAuthorize("hasAuthority('WRITE_RECIPE')")
+	@ValidateRecipeBelongsToLoggedInUser
+	public Response deleteRecipe(@PathParam("recipeId") @RecipeId Long recipeId) {
+		recipeService.deleteRecipeById(recipeId);
+
+		return Response.ok(
+				new DishbraryResponse<>("A recept sikeresen törölve!")
+		).build();
+	}
 }

@@ -14,6 +14,11 @@ class RecipeService {
         return DishbraryServerRestClient.post(updateRecipePath, recipe);
     }
 
+    deleteRecipe = (recipeId) => {
+        const deleteRecipePath = `recipe/delete/${recipeId}`;
+        return DishbraryServerRestClient.del(deleteRecipePath);
+    }
+
     saveRecipeImages = (recipeId, formData) => {
         const uploadRecipeImagesPath = `resource/recipe/${recipeId}/image/upload`;
         return DishbraryServerRestClient.postFormData(uploadRecipeImagesPath, formData);

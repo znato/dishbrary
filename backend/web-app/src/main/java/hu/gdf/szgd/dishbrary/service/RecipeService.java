@@ -13,6 +13,7 @@ import hu.gdf.szgd.dishbrary.web.model.PageableRestModel;
 import hu.gdf.szgd.dishbrary.web.model.RecipeIngredientRestModel;
 import hu.gdf.szgd.dishbrary.web.model.RecipeRestModel;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
@@ -38,6 +40,8 @@ public class RecipeService {
 	private IngredientRepository ingredientRepository;
 	@Autowired
 	private RecipeTransformer recipeTransformer;
+	@Autowired
+	private ResourcePathService resourcePathService;
 
 	@Transactional
 	public RecipeRestModel findRecipeById(Long recipeId) {
@@ -92,6 +96,23 @@ public class RecipeService {
 		recipeToUpdate.setAdditionalInfo(createAdditionalInfo(recipeRestModel));
 
 		return recipeTransformer.transform(recipeRepository.save(recipeToUpdate));
+	}
+
+	@Transactional
+	public void deleteRecipeById(Long recipeId) {
+		try {
+			recipeRepository.deleteById(recipeId);
+
+			//after delete recipe from database also remove the resource directory
+			String recipeResourceDirectoryRoot = resourcePathService.getFullResourceDirectoryRootPathForRecipe(SecurityUtils.getDishbraryUserFromContext().getId(), recipeId);
+
+			File recipeRootDir = new File(recipeResourceDirectoryRoot);
+
+			FileUtils.deleteDirectory(recipeRootDir);
+		} catch (Throwable t) {
+			log.error("Recipe with id[{}] could not be deleted!", recipeId, t);
+			throw new RuntimeException("A recept torlése sikertelen!");
+		}
 	}
 
 	private Recipe.AdditionalInfo createAdditionalInfo(RecipeRestModel recipeRestModel) {

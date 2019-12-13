@@ -77,7 +77,7 @@ class MyRecipesView extends React.Component {
 
         if (ArrayUtils.isNotEmpty(recipes)) {
             recipeCards = recipes.map(recipe => {
-                return (<DishbraryRecipeCard key={recipe.id} recipeData={recipe}/>)
+                return (<DishbraryRecipeCard key={recipe.id} recipeData={recipe} onDeleteSuccess={this.fetchUserRecipes}/>)
             })
         }
 

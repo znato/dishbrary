@@ -12,12 +12,14 @@ import IconButton from '@material-ui/core/IconButton';
 import {red} from '@material-ui/core/colors';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import {Link} from "react-router-dom";
 
 import * as ApplicationRoutes from '../../config/ApplicationRoutes';
 
 import recipeService from "../../services/RecipeService";
+import DishbraryAlertDialog from "../general/DishbraryAlertDialog";
 
 const styles = theme => ({
     card: {
@@ -25,6 +27,9 @@ const styles = theme => ({
         display: "inline-block",
         margin: "0 5px 0 5px",
         textAlign: "center"
+    },
+    cardActionForOwnRecipes: {
+        float: "right"
     },
     media: {
         height: 0,
@@ -50,10 +55,55 @@ class DishbraryRecipeCard extends React.Component {
 
     constructor(props) {
         super(props);
+
+        this.state = {
+            alertData: {
+                openAlert: false,
+                alertDialogTitle: "",
+                alertDialogContent: ""
+            }
+        }
+    }
+
+    openAlertDialog = (title, message) => {
+        this.setState(
+            {
+                alertData: {
+                    openAlert: true,
+                    alertDialogTitle: title,
+                    alertDialogContent: message
+                }
+            })
+    }
+
+    closeAlertDialog = () => {
+        this.setState(
+            {
+                alertData: {
+                    openAlert: false,
+                    alertDialogTitle: "",
+                    alertDialogContent: ""
+                }
+            })
+    }
+
+    deleteRecipe = (recipeId) => () => {
+        recipeService.deleteRecipe(recipeId)
+            .then(jsonResponse => {
+                if (jsonResponse.error) {
+                    this.openAlertDialog("Hiba történt!", jsonResponse.message);
+                } else {
+                    //call additional callback if present
+                    if (typeof this.props.onDeleteSuccess === "function") {
+                        this.props.onDeleteSuccess(recipeId);
+                    }
+                }
+            });
     }
 
     render() {
         const {classes, recipeData} = this.props;
+        const {alertData} = this.state;
 
         const {energyKcal, protein, fat, carbohydrate} = recipeData.calorieInfo;
 
@@ -98,22 +148,34 @@ class DishbraryRecipeCard extends React.Component {
                         </Typography>
                     </CardContent>
                 </Link>
-                <CardActions disableActionSpacing>
-                    <IconButton aria-label="add to favorites">
-                        <FavoriteIcon/>
-                    </IconButton>
-                    {
-                        recipeData.editable ?
-                            <Link to={ApplicationRoutes.editRecipePath + "/" + recipeData.id}>
-                                <IconButton aria-label="edit recipe">
-                                    <EditIcon/>
+                {
+                    recipeData.editable ?
+                        <CardActions className={classes.cardActionForOwnRecipes} disableActionSpacing>
+                            <React.Fragment>
+                                <Link to={ApplicationRoutes.editRecipePath + "/" + recipeData.id}>
+                                    <IconButton aria-label="edit recipe">
+                                        <EditIcon/>
+                                    </IconButton>
+                                </Link>
+                                <IconButton aria-label="delete recipe"
+                                            onClick={this.deleteRecipe(recipeData.id)}>
+                                    <DeleteIcon/>
                                 </IconButton>
-                            </Link>
-                            : ""
-                    }
-                </CardActions>
-            </Card>
+                            </React.Fragment>
+                        </CardActions>
+                        :
+                        <CardActions disableActionSpacing>
+                            <IconButton aria-label="add to favorites">
+                                <FavoriteIcon/>
+                            </IconButton>
+                        </CardActions>
+                }
 
+                <DishbraryAlertDialog open={alertData.openAlert}
+                                      dialogTitle={alertData.alertDialogTitle}
+                                      dialogContent={alertData.alertDialogContent}
+                                      onAlertDialogClose={this.closeAlertDialog}/>
+            </Card>
         );
     }
 }
