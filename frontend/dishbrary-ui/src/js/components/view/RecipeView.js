@@ -4,7 +4,6 @@ import withStyles from '@material-ui/core/styles/withStyles';
 
 import {Paper} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
-import CircularProgress from '@material-ui/core/CircularProgress';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -25,6 +24,7 @@ import recipeService from "../../services/RecipeService";
 import {LoadingState} from "../../services/constants/LoadingState";
 
 import * as ArrayUtils from '../../services/utils/ArrayUtils';
+import DishbraryProgress from "../general/DishbraryProgress";
 
 const styles = theme => ({
     root: {
@@ -35,9 +35,6 @@ const styles = theme => ({
         textAlign: 'center',
         background: 'url(\'' + backgroundImg + '\') no-repeat center center fixed',
         backgroundSize: 'cover'
-    },
-    progress: {
-        margin: theme.spacing.unit * 2,
     },
     videoContainer: {
         margin: '25px auto',
@@ -340,7 +337,7 @@ class RecipeView extends React.Component {
                 {
                     loadingState === LoadingState.inProgress
                         ?
-                        <CircularProgress disableShrink={true} className={classes.progress}/>
+                        <DishbraryProgress/>
                         :
                         loadingState === LoadingState.none
                             ?

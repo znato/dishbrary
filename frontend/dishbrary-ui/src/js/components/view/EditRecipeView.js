@@ -7,10 +7,11 @@ import Typography from "@material-ui/core/Typography";
 import {Paper} from "@material-ui/core";
 import {LoadingState} from "../../services/constants/LoadingState";
 import recipeService from "../../services/RecipeService";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import DishbraryProgress from "../general/DishbraryProgress";
 
 const styles = theme => ({
     root: {
+        minHeight: '100vh',
         width: '100%',
         marginTop: theme.spacing.unit * 3,
         overflowX: 'auto',
@@ -73,7 +74,7 @@ class EditRecipeView extends React.Component {
                 {
                     loadingState === LoadingState.inProgress
                         ?
-                        <CircularProgress disableShrink={true} className={classes.progress}/>
+                        <DishbraryProgress disableShrink={true} className={classes.progress}/>
                         :
                         loadingState === LoadingState.none
                             ?

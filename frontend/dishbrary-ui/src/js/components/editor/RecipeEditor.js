@@ -5,7 +5,6 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import FormControl from '@material-ui/core/FormControl/index';
 import Input from '@material-ui/core/Input/index';
 import InputLabel from '@material-ui/core/InputLabel/index';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Chip from '@material-ui/core/Chip';
 import Typography from "@material-ui/core/es/Typography";
 import Button from "@material-ui/core/Button";
@@ -22,6 +21,7 @@ import IngredientEditorDialog from './IngredientEditorDialog';
 import DishbraryNumberFormatInput from "./DishbraryNumberFormatInput";
 
 import DishbraryAlertDialog from "../general/DishbraryAlertDialog";
+import DishbraryProgress from "../general/DishbraryProgress";
 
 import categoryService from '../../services/CategoryService';
 import cuisineService from '../../services/CuisineService';
@@ -51,9 +51,6 @@ const styles = theme => ({
     },
     section: {
         textAlign: "left",
-    },
-    progress: {
-        margin: theme.spacing.unit * 2,
     },
     chip: {
         margin: `${theme.spacing.unit / 2}px ${theme.spacing.unit / 4}px`,
@@ -424,7 +421,7 @@ class RecipeEditor extends React.Component {
         return (
             overallLoadingState === LoadingState.inProgress
                 ?
-                <CircularProgress disableShrink={true} className={classes.progress}/>
+                <DishbraryProgress/>
                 :
                 overallLoadingState === LoadingState.none
                     ?

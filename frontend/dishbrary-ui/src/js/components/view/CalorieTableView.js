@@ -2,16 +2,17 @@ import React from 'react';
 
 import withStyles from '@material-ui/core/styles/withStyles';
 import Paper from '@material-ui/core/Paper';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from "@material-ui/core/es/Typography/Typography";
 
 import {ReactMUIDatatable} from "react-material-ui-datatable";
 
 import ingredientService from '../../services/IngredientService';
 import {LoadingState} from '../../services/constants/LoadingState';
+import DishbraryProgress from "../general/DishbraryProgress";
 
 const styles = theme => ({
     root: {
+        minHeight: '100vh',
         width: '100%',
         marginTop: theme.spacing.unit * 3,
         overflowX: 'auto',
@@ -24,9 +25,6 @@ const styles = theme => ({
         '&:nth-of-type(odd)': {
             backgroundColor: theme.palette.background.default,
         },
-    },
-    progress: {
-        margin: theme.spacing.unit * 2,
     }
 });
 
@@ -93,7 +91,7 @@ class CalorieTableView extends React.Component {
                 {
                     loading === LoadingState.inProgress
                         ?
-                        <CircularProgress disableShrink={true} className={classes.progress}/>
+                        <DishbraryProgress/>
                         :
                         loading === LoadingState.none
                             ?

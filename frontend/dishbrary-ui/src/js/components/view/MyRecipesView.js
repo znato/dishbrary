@@ -5,23 +5,20 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import {Paper} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 
-import CircularProgress from '@material-ui/core/CircularProgress';
-
 import DishbraryRecipeCard from "../recipe/DishbraryRecipeCard"
 import recipeService from "../../services/RecipeService";
 import {LoadingState} from "../../services/constants/LoadingState";
 
 import * as ArrayUtils from '../../services/utils/ArrayUtils';
+import DishbraryProgress from "../general/DishbraryProgress";
 
 const styles = theme => ({
     root: {
+        minHeight: '100vh',
         width: '100%',
         marginTop: theme.spacing.unit * 3,
         overflowX: 'auto',
         textAlign: "center",
-    },
-    progress: {
-        margin: theme.spacing.unit * 2,
     },
     recipeCardContainer: {
         textAlign: "left",
@@ -90,7 +87,7 @@ class MyRecipesView extends React.Component {
                 {
                     loadingState === LoadingState.inProgress
                     ?
-                    <CircularProgress disableShrink={true} className={classes.progress}/>
+                    <DishbraryProgress/>
                     :
                         loadingState === LoadingState.none
                         ?
