@@ -64,7 +64,7 @@ public class RecipeService {
 	@Transactional
 	public RecipeRestModel saveRecipe(RecipeRestModel recipeRestModel) {
 		if (recipeRestModel.getId() != null) {
-			return updateRecipe(recipeRestModel);
+			recipeRestModel.setId(null);
 		}
 
 		RecipeValidatorUtil.validateRecipeForCreation(recipeRestModel);

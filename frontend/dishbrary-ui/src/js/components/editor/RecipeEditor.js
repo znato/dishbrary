@@ -99,6 +99,8 @@ class RecipeEditor extends React.Component {
 
         const {recipe} = props;
         this.state = {
+            isEditMode: recipe ? true : false,
+            recipeEdited: false,
             actualStep: EDITOR_STEP.RECIPE,
             recipeId: recipe ? recipe.id : null,
             recipeName: recipe ? recipe.name : null,
@@ -259,17 +261,24 @@ class RecipeEditor extends React.Component {
 
     handleInputChange = name => value => {
         this.setState({
+            recipeEdited: true,
             [name]: value,
         });
     };
 
     onEventBasedInputChange = name => event => {
-        this.setState({[name]: event.target.value})
+        this.setState({
+            recipeEdited: true,
+            [name]: event.target.value
+        })
     }
 
 
     onInstructionValueChange = (instructionValue) => {
-        this.setState({instructionValue});
+        this.setState({
+            recipeEdited: true,
+            instructionValue
+        });
     }
 
     openIngredientEditorDialog = () => {
@@ -278,6 +287,7 @@ class RecipeEditor extends React.Component {
 
     onIngredientChange = (ingredientData) => {
         this.setState({
+            recipeEdited: true,
             selectedIngredients: [...this.state.selectedIngredients, ingredientData]
         });
     }
@@ -301,6 +311,7 @@ class RecipeEditor extends React.Component {
         }
 
         this.setState({
+            recipeEdited: true,
             selectedIngredients: ingredientArray
         })
     }
@@ -312,7 +323,7 @@ class RecipeEditor extends React.Component {
             recipeId, recipeName, cookTime,
             preparationTime, instructionValue,
             selectedCategories, selectedCuisines,
-            selectedIngredients, portion
+            selectedIngredients, portion, isEditMode
         } = this.state;
 
         const recipe = {
@@ -350,13 +361,16 @@ class RecipeEditor extends React.Component {
             })
         };
 
-        recipeService.saveRecipe(recipe)
+        const saveOrUpdateRecipePromise = isEditMode ? recipeService.updateRecipe(recipe) : recipeService.saveRecipe(recipe);
+
+        saveOrUpdateRecipePromise
             .then(jsonResponse => {
                 if (jsonResponse.error) {
                     this.openAlertDialog("Hiba történt!", jsonResponse.message);
                 } else {
                     this.setState({
                         recipeId: jsonResponse.content.id,
+                        recipeEdited: false,
                         actualStep: EDITOR_STEP.IMAGE_UPLOAD
                     });
                 }
@@ -382,7 +396,8 @@ class RecipeEditor extends React.Component {
             ingredients, cuisinesLoading, cuisines,
             ingredientEditorOpened, selectedIngredients, selectedCuisines,
             selectedCategories, recipeId, alertData, actualStep,
-            imageFileUploaderData, videoFileUploaderData, recipeEditingFinished
+            imageFileUploaderData, videoFileUploaderData, recipeEditingFinished,
+            isEditMode, recipeEdited
         } = this.state;
 
         const highestLoadingStateIndex = Math.max(categoriesLoading.index, ingredientsLoading.index, cuisinesLoading.index);
@@ -557,15 +572,27 @@ class RecipeEditor extends React.Component {
                                                                 toolbarConfig={richTextEditorToolbarConfig}/>
                                             </FormControl>
 
-                                            <Button
-                                                disabled={!readyToSave}
-                                                type="submit"
-                                                fullWidth
-                                                variant="contained"
-                                                color="primary"
-                                            >
-                                                Mentés
-                                            </Button>
+                                            {
+                                                recipeId && !recipeEdited
+                                                    ?
+                                                    <Button
+                                                        fullWidth
+                                                        variant="contained"
+                                                        color="primary"
+                                                        onClick={this.setActualEditorStep(EDITOR_STEP.IMAGE_UPLOAD)}>
+                                                        Tovább
+                                                    </Button>
+                                                    :
+                                                    <Button
+                                                        disabled={!readyToSave}
+                                                        type="submit"
+                                                        fullWidth
+                                                        variant="contained"
+                                                        color="primary"
+                                                    >
+                                                        Mentés
+                                                    </Button>
+                                            }
                                         </form>
 
                                         <DishbraryAlertDialog open={alertData.openAlert}

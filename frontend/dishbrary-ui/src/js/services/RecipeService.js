@@ -9,6 +9,11 @@ class RecipeService {
         return DishbraryServerRestClient.put(createRecipePath, recipe);
     }
 
+    updateRecipe = (recipe) => {
+        const updateRecipePath = "recipe/update/" + recipe.id;
+        return DishbraryServerRestClient.post(updateRecipePath, recipe);
+    }
+
     saveRecipeImages = (recipeId, formData) => {
         const uploadRecipeImagesPath = `resource/recipe/${recipeId}/image/upload`;
         return DishbraryServerRestClient.postFormData(uploadRecipeImagesPath, formData);
