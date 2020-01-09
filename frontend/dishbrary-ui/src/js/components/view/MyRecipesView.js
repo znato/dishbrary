@@ -11,6 +11,7 @@ import {LoadingState} from "../../services/constants/LoadingState";
 
 import * as ArrayUtils from '../../services/utils/ArrayUtils';
 import DishbraryProgress from "../general/DishbraryProgress";
+import Pagination from "../general/Pagination";
 
 const styles = theme => ({
     root: {
@@ -31,6 +32,7 @@ class MyRecipesView extends React.Component {
         super(props);
 
         this.state = {
+            actualPage: 0,
             loadingState: LoadingState.none,
             recipes: [],
             totalElement: null,
@@ -43,12 +45,12 @@ class MyRecipesView extends React.Component {
         this.fetchUserRecipes();
     }
 
-    fetchUserRecipes = () => {
+    fetchUserRecipes = (pageNumber) => {
         this.setState({
             loadingState: LoadingState.inProgress,
         });
 
-        recipeService.fetchLoggedInUserPageableRecipes()
+        recipeService.fetchLoggedInUserPageableRecipes(pageNumber)
             .then(jsonResponse => {
                 if (jsonResponse.error) {
                     this.setState({
@@ -66,16 +68,30 @@ class MyRecipesView extends React.Component {
             });
     };
 
+    changePage = (pageNumber) => {
+        this.setState({actualPage: pageNumber})
+        this.fetchUserRecipes(pageNumber);
+    }
+
     render() {
         const {classes} = this.props;
-        const {loadingState, recipes, totalElement, totalPages, errorMessage} = this.state;
+        const {loadingState, recipes, totalPages, actualPage, errorMessage} = this.state;
 
         let recipeCards = [];
 
         if (ArrayUtils.isNotEmpty(recipes)) {
-            recipeCards = recipes.map(recipe => {
-                return (<DishbraryRecipeCard key={recipe.id} recipeData={recipe} onDeleteSuccess={this.fetchUserRecipes}/>)
-            })
+            //in case we are on the last page and there is only one element on it after deletion we need to fetch the actualPage - 1 page
+            //actual page indexed from zero while totalPages is the number of the pages
+            if (recipes.length == 1 && actualPage == totalPages - 1) {
+                recipeCards.push(
+                    <DishbraryRecipeCard key={recipes[0].id} recipeData={recipes[0]} onDeleteSuccess={() => this.changePage(actualPage - 1)}/>
+                    );
+            } else {
+                recipeCards = recipes.map(recipe => {
+                    return (<DishbraryRecipeCard key={recipe.id} recipeData={recipe}
+                                                 onDeleteSuccess={() => this.fetchUserRecipes(actualPage)}/>)
+                })
+            }
         }
 
         return (
@@ -99,7 +115,9 @@ class MyRecipesView extends React.Component {
                         :
                         (
                             <div id="recipe-card-container" className={classes.recipeCardContainer}>
-                                {recipeCards}
+                                <Pagination totalPages={totalPages} actualPage={actualPage} onPageChange={this.changePage}>
+                                    {recipeCards}
+                                </Pagination>
                             </div>
                         )
                 }

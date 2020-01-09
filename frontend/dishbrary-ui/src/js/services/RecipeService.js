@@ -39,7 +39,7 @@ class RecipeService {
         let fetchUrl = getMyRecipesPath;
 
         if (pageNumber) {
-            fetchUrl += "?" + pageNumber;
+            fetchUrl += "?page=" + pageNumber;
         }
 
         return DishbraryServerRestClient.get(fetchUrl);

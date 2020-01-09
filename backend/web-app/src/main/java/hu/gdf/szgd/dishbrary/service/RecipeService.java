@@ -24,15 +24,13 @@ import javax.transaction.Transactional;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Log4j2
 public class RecipeService {
 
+	private static final int MAX_RANDOM_RECIPES_SIZE = 10;
 	private static final BigDecimal HUNDRED = new BigDecimal(100);
 
 	@Autowired
@@ -60,16 +58,14 @@ public class RecipeService {
 		Long minRecipeId = recipeRepository.findMinId();
 		Long maxRecipeId = recipeRepository.findMaxId();
 
-		int resultCount = maxRecipeId < 10 ? (int)(long) maxRecipeId : 10;
+		int resultSize = maxRecipeId < MAX_RANDOM_RECIPES_SIZE ? (int) (long) maxRecipeId : MAX_RANDOM_RECIPES_SIZE;
 
-		List<Long> randomIds = new ArrayList<>(resultCount);
+		Set<Long> randomIds = new HashSet<>(resultSize);
 
-		while (randomIds.size() < resultCount) {
-			Long randomId = (long)(Math.random() * ((maxRecipeId - minRecipeId) + 1)) + minRecipeId;
+		while (randomIds.size() < resultSize) {
+			Long randomId = (long) (Math.random() * maxRecipeId) + minRecipeId;
 
-			if (!randomIds.contains(randomId)) {
-				randomIds.add(randomId);
-			}
+			randomIds.add(randomId);
 		}
 
 		return recipeTransformer.transformAll(recipeRepository.findAllById(randomIds));
