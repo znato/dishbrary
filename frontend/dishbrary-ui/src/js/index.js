@@ -9,6 +9,7 @@ import DishbraryAppBar from './components/appbar/DishbraryAppBar';
 import HomeView from './components/view/HomeView';
 import CalorieTableView from './components/view/CalorieTableView';
 import MyRecipesView from './components/view/MyRecipesView';
+import FavouriteRecipesView from './components/view/FavouriteRecipesView';
 import CreateRecipeView from './components/view/CreateRecipeView';
 import EditRecipeView from './components/view/EditRecipeView';
 import RecipeView from './components/view/RecipeView';
@@ -26,6 +27,8 @@ function DishbraryApp() {
                     <Route path={ApplicationRoutes.calorieTablePath} component={CalorieTableView} />
 
                     <Route path={ApplicationRoutes.userOwnRecipesPath} component={MyRecipesView}/>
+
+                    <Route path={ApplicationRoutes.favouriteRecipesPath} component={FavouriteRecipesView}/>
 
                     <Route path={ApplicationRoutes.createRecipePath} component={CreateRecipeView}/>
 

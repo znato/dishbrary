@@ -4,3 +4,4 @@ export const userOwnRecipesPath = "/userOwnRecipes";
 export const createRecipePath = "/createRecipe";
 export const editRecipePath = "/editRecipe";
 export const viewRecipePath = "/recipe";
+export const favouriteRecipesPath = "/favourites";

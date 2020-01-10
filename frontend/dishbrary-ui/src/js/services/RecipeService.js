@@ -3,6 +3,7 @@ import * as DishbraryServerRestClient from "./utils/DishbraryServerRestClient";
 const createRecipePath = "recipe/create";
 const getMyRecipesPath = "recipe/my-recipes";
 const getRandomRecipesPath = "recipe/recipes/random";
+const getFavouriteRecipesPath = "recipe/favourites";
 
 class RecipeService {
 
@@ -43,6 +44,28 @@ class RecipeService {
         }
 
         return DishbraryServerRestClient.get(fetchUrl);
+    }
+
+    fetchLoggedInUserPageableFavouriteRecipes = (pageNumber) => {
+        let fetchUrl = getFavouriteRecipesPath;
+
+        if (pageNumber) {
+            fetchUrl += "?page=" + pageNumber;
+        }
+
+        return DishbraryServerRestClient.get(fetchUrl);
+    }
+
+    addRecipeToFavourites = (recipeId) => {
+        const addToFavouritePath = `recipe/favourites/add/${recipeId}`;
+
+        return DishbraryServerRestClient.put(addToFavouritePath);
+    }
+
+    deleteRecipeFromFavourites = (recipeId) => {
+        const deleteFromFavouritePath = `recipe/favourites/remove/${recipeId}`;
+
+        return DishbraryServerRestClient.del(deleteFromFavouritePath);
     }
 
     fetchRandomRecipes = () => {

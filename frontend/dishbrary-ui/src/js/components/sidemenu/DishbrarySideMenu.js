@@ -8,9 +8,9 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText'
 
 import {Link} from "react-router-dom";
-import {homePath, calorieTablePath, createRecipePath, userOwnRecipesPath} from '../../config/ApplicationRoutes';
+import {homePath, calorieTablePath, createRecipePath, userOwnRecipesPath, favouriteRecipesPath} from '../../config/ApplicationRoutes';
 
-import {Home, Create, AccountBox} from '@material-ui/icons';
+import {Home, Create, AccountBox, Favorite} from '@material-ui/icons';
 import CalorieIcon from '../icons/CalorieIcon';
 
 const styles = {
@@ -36,10 +36,14 @@ const menuItems = [
         linkTo: userOwnRecipesPath,
     },
     {
+        title: 'Kedvenc receptek',
+        icon: Favorite,
+        linkTo: favouriteRecipesPath,
+    },
+    {
         title: 'Új recept',
         icon: Create,
         linkTo: createRecipePath,
-        color: "#2ecc71"
     }
 ]
 

@@ -16,7 +16,7 @@ export const put = (serviceUrl, data) => {
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: data ? JSON.stringify(data) : null,
     })
         .then((response => response.json()));
 }

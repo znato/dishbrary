@@ -137,8 +137,11 @@ public class RecipeTransformer {
 		restModel.setOwner(userTransformer.transformUser(recipe.getOwner()));
 
 		//users can edit their own recipe if they are logged in
-		boolean editable = SecurityUtils.isSessionAuthenticated() && SecurityUtils.getDishbraryUserFromContext().getId().equals(recipe.getOwner().getId());
+		boolean userAuthenticated = SecurityUtils.isSessionAuthenticated();
+		boolean editable = userAuthenticated && SecurityUtils.getDishbraryUserFromContext().getId().equals(recipe.getOwner().getId());
 		restModel.setEditable(editable);
+		//like functionality is available only for logged on users, users are not able to like their own recipes
+		restModel.setLikeable(userAuthenticated && !editable);
 
 		return restModel;
 	}

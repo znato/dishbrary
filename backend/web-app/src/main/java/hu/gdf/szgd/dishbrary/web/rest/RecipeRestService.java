@@ -4,6 +4,7 @@ import hu.gdf.szgd.dishbrary.security.DishbraryUser;
 import hu.gdf.szgd.dishbrary.security.SecurityUtils;
 import hu.gdf.szgd.dishbrary.security.annotation.RecipeId;
 import hu.gdf.szgd.dishbrary.security.annotation.ValidateRecipeBelongsToLoggedInUser;
+import hu.gdf.szgd.dishbrary.service.FavouriteRecipeService;
 import hu.gdf.szgd.dishbrary.service.RecipeService;
 import hu.gdf.szgd.dishbrary.web.model.DishbraryResponse;
 import hu.gdf.szgd.dishbrary.web.model.RecipeRestModel;
@@ -24,6 +25,8 @@ public class RecipeRestService {
 
 	@Autowired
 	private RecipeService recipeService;
+	@Autowired
+	private FavouriteRecipeService favouriteRecipeService;
 
 	@GET
 	@Path("/{recipeId}")
@@ -82,6 +85,41 @@ public class RecipeRestService {
 
 		return Response.ok(
 				new DishbraryResponse<>("A recept sikeresen törölve!")
+		).build();
+	}
+
+	@GET
+	@Path("/favourites")
+	@PreAuthorize("hasRole('SIMPLE_USER')")
+	public Response getFavouriteRecipes(@QueryParam("page") int pageNumber) {
+		DishbraryUser loggedInUser = SecurityUtils.getDishbraryUserFromContext();
+
+		return Response.ok(
+				new DishbraryResponse<>(
+						favouriteRecipeService.findFavouriteRecipesForUser(loggedInUser.getId(), pageNumber)
+				)
+		).build();
+	}
+
+	@PUT
+	@Path("/favourites/add/{recipeId}")
+	@PreAuthorize("hasRole('SIMPLE_USER')")
+	public Response addRecipesToFavourites(@PathParam("recipeId") Long recipeId) {
+		favouriteRecipeService.addRecipeToUserFavourites(SecurityUtils.getDishbraryUserFromContext().getId(), recipeId);
+
+		return Response.ok(
+				new DishbraryResponse<>("A recept sikeresen hozzáadva a kedvencekhez!")
+		).build();
+	}
+
+	@DELETE
+	@Path("/favourites/remove/{recipeId}")
+	@PreAuthorize("hasRole('SIMPLE_USER')")
+	public Response deleteRecipesFromFavourites(@PathParam("recipeId") Long recipeId) {
+		favouriteRecipeService.removeRecipeFromUserFavourites(SecurityUtils.getDishbraryUserFromContext().getId(), recipeId);
+
+		return Response.ok(
+				new DishbraryResponse<>("A recept sikeresen eltávolítva a kedvencek közül!")
 		).build();
 	}
 }

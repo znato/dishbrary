@@ -13,6 +13,7 @@ import {red} from '@material-ui/core/colors';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import {Link} from "react-router-dom";
 
@@ -57,6 +58,8 @@ class DishbraryRecipeCard extends React.Component {
         super(props);
 
         this.state = {
+            recipeAddedToFavourites: false,
+            recipeRemovedFromFavourites: false,
             alertData: {
                 openAlert: false,
                 alertDialogTitle: "",
@@ -101,9 +104,39 @@ class DishbraryRecipeCard extends React.Component {
             });
     }
 
+    addRecipeToFavourites = (recipeId) => () => {
+        recipeService.addRecipeToFavourites(recipeId)
+            .then(jsonResponse => {
+                if (jsonResponse.error) {
+                    this.openAlertDialog("Hiba történt!", jsonResponse.message);
+                } else {
+                    this.setState({
+                        recipeAddedToFavourites: true,
+                        recipeRemovedFromFavourites: false
+                    });
+                }
+            });
+    }
+
+    deleteRecipeFromFavourites = (recipeId) => () => {
+        recipeService.deleteRecipeFromFavourites(recipeId)
+            .then(jsonResponse => {
+                if (jsonResponse.error) {
+                    this.openAlertDialog("Hiba történt!", jsonResponse.message);
+                } else {
+                    this.setState({
+                        recipeAddedToFavourites: false,
+                        recipeRemovedFromFavourites: true
+                    });
+                }
+            });
+    }
+
     render() {
         const {classes, recipeData} = this.props;
-        const {alertData} = this.state;
+        const {alertData, recipeAddedToFavourites, recipeRemovedFromFavourites} = this.state;
+
+        const isRecipeFavourite = (recipeData.favourite && !recipeRemovedFromFavourites) || recipeAddedToFavourites;
 
         const {energyKcal, protein, fat, carbohydrate} = recipeData.calorieInfo;
 
@@ -153,22 +186,43 @@ class DishbraryRecipeCard extends React.Component {
                         <CardActions className={classes.cardActionForOwnRecipes} disableActionSpacing>
                             <React.Fragment>
                                 <Link to={ApplicationRoutes.editRecipePath + "/" + recipeData.id}>
-                                    <IconButton aria-label="edit recipe">
-                                        <EditIcon/>
-                                    </IconButton>
+                                    <Tooltip title="Recept szerkesztése" aria-label="edit-recipe">
+                                        <IconButton aria-label="edit recipe">
+                                            <EditIcon/>
+                                        </IconButton>
+                                    </Tooltip>
                                 </Link>
-                                <IconButton aria-label="delete recipe"
-                                            onClick={this.deleteRecipe(recipeData.id)}>
-                                    <DeleteIcon/>
-                                </IconButton>
+                                <Tooltip title="Recept törlése" aria-label="del-recipe">
+                                    <IconButton aria-label="delete recipe"
+                                                onClick={this.deleteRecipe(recipeData.id)}>
+                                        <DeleteIcon/>
+                                    </IconButton>
+                                </Tooltip>
                             </React.Fragment>
                         </CardActions>
-                        :
+                        : ""
+                }
+                {
+                    (recipeData.likeable && !isRecipeFavourite) || recipeRemovedFromFavourites ?
                         <CardActions disableActionSpacing>
-                            <IconButton aria-label="add to favorites">
-                                <FavoriteIcon/>
-                            </IconButton>
+                            <Tooltip title="Kedvencekhez adás" aria-label="add-to-fav">
+                                <IconButton aria-label="add to favorites" onClick={this.addRecipeToFavourites(recipeData.id)}>
+                                    <FavoriteIcon/>
+                                </IconButton>
+                            </Tooltip>
                         </CardActions>
+                        : ""
+                }
+                {
+                    isRecipeFavourite ?
+                        <CardActions disableActionSpacing>
+                            <Tooltip title="Eltávolítás a kedvencekhez közül" aria-label="remove-from-fav">
+                                <IconButton aria-label="remove from favorites" onClick={this.deleteRecipeFromFavourites(recipeData.id)}>
+                                    <FavoriteIcon color="secondary"/>
+                                </IconButton>
+                            </Tooltip>
+                        </CardActions>
+                        : ""
                 }
 
                 <DishbraryAlertDialog open={alertData.openAlert}

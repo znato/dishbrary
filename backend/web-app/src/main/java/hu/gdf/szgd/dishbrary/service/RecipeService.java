@@ -3,6 +3,7 @@ package hu.gdf.szgd.dishbrary.service;
 import hu.gdf.szgd.dishbrary.db.entity.Ingredient;
 import hu.gdf.szgd.dishbrary.db.entity.Recipe;
 import hu.gdf.szgd.dishbrary.db.entity.RecipeIngredient;
+import hu.gdf.szgd.dishbrary.db.repository.FavouriteRecipeRepository;
 import hu.gdf.szgd.dishbrary.db.repository.IngredientRepository;
 import hu.gdf.szgd.dishbrary.db.repository.RecipeRepository;
 import hu.gdf.szgd.dishbrary.security.SecurityUtils;
@@ -38,6 +39,8 @@ public class RecipeService {
 	@Autowired
 	private IngredientRepository ingredientRepository;
 	@Autowired
+	private FavouriteRecipeRepository favouriteRecipeRepository;
+	@Autowired
 	private RecipeTransformer recipeTransformer;
 	@Autowired
 	private ResourcePathService resourcePathService;
@@ -50,7 +53,25 @@ public class RecipeService {
 			throw new DishbraryValidationException("Nem létezik recept a következő azonosíto alatt: " + recipeId + "!");
 		}
 
-		return recipeTransformer.transform(recipe.get());
+		RecipeRestModel recipeRestModel = recipeTransformer.transform(recipe.get());
+
+		//in case recipe would be likeable check if user already liked it or not
+		if (recipeRestModel.isLikeable()) {
+			Set<Long> recipeIsSet = new HashSet<>();
+			recipeIsSet.add(recipeId);
+
+			Set<Long> favouriteRecipeIdSet = favouriteRecipeRepository.findFavouriteRecipeIdsByUserIdAndRecipeIds(
+					SecurityUtils.getDishbraryUserFromContext().getId(),
+					recipeIsSet
+			);
+
+			if (!favouriteRecipeIdSet.isEmpty()) {
+				recipeRestModel.setLikeable(false);
+				recipeRestModel.setFavourite(true);
+			}
+		}
+
+		return recipeRestModel;
 	}
 
 	@Transactional
@@ -68,7 +89,24 @@ public class RecipeService {
 			randomIds.add(randomId);
 		}
 
-		return recipeTransformer.transformAll(recipeRepository.findAllById(randomIds));
+		List<RecipeRestModel> recipeRestModelList = new ArrayList<>();
+
+		Set<Long> favouriteRecipeIdSet = favouriteRecipeRepository.findFavouriteRecipeIdsByUserIdAndRecipeIds(
+				SecurityUtils.getDishbraryUserFromContext().getId(),
+				randomIds
+		);
+
+		recipeRepository.findAllById(randomIds).forEach(recipe -> {
+			RecipeRestModel model = recipeTransformer.transform(recipe);
+			if (favouriteRecipeIdSet.contains(model.getId())) {
+				model.setLikeable(false);
+				model.setFavourite(true);
+			}
+
+			recipeRestModelList.add(model);
+		});
+
+		return recipeRestModelList;
 	}
 
 	@Transactional

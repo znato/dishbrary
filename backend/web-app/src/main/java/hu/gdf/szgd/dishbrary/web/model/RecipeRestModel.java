@@ -32,6 +32,8 @@ public class RecipeRestModel {
 	private DishbraryUser owner;
 	private Date creationDate;
 	private boolean editable = false;
+	private boolean likeable = false;
+	private boolean favourite = false;
 
 	@AllArgsConstructor
 	@NoArgsConstructor

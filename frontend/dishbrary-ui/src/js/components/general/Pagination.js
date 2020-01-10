@@ -101,12 +101,12 @@ class Pagination extends React.Component {
 
         //add previous button as the first element
         navigationButtons.unshift(
-            <Button key="prevBtn" disabled={actualPage == 0} onClick={this.setActualPage(actualPage - 1)}>&lt;</Button>
+            <Button key="prevBtn" color="primary" disabled={actualPage == 0} onClick={this.setActualPage(actualPage - 1)}>&lt;</Button>
         );
 
         //add next button as the last element
         navigationButtons.push(
-            <Button key="nextBtn" disabled={actualPage == lastIndex}
+            <Button key="nextBtn" color="primary" disabled={actualPage == lastIndex}
                     onClick={this.setActualPage(actualPage + 1)}>&gt;</Button>
         );
 
