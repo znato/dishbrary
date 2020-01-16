@@ -31,7 +31,7 @@ public class User extends AbstractEntity {
 	private Date lastLoginDate;
 	@Column
 	private boolean banned;
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Role role;
 	@OneToMany(mappedBy = "owner")
 	private List<Recipe> recipes;

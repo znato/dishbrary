@@ -2,8 +2,6 @@ package hu.gdf.szgd.dishbrary.db.entity;
 
 import hu.gdf.szgd.dishbrary.db.converter.RecipeAdditionalInfoJsonConverter;
 import lombok.*;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.List;
@@ -11,7 +9,12 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@NamedEntityGraph(name = Recipe.FETCH_INGREDIENTS, attributeNodes = {
+		@NamedAttributeNode("ingredients")
+})
 public class Recipe extends AbstractEntity {
+
+	public static final String FETCH_INGREDIENTS = "recipe.fetch.ingredients";
 
 	@ManyToOne
 	private User owner;
@@ -20,7 +23,7 @@ public class Recipe extends AbstractEntity {
 	@Lob
 	@Column
 	private String instruction;
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "recipe", fetch = FetchType.EAGER)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "recipe")
 	private List<RecipeIngredient> ingredients;
 	@Column
 	@ManyToMany

@@ -10,6 +10,7 @@ import hu.gdf.szgd.dishbrary.security.SecurityUtils;
 import hu.gdf.szgd.dishbrary.service.exception.DishbraryValidationException;
 import hu.gdf.szgd.dishbrary.service.validation.RecipeValidatorUtil;
 import hu.gdf.szgd.dishbrary.transformer.RecipeTransformer;
+import hu.gdf.szgd.dishbrary.transformer.TransformerConfig;
 import hu.gdf.szgd.dishbrary.web.model.PageableRestModel;
 import hu.gdf.szgd.dishbrary.web.model.RecipeIngredientRestModel;
 import hu.gdf.szgd.dishbrary.web.model.RecipeRestModel;
@@ -34,6 +35,9 @@ public class RecipeService {
 	private static final int MAX_RANDOM_RECIPES_SIZE = 10;
 	private static final BigDecimal HUNDRED = new BigDecimal(100);
 
+	private static final TransformerConfig TRANSFORMER_CONFIG_FOR_RECIPE_PREVIEW =
+			TransformerConfig.includeOnlyFields("id", "name", "creationDate", "owner", "coverImageFileName", "calorieInfo", "editable", "likeable", "favourite");
+
 	@Autowired
 	private RecipeRepository recipeRepository;
 	@Autowired
@@ -47,7 +51,7 @@ public class RecipeService {
 
 	@Transactional
 	public RecipeRestModel findRecipeById(Long recipeId) {
-		Optional<Recipe> recipe = recipeRepository.findById(recipeId);
+		Optional<Recipe> recipe = recipeRepository.findByIdAndFetchIngredients(recipeId);
 
 		if (!recipe.isPresent()) {
 			throw new DishbraryValidationException("Nem létezik recept a következő azonosíto alatt: " + recipeId + "!");
@@ -74,7 +78,6 @@ public class RecipeService {
 		return recipeRestModel;
 	}
 
-	@Transactional
 	public List<RecipeRestModel> findRandomRecipes() {
 		Long minRecipeId = recipeRepository.findMinId();
 		Long maxRecipeId = recipeRepository.findMaxId();
@@ -97,7 +100,7 @@ public class RecipeService {
 		);
 
 		recipeRepository.findAllById(randomIds).forEach(recipe -> {
-			RecipeRestModel model = recipeTransformer.transform(recipe);
+			RecipeRestModel model = recipeTransformer.transform(recipe, TRANSFORMER_CONFIG_FOR_RECIPE_PREVIEW);
 			if (favouriteRecipeIdSet.contains(model.getId())) {
 				model.setLikeable(false);
 				model.setFavourite(true);
@@ -109,13 +112,12 @@ public class RecipeService {
 		return recipeRestModelList;
 	}
 
-	@Transactional
 	public PageableRestModel<RecipeRestModel> findPageableRecipesByUserId(Long userId, int pageNumber) {
 		Page<Recipe> userRecipesPage = recipeRepository.findByOwnerId(
 				userId,
 				PageRequest.of(pageNumber, RecipeRepository.DEFAULT_PAGE_SIZE, Sort.by(Sort.Direction.DESC, "creationDate")));
 
-		List<RecipeRestModel> restModels = recipeTransformer.transformAll(userRecipesPage);
+		List<RecipeRestModel> restModels = recipeTransformer.transformAll(userRecipesPage, TRANSFORMER_CONFIG_FOR_RECIPE_PREVIEW);
 
 		return new PageableRestModel<>(restModels, userRecipesPage.getTotalElements(), userRecipesPage.getTotalPages());
 	}

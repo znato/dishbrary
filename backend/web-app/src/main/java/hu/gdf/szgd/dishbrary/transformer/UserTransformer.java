@@ -23,18 +23,22 @@ public class UserTransformer {
 	private GenericReflectionBasedTransformer genericTransformer;
 
 	public DishbraryUser transformUser(User user) {
+		return transformUser(user, null);
+	}
+
+	public DishbraryUser transformUser(User user, TransformerConfig config) {
 		log.debug("Transfomr user: id[{}], username[{}]", user.getId(), user.getUsername());
 
-		DishbraryUser dishbraryUser = genericTransformer.transform(user, new DishbraryUser());
+		DishbraryUser dishbraryUser = genericTransformer.transform(user, new DishbraryUser(), config);
 
-		//TODO: dishbraryUser.setProfileImageUrl(getImageConfigUrl.append user.getProfileImageFileName());
-		dishbraryUser.setGrantedAuthorities(mapRoleForUser(user));
+		if (!TransformerConfig.isFieldExcludedInConfig(config, "grantedAuthorities")) {
+			dishbraryUser.setGrantedAuthorities(mapRoleForUser(user));
+		}
 
 		return dishbraryUser;
 	}
 
 	public User transformDishbraryUser(DishbraryUser dishbraryUser) {
-		//TODO: cut the path off from dishbraryUser.getProfileImageUrl and set user.profileImageFileName
 		return genericTransformer.transform(dishbraryUser, new User());
 	}
 

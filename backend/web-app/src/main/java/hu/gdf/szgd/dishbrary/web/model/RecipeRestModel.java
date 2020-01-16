@@ -24,7 +24,6 @@ public class RecipeRestModel {
 	private List<String> additionalImagesFileNames;
 	private String videoFileName;
 //	private List<Comment> comments;
-	private Long popularityIndex;
 	private Integer preparationTimeInMinute;
 	private Integer cookTimeInMinute;
 	private Integer portion;

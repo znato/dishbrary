@@ -25,6 +25,18 @@ public class GenericReflectionBasedTransformer {
 	}
 
 	public <T> T transform(Object inputObject, T targetObject) {
+		return transform(inputObject, targetObject, null);
+	}
+
+	public <T> T transform(Object inputObject, Class<T> targetClass) {
+		return transform(inputObject, createInstance(targetClass), null);
+	}
+
+	public <T> T transform(Object inputObject, Class<T> targetClass, TransformerConfig config) {
+		return transform(inputObject, createInstance(targetClass), config);
+	}
+
+	public <T> T transform(Object inputObject, T targetObject, TransformerConfig config) {
 		Class<?> targetClass = targetObject.getClass();
 		Class<?> entityClass = inputObject.getClass();
 
@@ -45,6 +57,14 @@ public class GenericReflectionBasedTransformer {
 					if (log.isTraceEnabled()) {
 						log.trace("Setter method[{}] found for class: {}", method.getName(), c.getName());
 					}
+
+					String fieldName = getFieldNameBySetterOrGetter(method);
+					if (TransformerConfig.isFieldExcludedInConfig(config, fieldName)) {
+						log.debug("Field marked as excluded: {}", fieldName);
+
+						continue;
+					}
+
 					allSetterOfTarget.add(method);
 				}
 			}
@@ -82,10 +102,6 @@ public class GenericReflectionBasedTransformer {
 		}
 
 		return targetObject;
-	}
-
-	public <T> T transform(Object inputObject, Class<T> targetClass) {
-		return transform(inputObject, createInstance(targetClass));
 	}
 
 	public <T> T createInstance(Class<T> targetClass) {
@@ -128,19 +144,21 @@ public class GenericReflectionBasedTransformer {
 	}
 
 	public Optional<Method> getSetterMethodByGetter(Method getterMethod, Class<?> targetClass) {
-		String getterName = getterMethod.getName();
-		String fieldName = Character.toLowerCase(getterName.charAt(3)) + getterName.substring(4);
+		String fieldName = getFieldNameBySetterOrGetter(getterMethod);
 
-		log.debug("Computed field name from getter method[{}]: {}", getterName, fieldName);
+		if (log.isDebugEnabled()) {
+			log.debug("Computed field name from getter method[{}]: {}", getterMethod.getName(), fieldName);
+		}
 
 		return getMethodByFieldName(AccessorType.SETTER, fieldName, targetClass, getterMethod.getReturnType());
 	}
 
 	public Optional<Method> getGetterMethodBySetter(Method setterMethod, Class<?> targetClass) {
-		String setterName = setterMethod.getName();
-		String fieldName = Character.toLowerCase(setterName.charAt(3)) + setterName.substring(4);
+		String fieldName = getFieldNameBySetterOrGetter(setterMethod);
 
-		log.debug("Computed field name from setter method[{}]: {}", setterName, fieldName);
+		if (log.isDebugEnabled()) {
+			log.debug("Computed field name from setter method[{}]: {}", setterMethod.getName(), fieldName);
+		}
 
 		Optional<Method> optionalGetter = getMethodByFieldName(AccessorType.GETTER, fieldName, targetClass);
 
@@ -149,5 +167,10 @@ public class GenericReflectionBasedTransformer {
 		}
 
 		return optionalGetter;
+	}
+
+	private String getFieldNameBySetterOrGetter(Method setterOrGetterMethod) {
+		String methodName = setterOrGetterMethod.getName();
+		return Character.toLowerCase(methodName.charAt(3)) + methodName.substring(4);
 	}
 }

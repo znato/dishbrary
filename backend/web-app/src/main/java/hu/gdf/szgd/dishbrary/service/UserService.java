@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -38,6 +39,7 @@ public class UserService {
 
 	private static final ExecutorService REGISTER_USER_LOGIN_ACTION_EXECUTOR = Executors.newFixedThreadPool(5);
 
+	@Transactional
 	public DishbraryUser performLogin(String userName, String password) {
 		DishbraryUser dishbraryUser = SecurityUtils.getDishbraryUserFromContext();
 

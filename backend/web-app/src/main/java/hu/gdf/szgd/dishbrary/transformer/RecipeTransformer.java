@@ -21,6 +21,8 @@ import java.util.List;
 @Log4j2
 public class RecipeTransformer {
 
+	private static final TransformerConfig USER_TRANSFORMER_CONFIG = TransformerConfig.excludeFields("grantedAuthorities");
+
 	@Value("${dishbrary.recipe.images.defaultCoverImage.name}")
 	private String defaultCoverImageFileName;
 
@@ -93,48 +95,68 @@ public class RecipeTransformer {
 	}
 
 	public RecipeRestModel transform(Recipe recipe) {
-		RecipeRestModel restModel = genericTransformer.transform(recipe, new RecipeRestModel());
+		return transform(recipe, null);
+	}
 
-		restModel.setPreparationTimeInMinute(millisToMinute(recipe.getPreparationTimeInMillis()));
-		restModel.setCookTimeInMinute(millisToMinute(recipe.getCookTimeInMillis()));
+	public RecipeRestModel transform(Recipe recipe, TransformerConfig config) {
+		RecipeRestModel restModel = genericTransformer.transform(recipe, new RecipeRestModel(), config);
 
-		restModel.setCategories(categoryTransformer.transformAll(recipe.getCategories()));
-		restModel.setCuisines(cuisineTransformer.transformAll(recipe.getCuisines()));
+		if (!TransformerConfig.isFieldExcludedInConfig(config, "preparationTimeInMinute")) {
+			restModel.setPreparationTimeInMinute(millisToMinute(recipe.getPreparationTimeInMillis()));
+		}
+
+		if (!TransformerConfig.isFieldExcludedInConfig(config, "cookTimeInMinute")) {
+			restModel.setCookTimeInMinute(millisToMinute(recipe.getCookTimeInMillis()));
+		}
+
+		if (!TransformerConfig.isFieldExcludedInConfig(config, "categories")) {
+			restModel.setCategories(categoryTransformer.transformAll(recipe.getCategories()));
+		}
+
+		if (!TransformerConfig.isFieldExcludedInConfig(config, "cuisines")) {
+			restModel.setCuisines(cuisineTransformer.transformAll(recipe.getCuisines()));
+		}
 
 		if (StringUtils.isEmpty(recipe.getCoverImageFileName())) {
 			restModel.setCoverImageFileName(defaultCoverImageFileName);
 		}
 
-		if (recipe.getAdditionalImagesFileNames() != null) {
+		if (!TransformerConfig.isFieldExcludedInConfig(config, "additionalImagesFileNames") && recipe.getAdditionalImagesFileNames() != null) {
 			restModel.setAdditionalImagesFileNames(new ArrayList<>(recipe.getAdditionalImagesFileNames()));
 		}
 
-		List<RecipeIngredientRestModel> ingredientRestModels = new ArrayList<>(recipe.getIngredients().size());
+		if (!TransformerConfig.isFieldExcludedInConfig(config, "ingredients")) {
+			List<RecipeIngredientRestModel> ingredientRestModels = new ArrayList<>(recipe.getIngredients().size());
 
-		for (RecipeIngredient recipeIngredient : recipe.getIngredients()) {
-			ingredientRestModels.add(new RecipeIngredientRestModel(
-					recipeIngredient.getId(),
-					null,
-					ingredientTransformer.transform(recipeIngredient.getIngredient()),
-					recipeIngredient.getQuantity(),
-					recipeIngredient.getSelectedUnit()
-			));
+			for (RecipeIngredient recipeIngredient : recipe.getIngredients()) {
+				ingredientRestModels.add(new RecipeIngredientRestModel(
+						recipeIngredient.getId(),
+						null,
+						ingredientTransformer.transform(recipeIngredient.getIngredient()),
+						recipeIngredient.getQuantity(),
+						recipeIngredient.getSelectedUnit()
+				));
+			}
+
+			restModel.setIngredients(ingredientRestModels);
 		}
 
-		restModel.setIngredients(ingredientRestModels);
+		if (!TransformerConfig.isFieldExcludedInConfig(config, "calorieInfo")) {
+			Recipe.AdditionalInfo additionalInfo = recipe.getAdditionalInfo();
 
-		Recipe.AdditionalInfo additionalInfo = recipe.getAdditionalInfo();
-
-		if (additionalInfo != null) {
-			restModel.setCalorieInfo(new RecipeRestModel.CalorieInfo(
-					additionalInfo.getEnergyKcal(),
-					additionalInfo.getProtein(),
-					additionalInfo.getFat(),
-					additionalInfo.getCarbohydrate()
-			));
+			if (additionalInfo != null) {
+				restModel.setCalorieInfo(new RecipeRestModel.CalorieInfo(
+						additionalInfo.getEnergyKcal(),
+						additionalInfo.getProtein(),
+						additionalInfo.getFat(),
+						additionalInfo.getCarbohydrate()
+				));
+			}
 		}
 
-		restModel.setOwner(userTransformer.transformUser(recipe.getOwner()));
+		if (!TransformerConfig.isFieldExcludedInConfig(config, "owner")) {
+			restModel.setOwner(userTransformer.transformUser(recipe.getOwner(), USER_TRANSFORMER_CONFIG));
+		}
 
 		//users can edit their own recipe if they are logged in
 		boolean userAuthenticated = SecurityUtils.isSessionAuthenticated();
@@ -147,9 +169,13 @@ public class RecipeTransformer {
 	}
 
 	public List<RecipeRestModel> transformAll(Iterable<Recipe> recipeEntities) {
+		return transformAll(recipeEntities, null);
+	}
+
+	public List<RecipeRestModel> transformAll(Iterable<Recipe> recipeEntities, TransformerConfig config) {
 		List<RecipeRestModel> retVal = new ArrayList<>();
 
-		recipeEntities.forEach(recipeEntity -> retVal.add(transform(recipeEntity)));
+		recipeEntities.forEach(recipeEntity -> retVal.add(transform(recipeEntity, config)));
 
 		return retVal;
 	}
