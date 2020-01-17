@@ -1,5 +1,6 @@
 package hu.gdf.szgd.dishbrary.service;
 
+import hu.gdf.szgd.dishbrary.RecipeSearchContextType;
 import hu.gdf.szgd.dishbrary.db.entity.Ingredient;
 import hu.gdf.szgd.dishbrary.db.entity.Recipe;
 import hu.gdf.szgd.dishbrary.db.entity.RecipeIngredient;
@@ -14,11 +15,13 @@ import hu.gdf.szgd.dishbrary.transformer.TransformerConfig;
 import hu.gdf.szgd.dishbrary.web.model.PageableRestModel;
 import hu.gdf.szgd.dishbrary.web.model.RecipeIngredientRestModel;
 import hu.gdf.szgd.dishbrary.web.model.RecipeRestModel;
+import hu.gdf.szgd.dishbrary.web.model.request.RecipeSearchCriteria;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +52,30 @@ public class RecipeService {
 	@Autowired
 	private ResourcePathService resourcePathService;
 
+	public PageableRestModel<RecipeRestModel> findRecipeByContextAndCriteria(RecipeSearchContextType context, RecipeSearchCriteria searchCriteria, int pageNumber) {
+		Long userId = SecurityUtils.getDishbraryUserFromContext().getId();
+
+		Page<Recipe> pageableSearchResult = null;
+
+		Pageable pageInfo = PageRequest.of(pageNumber, RecipeRepository.DEFAULT_PAGE_SIZE, Sort.by(Sort.Direction.DESC, "modificationDate"));
+
+		switch (context) {
+			case ALL_RECIPE:
+				pageableSearchResult = recipeRepository.findBySearchCriteria(searchCriteria, pageInfo);
+				break;
+			case USER_OWN_RECIPE:
+				pageableSearchResult = recipeRepository.findByOwnerIdAndSearchCriteria(userId, searchCriteria, pageInfo);
+				break;
+			case USER_FAVOURITE_RECIPES:
+				pageableSearchResult = favouriteRecipeRepository.findFavouriteRecipesForUserBySearchCriteria(userId, searchCriteria, pageInfo);
+				break;
+		}
+
+		List<RecipeRestModel> restModels = recipeTransformer.transformAll(pageableSearchResult, TRANSFORMER_CONFIG_FOR_RECIPE_PREVIEW);
+
+		return new PageableRestModel<>(restModels, pageableSearchResult.getTotalElements(), pageableSearchResult.getTotalPages());
+	}
+
 	@Transactional
 	public RecipeRestModel findRecipeById(Long recipeId) {
 		Optional<Recipe> recipe = recipeRepository.findByIdAndFetchIngredients(recipeId);
@@ -78,7 +105,7 @@ public class RecipeService {
 		return recipeRestModel;
 	}
 
-	public List<RecipeRestModel> findRandomRecipes() {
+	public PageableRestModel<RecipeRestModel> findRandomRecipes() {
 		Long minRecipeId = recipeRepository.findMinId();
 		Long maxRecipeId = recipeRepository.findMaxId();
 
@@ -109,13 +136,13 @@ public class RecipeService {
 			recipeRestModelList.add(model);
 		});
 
-		return recipeRestModelList;
+		return new PageableRestModel<>(recipeRestModelList, recipeRestModelList.size(), 1);
 	}
 
 	public PageableRestModel<RecipeRestModel> findPageableRecipesByUserId(Long userId, int pageNumber) {
 		Page<Recipe> userRecipesPage = recipeRepository.findByOwnerId(
 				userId,
-				PageRequest.of(pageNumber, RecipeRepository.DEFAULT_PAGE_SIZE, Sort.by(Sort.Direction.DESC, "creationDate")));
+				PageRequest.of(pageNumber, RecipeRepository.DEFAULT_PAGE_SIZE, Sort.by(Sort.Direction.DESC, "modificationDate")));
 
 		List<RecipeRestModel> restModels = recipeTransformer.transformAll(userRecipesPage, TRANSFORMER_CONFIG_FOR_RECIPE_PREVIEW);
 

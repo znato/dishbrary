@@ -1,5 +1,6 @@
 package hu.gdf.szgd.dishbrary.web.rest;
 
+import hu.gdf.szgd.dishbrary.RecipeSearchContextType;
 import hu.gdf.szgd.dishbrary.security.DishbraryUser;
 import hu.gdf.szgd.dishbrary.security.SecurityUtils;
 import hu.gdf.szgd.dishbrary.security.annotation.RecipeId;
@@ -8,6 +9,7 @@ import hu.gdf.szgd.dishbrary.service.FavouriteRecipeService;
 import hu.gdf.szgd.dishbrary.service.RecipeService;
 import hu.gdf.szgd.dishbrary.web.model.DishbraryResponse;
 import hu.gdf.szgd.dishbrary.web.model.RecipeRestModel;
+import hu.gdf.szgd.dishbrary.web.model.request.RecipeSearchCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,24 @@ public class RecipeRestService {
 	private RecipeService recipeService;
 	@Autowired
 	private FavouriteRecipeService favouriteRecipeService;
+
+	@POST
+	@Path("/search/{contextName}")
+	public Response searchRecipe(@PathParam("contextName") String contextName, @QueryParam("page") int pageNumber, RecipeSearchCriteria searchCriteria) {
+		RecipeSearchContextType context;
+
+		try {
+			context = RecipeSearchContextType.fromContextName(contextName);
+		} catch (IllegalArgumentException ex) {
+			throw new ClientErrorException(Response.Status.BAD_REQUEST);
+		}
+
+		return Response.ok(
+				new DishbraryResponse<>(
+						recipeService.findRecipeByContextAndCriteria(context, searchCriteria, pageNumber)
+				)
+		).build();
+	}
 
 	@GET
 	@Path("/{recipeId}")
@@ -57,7 +77,7 @@ public class RecipeRestService {
 		).build();
 	}
 
-	@PUT
+	@POST
 	@Path("/create")
 	@PreAuthorize("hasAuthority('WRITE_RECIPE')")
 	public Response createRecipe(RecipeRestModel recipeToSave) {
@@ -66,7 +86,7 @@ public class RecipeRestService {
 		).build();
 	}
 
-	@POST
+	@PUT
 	@Path("/update/{recipeId}")
 	@PreAuthorize("hasAuthority('WRITE_RECIPE')")
 	@ValidateRecipeBelongsToLoggedInUser

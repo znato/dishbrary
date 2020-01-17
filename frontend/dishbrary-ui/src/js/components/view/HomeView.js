@@ -11,6 +11,7 @@ import {LoadingState} from "../../services/constants/LoadingState";
 
 import * as ArrayUtils from '../../services/utils/ArrayUtils';
 import DishbraryProgress from "../general/DishbraryProgress";
+import Pagination from "../general/Pagination";
 
 const styles = theme => ({
     root: {
@@ -33,7 +34,10 @@ class HomeView extends React.Component {
         this.state = {
             loadingState: LoadingState.none,
             recipes: [],
-            errorMessage: null
+            errorMessage: null,
+            actualPage: 0,
+            totalElement: null,
+            totalPages: null,
         }
     }
 
@@ -56,15 +60,26 @@ class HomeView extends React.Component {
                 } else {
                     this.setState({
                         loadingState: LoadingState.loaded,
-                        recipes: jsonResponse.content
+                        recipes: jsonResponse.content.elements,
+                        totalElement: jsonResponse.content.totalElements,
+                        totalPages: jsonResponse.content.totalPages
                     });
                 }
             });
     };
 
+    fetchRecipesByCriteria = (pageNumber) => {
+
+    }
+
+    changePage = (pageNumber) => {
+        this.setState({actualPage: pageNumber})
+        this.fetchRecipesByCriteria(pageNumber);
+    }
+
     render() {
         const {classes} = this.props;
-        const {loadingState, recipes, errorMessage} = this.state;
+        const {loadingState, recipes, totalPages, actualPage, errorMessage} = this.state;
 
         let recipeCards = [];
 
@@ -95,7 +110,9 @@ class HomeView extends React.Component {
                                 :
                                 (
                                     <div id="recipe-card-container" className={classes.recipeCardContainer}>
-                                        {recipeCards}
+                                        <Pagination totalPages={totalPages} actualPage={actualPage} onPageChange={this.changePage}>
+                                            {recipeCards}
+                                        </Pagination>
                                     </div>
                                 )
                 }

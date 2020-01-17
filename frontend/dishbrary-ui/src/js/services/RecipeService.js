@@ -8,12 +8,12 @@ const getFavouriteRecipesPath = "recipe/favourites";
 class RecipeService {
 
     saveRecipe = (recipe) => {
-        return DishbraryServerRestClient.put(createRecipePath, recipe);
+        return DishbraryServerRestClient.post(createRecipePath, recipe);
     }
 
     updateRecipe = (recipe) => {
         const updateRecipePath = "recipe/update/" + recipe.id;
-        return DishbraryServerRestClient.post(updateRecipePath, recipe);
+        return DishbraryServerRestClient.put(updateRecipePath, recipe);
     }
 
     deleteRecipe = (recipeId) => {
