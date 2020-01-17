@@ -403,8 +403,7 @@ class RecipeEditor extends React.Component {
             ingredients, cuisinesLoading, cuisines,
             ingredientEditorOpened, selectedIngredients, selectedCuisines,
             selectedCategories, recipeId, alertData, actualStep,
-            imageFileUploaderData, videoFileUploaderData, recipeEditingFinished,
-            isEditMode, recipeEdited
+            imageFileUploaderData, videoFileUploaderData, recipeEditingFinished, recipeEdited
         } = this.state;
 
         const highestLoadingStateIndex = Math.max(categoriesLoading.index, ingredientsLoading.index, cuisinesLoading.index);

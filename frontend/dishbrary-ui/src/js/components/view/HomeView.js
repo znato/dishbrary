@@ -12,6 +12,7 @@ import {LoadingState} from "../../services/constants/LoadingState";
 import * as ArrayUtils from '../../services/utils/ArrayUtils';
 import DishbraryProgress from "../general/DishbraryProgress";
 import Pagination from "../general/Pagination";
+import DishbraryRecipeSearch from "../recipe/DishbraryRecipeSearch";
 
 const styles = theme => ({
     root: {
@@ -109,11 +110,15 @@ class HomeView extends React.Component {
                                 <Typography>{errorMessage}</Typography>
                                 :
                                 (
-                                    <div id="recipe-card-container" className={classes.recipeCardContainer}>
-                                        <Pagination totalPages={totalPages} actualPage={actualPage} onPageChange={this.changePage}>
-                                            {recipeCards}
-                                        </Pagination>
-                                    </div>
+                                    <React.Fragment>
+                                        <DishbraryRecipeSearch onSearchTrigger={}/>
+
+                                        <div id="recipe-card-container" className={classes.recipeCardContainer}>
+                                            <Pagination totalPages={totalPages} actualPage={actualPage} onPageChange={this.changePage}>
+                                                {recipeCards}
+                                            </Pagination>
+                                        </div>
+                                    </React.Fragment>
                                 )
                 }
             </Paper>

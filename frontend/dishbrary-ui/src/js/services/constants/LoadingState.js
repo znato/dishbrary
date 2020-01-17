@@ -3,13 +3,13 @@ export const LoadingState = {
         index: 0,
         name: "none"
     },
-    inProgress: {
-        index: 1,
-        name: "inProgress"
-    },
     loaded: {
-        index: 2,
+        index: 1,
         name: "loaded"
+    },
+    inProgress: {
+        index: 2,
+        name: "inProgress"
     },
     error: {
         index: 3,
@@ -19,7 +19,7 @@ export const LoadingState = {
 
 export const LoadingStateByIndex = {
     0: LoadingState.none,
-    1: LoadingState.inProgress,
-    2: LoadingState.loaded,
+    1: LoadingState.loaded,
+    2: LoadingState.inProgress,
     3: LoadingState.error,
 }
