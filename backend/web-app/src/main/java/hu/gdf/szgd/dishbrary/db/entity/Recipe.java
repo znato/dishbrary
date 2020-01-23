@@ -12,6 +12,7 @@ import java.util.List;
 @NamedEntityGraph(name = Recipe.FETCH_INGREDIENTS, attributeNodes = {
 		@NamedAttributeNode("ingredients")
 })
+@SequenceGenerator(name = AbstractEntity.ID_GENERATOR_NAME, sequenceName = "recipe_seq")
 public class Recipe extends AbstractEntity {
 
 	public static final String FETCH_INGREDIENTS = "recipe.fetch.ingredients";
@@ -37,8 +38,6 @@ public class Recipe extends AbstractEntity {
 	private List<String> additionalImagesFileNames;
 	@Column
 	private String videoFileName;
-	@OneToMany(mappedBy = "recipe")
-	private List<Comment> comments;
 	@Column
 	private Long popularityIndex;
 	@Column

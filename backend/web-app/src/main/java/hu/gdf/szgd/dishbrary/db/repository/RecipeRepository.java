@@ -1,7 +1,7 @@
 package hu.gdf.szgd.dishbrary.db.repository;
 
+import hu.gdf.szgd.dishbrary.db.criteria.RecipeSearchCriteria;
 import hu.gdf.szgd.dishbrary.db.entity.Recipe;
-import hu.gdf.szgd.dishbrary.web.model.request.RecipeSearchCriteria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -24,49 +24,49 @@ public interface RecipeRepository extends PagingAndSortingRepository<Recipe, Lon
 	Page<Recipe> findByOwnerId(Long userId, Pageable pageInfo);
 
 
-	@Query("select r from Recipe r where " +
+	@Query("select distinct r from Recipe r inner join r.ingredients recipe_ingredient left join r.categories category left join r.cuisines cuisine where " +
 			"(" +
-				":#{#criteria.plainTextSearch} is null " +
+				":#{#criteria.plainTextEmpty} = true " +
 				"or (" +
-					"r.name like '%:#{#criteria.plainTextSearch}%' " +
-					"or r.instruction like '%:#{#criteria.plainTextSearch}%' " +
+					"r.name like %:#{#criteria.plainTextSearch}% " +
+					"or r.instruction like %:#{#criteria.plainTextSearch}% " +
 				")" +
 			") " +
 			"and (" +
-				":#{#criteria.categoryList} is null " +
-				"or (r.categories in (:#{#criteria.categoryList}))" +
+				":#{#criteria.categoriesEmpty} = true " +
+				"or (category.id in (:#{#criteria.categoryIdList}))" +
 			") " +
 			"and (" +
-				":#{#criteria.cuisineList} is null " +
-				"or (r.cuisines in (:#{#criteria.cuisineList}))" +
+				":#{#criteria.cuisinesEmpty} = true " +
+				"or (cuisine.id in (:#{#criteria.cuisineIdList}))" +
 			") " +
 			"and (" +
-				":#{#criteria.ingredientList} is null) " +
-				"or (r.ingredients in (:#{#criteria.ingredientList})" +
+				":#{#criteria.ingredientsEmpty} = true " +
+				"or (recipe_ingredient.ingredient.id in (:#{#criteria.ingredientIdList}))" +
 			")"
 	)
 	Page<Recipe> findBySearchCriteria(@Param("criteria") RecipeSearchCriteria criteria, Pageable pageInfo);
 
-	@Query("select r from Recipe r where " +
+	@Query("select distinct r from Recipe r inner join r.ingredients recipe_ingredient left join r.categories category left join r.cuisines cuisine where " +
 			"r.owner.id = :ownerId " +
 			"and (" +
-				":#{#criteria.plainTextSearch} is null " +
+				":#{#criteria.plainTextEmpty} = true " +
 				"or (" +
-					"r.name like '%:#{#criteria.plainTextSearch}%' " +
-					"or r.instruction like '%:#{#criteria.plainTextSearch}%' " +
+					"r.name like %:#{#criteria.plainTextSearch}% " +
+					"or r.instruction like %:#{#criteria.plainTextSearch}% " +
 				")" +
 			") " +
 			"and (" +
-				":#{#criteria.categoryList} is null " +
-				"or (r.categories in (:#{#criteria.categoryList}))" +
+				":#{#criteria.categoriesEmpty} = true " +
+				"or (category.id in (:#{#criteria.categoryIdList}))" +
 			") " +
 			"and (" +
-				":#{#criteria.cuisineList} is null " +
-				"or (r.cuisines in (:#{#criteria.cuisineList}))" +
+				":#{#criteria.cuisinesEmpty} = true " +
+				"or (cuisine.id in (:#{#criteria.cuisineIdList}))" +
 			") " +
 			"and (" +
-				":#{#criteria.ingredientList} is null) " +
-				"or (r.ingredients in (:#{#criteria.ingredientList})" +
+				":#{#criteria.ingredientsEmpty} = true " +
+				"or (recipe_ingredient.ingredient.id in (:#{#criteria.ingredientIdList}))" +
 			")"
 	)
 	Page<Recipe> findByOwnerIdAndSearchCriteria(Long ownerId, @Param("criteria") RecipeSearchCriteria criteria, Pageable pageInfo);

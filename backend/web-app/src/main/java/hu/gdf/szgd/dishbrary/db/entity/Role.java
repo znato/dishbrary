@@ -8,11 +8,13 @@ import org.hibernate.annotations.LazyCollectionOption;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
+@SequenceGenerator(name = AbstractEntity.ID_GENERATOR_NAME, sequenceName = "role_seq")
 public class Role extends AbstractEntity {
 
 	@Column(nullable = false, unique = true)

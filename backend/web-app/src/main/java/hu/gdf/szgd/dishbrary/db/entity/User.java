@@ -10,6 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@SequenceGenerator(name = AbstractEntity.ID_GENERATOR_NAME, sequenceName = "user_seq")
 public class User extends AbstractEntity {
 
 	@Column

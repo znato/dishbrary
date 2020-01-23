@@ -14,8 +14,10 @@ import java.util.Date;
 @Setter
 public abstract class AbstractEntity {
 
+	public static final String ID_GENERATOR_NAME = "ID_GENERATOR";
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = ID_GENERATOR_NAME)
 	private Long id;
 	@Column
 	@CreationTimestamp

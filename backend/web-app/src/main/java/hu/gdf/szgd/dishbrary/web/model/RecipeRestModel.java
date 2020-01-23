@@ -23,7 +23,6 @@ public class RecipeRestModel {
 	private String coverImageFileName;
 	private List<String> additionalImagesFileNames;
 	private String videoFileName;
-//	private List<Comment> comments;
 	private Integer preparationTimeInMinute;
 	private Integer cookTimeInMinute;
 	private Integer portion;

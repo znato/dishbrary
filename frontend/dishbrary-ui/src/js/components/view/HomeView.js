@@ -8,6 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import DishbraryRecipeCard from "../recipe/DishbraryRecipeCard"
 import recipeService from "../../services/RecipeService";
 import {LoadingState} from "../../services/constants/LoadingState";
+import * as RecipeSearchContext from "../../services/constants/RecipeSearchContext";
 
 import * as ArrayUtils from '../../services/utils/ArrayUtils';
 import DishbraryProgress from "../general/DishbraryProgress";
@@ -35,6 +36,7 @@ class HomeView extends React.Component {
         this.state = {
             loadingState: LoadingState.none,
             recipes: [],
+            searchCriteria: null,
             errorMessage: null,
             actualPage: 0,
             totalElement: null,
@@ -69,13 +71,39 @@ class HomeView extends React.Component {
             });
     };
 
-    fetchRecipesByCriteria = (pageNumber) => {
+    fetchRecipesByCriteria = (searchCriteria, pageNumber) => {
+        this.setState({
+            loadingState: LoadingState.inProgress,
+        });
 
+        recipeService.searchRecipes(RecipeSearchContext.ALL_RECIPE, searchCriteria, pageNumber)
+            .then(jsonResponse => {
+                if (jsonResponse.error) {
+                    this.setState({
+                        loadingState: LoadingState.error,
+                        errorMessage: jsonResponse.message
+                    });
+                } else {
+                    this.setState({
+                        loadingState: LoadingState.loaded,
+                        recipes: jsonResponse.content.elements,
+                        totalElement: jsonResponse.content.totalElements,
+                        totalPages: jsonResponse.content.totalPages
+                    });
+                }
+            });
+    }
+
+    triggerSearch = (searchCriteria) => {
+        this.setState({searchCriteria});
+
+        this.fetchRecipesByCriteria(searchCriteria);
     }
 
     changePage = (pageNumber) => {
-        this.setState({actualPage: pageNumber})
-        this.fetchRecipesByCriteria(pageNumber);
+        this.setState({actualPage: pageNumber});
+
+        this.fetchRecipesByCriteria(this.state.searchCriteria, pageNumber);
     }
 
     render() {
@@ -111,7 +139,7 @@ class HomeView extends React.Component {
                                 :
                                 (
                                     <React.Fragment>
-                                        <DishbraryRecipeSearch onSearchTrigger={}/>
+                                        <DishbraryRecipeSearch onSearchTrigger={this.triggerSearch}/>
 
                                         <div id="recipe-card-container" className={classes.recipeCardContainer}>
                                             <Pagination totalPages={totalPages} actualPage={actualPage} onPageChange={this.changePage}>

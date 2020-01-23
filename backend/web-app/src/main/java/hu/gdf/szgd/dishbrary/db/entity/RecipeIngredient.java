@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 @Entity
 @Getter
 @Setter
+@SequenceGenerator(name = AbstractEntity.ID_GENERATOR_NAME, sequenceName = "recipe_ingredient_seq")
 public class RecipeIngredient extends AbstractEntity {
 
 	@ManyToOne

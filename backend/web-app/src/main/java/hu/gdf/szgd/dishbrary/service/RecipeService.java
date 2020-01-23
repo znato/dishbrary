@@ -1,6 +1,7 @@
 package hu.gdf.szgd.dishbrary.service;
 
 import hu.gdf.szgd.dishbrary.RecipeSearchContextType;
+import hu.gdf.szgd.dishbrary.db.criteria.RecipeSearchCriteria;
 import hu.gdf.szgd.dishbrary.db.entity.Ingredient;
 import hu.gdf.szgd.dishbrary.db.entity.Recipe;
 import hu.gdf.szgd.dishbrary.db.entity.RecipeIngredient;
@@ -10,12 +11,13 @@ import hu.gdf.szgd.dishbrary.db.repository.RecipeRepository;
 import hu.gdf.szgd.dishbrary.security.SecurityUtils;
 import hu.gdf.szgd.dishbrary.service.exception.DishbraryValidationException;
 import hu.gdf.szgd.dishbrary.service.validation.RecipeValidatorUtil;
+import hu.gdf.szgd.dishbrary.transformer.RecipeSearchCriteriaTransformer;
 import hu.gdf.szgd.dishbrary.transformer.RecipeTransformer;
 import hu.gdf.szgd.dishbrary.transformer.TransformerConfig;
 import hu.gdf.szgd.dishbrary.web.model.PageableRestModel;
 import hu.gdf.szgd.dishbrary.web.model.RecipeIngredientRestModel;
 import hu.gdf.szgd.dishbrary.web.model.RecipeRestModel;
-import hu.gdf.szgd.dishbrary.web.model.request.RecipeSearchCriteria;
+import hu.gdf.szgd.dishbrary.web.model.request.RecipeSearchCriteriaRestModel;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,23 +53,27 @@ public class RecipeService {
 	private RecipeTransformer recipeTransformer;
 	@Autowired
 	private ResourcePathService resourcePathService;
+	@Autowired
+	private RecipeSearchCriteriaTransformer criteriaTransformer;
 
-	public PageableRestModel<RecipeRestModel> findRecipeByContextAndCriteria(RecipeSearchContextType context, RecipeSearchCriteria searchCriteria, int pageNumber) {
+	public PageableRestModel<RecipeRestModel> findRecipeByContextAndCriteria(RecipeSearchContextType context, RecipeSearchCriteriaRestModel searchCriteria, int pageNumber) {
 		Long userId = SecurityUtils.getDishbraryUserFromContext().getId();
 
 		Page<Recipe> pageableSearchResult = null;
 
 		Pageable pageInfo = PageRequest.of(pageNumber, RecipeRepository.DEFAULT_PAGE_SIZE, Sort.by(Sort.Direction.DESC, "modificationDate"));
 
+		RecipeSearchCriteria criteria = criteriaTransformer.transform(searchCriteria);
+
 		switch (context) {
 			case ALL_RECIPE:
-				pageableSearchResult = recipeRepository.findBySearchCriteria(searchCriteria, pageInfo);
+				pageableSearchResult = recipeRepository.findBySearchCriteria(criteria, pageInfo);
 				break;
 			case USER_OWN_RECIPE:
-				pageableSearchResult = recipeRepository.findByOwnerIdAndSearchCriteria(userId, searchCriteria, pageInfo);
+				pageableSearchResult = recipeRepository.findByOwnerIdAndSearchCriteria(userId, criteria, pageInfo);
 				break;
 			case USER_FAVOURITE_RECIPES:
-				pageableSearchResult = favouriteRecipeRepository.findFavouriteRecipesForUserBySearchCriteria(userId, searchCriteria, pageInfo);
+				pageableSearchResult = favouriteRecipeRepository.findFavouriteRecipesForUserBySearchCriteria(userId, criteria, pageInfo);
 				break;
 		}
 

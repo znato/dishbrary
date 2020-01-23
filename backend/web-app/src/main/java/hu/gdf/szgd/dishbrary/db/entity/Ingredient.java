@@ -3,15 +3,13 @@ package hu.gdf.szgd.dishbrary.db.entity;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
 @Getter
 @Setter
+@SequenceGenerator(name = AbstractEntity.ID_GENERATOR_NAME, sequenceName = "ingredient_seq")
 public class Ingredient extends AbstractEntity {
 
 	@Column(nullable = false, unique = true)

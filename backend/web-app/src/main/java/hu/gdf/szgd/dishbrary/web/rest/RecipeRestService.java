@@ -9,7 +9,7 @@ import hu.gdf.szgd.dishbrary.service.FavouriteRecipeService;
 import hu.gdf.szgd.dishbrary.service.RecipeService;
 import hu.gdf.szgd.dishbrary.web.model.DishbraryResponse;
 import hu.gdf.szgd.dishbrary.web.model.RecipeRestModel;
-import hu.gdf.szgd.dishbrary.web.model.request.RecipeSearchCriteria;
+import hu.gdf.szgd.dishbrary.web.model.request.RecipeSearchCriteriaRestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -32,7 +32,7 @@ public class RecipeRestService {
 
 	@POST
 	@Path("/search/{contextName}")
-	public Response searchRecipe(@PathParam("contextName") String contextName, @QueryParam("page") int pageNumber, RecipeSearchCriteria searchCriteria) {
+	public Response searchRecipe(@PathParam("contextName") String contextName, @QueryParam("page") int pageNumber, RecipeSearchCriteriaRestModel searchCriteria) {
 		RecipeSearchContextType context;
 
 		try {

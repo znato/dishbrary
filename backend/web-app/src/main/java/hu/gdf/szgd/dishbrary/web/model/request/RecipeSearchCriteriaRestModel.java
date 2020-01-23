@@ -8,7 +8,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class RecipeSearchCriteria {
+public class RecipeSearchCriteriaRestModel {
 
 	private String plainTextSearch;
 	private List<IngredientRestModel> ingredientList;

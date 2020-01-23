@@ -1,8 +1,8 @@
 package hu.gdf.szgd.dishbrary.db.repository;
 
+import hu.gdf.szgd.dishbrary.db.criteria.RecipeSearchCriteria;
 import hu.gdf.szgd.dishbrary.db.entity.FavouriteRecipe;
 import hu.gdf.szgd.dishbrary.db.entity.Recipe;
-import hu.gdf.szgd.dishbrary.web.model.request.RecipeSearchCriteria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;

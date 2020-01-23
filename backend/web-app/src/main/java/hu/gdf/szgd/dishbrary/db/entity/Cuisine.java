@@ -5,10 +5,12 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.SequenceGenerator;
 
 @Entity
 @Getter
 @Setter
+@SequenceGenerator(name = AbstractEntity.ID_GENERATOR_NAME, sequenceName = "cuisine_seq")
 public class Cuisine extends AbstractEntity {
 
 	@Column

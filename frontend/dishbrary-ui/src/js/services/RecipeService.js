@@ -72,6 +72,16 @@ class RecipeService {
         return DishbraryServerRestClient.get(getRandomRecipesPath);
     }
 
+    searchRecipes = (context, searchCriteria, page) => {
+        let searchRecipesPath = `recipe/search/${context}`;
+
+        if (page) {
+            searchRecipesPath += `?page=${page}`;
+        }
+
+        return DishbraryServerRestClient.post(searchRecipesPath, searchCriteria);
+    }
+
     deleteAllRecipeImages = (recipeId) => {
         const deleteRecipeImagesPath = `resource/recipe/${recipeId}/image/deleteAll`;
         return DishbraryServerRestClient.del(deleteRecipeImagesPath);
