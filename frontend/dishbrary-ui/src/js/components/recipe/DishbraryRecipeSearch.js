@@ -52,15 +52,53 @@ class DishbraryRecipeSearch extends React.Component {
     constructor(props) {
         super(props);
 
+        const {searchCriteria} = props;
+
+        let passedSearchText = null;
+        let passedIngredientSelection;
+        let passedCuisineSelection;
+        let passedCategorySelection;
+
+        if (searchCriteria) {
+            passedSearchText = searchCriteria.plainTextSearch;
+
+            if (ArrayUtils.isNotEmpty(searchCriteria.ingredientList)) {
+                passedIngredientSelection = searchCriteria.ingredientList.map(data => {
+                    return {
+                        value: data.id,
+                        label: data.name
+                    }
+                });
+            }
+
+            if (ArrayUtils.isNotEmpty(searchCriteria.cuisineList)) {
+                passedCuisineSelection = searchCriteria.cuisineList.map(data => {
+                    return {
+                        value: data.id,
+                        label: data.name
+                    }
+                });
+            }
+
+            if (ArrayUtils.isNotEmpty(searchCriteria.categoryList)) {
+                passedCategorySelection = searchCriteria.categoryList.map(data => {
+                    return {
+                        value: data.id,
+                        label: data.name
+                    }
+                });
+            }
+        }
+
         this.state = {
             advancedSearchOptionsOpen: false,
-            searchText: null,
+            searchText: passedSearchText,
             ingredients: [],
-            selectedIngredients: [],
+            selectedIngredients: passedIngredientSelection || [],
             categories: [],
-            selectedCategories: [],
+            selectedCategories: passedCategorySelection || [],
             cuisines: [],
-            selectedCuisines: [],
+            selectedCuisines: passedCuisineSelection || [],
             categoriesLoading: LoadingState.none,
             ingredientsLoading: LoadingState.none,
             cuisinesLoading: LoadingState.none,
@@ -183,7 +221,7 @@ class DishbraryRecipeSearch extends React.Component {
         const {advancedSearchOptionsOpen,
             categoriesLoading, ingredientsLoading, cuisinesLoading,
             ingredients, categories, cuisines,
-            selectedIngredients, selectedCategories, selectedCuisines} = this.state;
+            searchText, selectedIngredients, selectedCategories, selectedCuisines} = this.state;
 
         const highestLoadingStateIndex = Math.max(categoriesLoading.index, ingredientsLoading.index, cuisinesLoading.index);
         const overallLoadingState = LoadingStateByIndex[highestLoadingStateIndex];
@@ -194,7 +232,7 @@ class DishbraryRecipeSearch extends React.Component {
 
         return (
             <div className={classes.searchComponentContainer}>
-                <TextField className={classes.searchField} label="Keresés..." variant="outlined"
+                <TextField className={classes.searchField} label="Keresés..." variant="outlined" value={searchText}
                            InputProps={{
                                endAdornment: (
                                    searchFieldAdornmentIcon

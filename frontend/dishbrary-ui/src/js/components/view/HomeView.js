@@ -108,7 +108,7 @@ class HomeView extends React.Component {
 
     render() {
         const {classes} = this.props;
-        const {loadingState, recipes, totalPages, actualPage, errorMessage} = this.state;
+        const {searchCriteria, loadingState, recipes, totalPages, actualPage, errorMessage} = this.state;
 
         let recipeCards = [];
 
@@ -139,7 +139,7 @@ class HomeView extends React.Component {
                                 :
                                 (
                                     <React.Fragment>
-                                        <DishbraryRecipeSearch onSearchTrigger={this.triggerSearch}/>
+                                        <DishbraryRecipeSearch searchCriteria={searchCriteria} onSearchTrigger={this.triggerSearch}/>
 
                                         <div id="recipe-card-container" className={classes.recipeCardContainer}>
                                             <Pagination totalPages={totalPages} actualPage={actualPage} onPageChange={this.changePage}>
