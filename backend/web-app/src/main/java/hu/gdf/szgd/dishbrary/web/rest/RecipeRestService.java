@@ -102,7 +102,7 @@ public class RecipeRestService {
 	@Path("/update/{recipeId}")
 	@PreAuthorize("hasAuthority('WRITE_RECIPE')")
 	@ValidateRecipeBelongsToLoggedInUser
-	public Response createRecipe(@PathParam("recipeId") @RecipeId Long recipeId, RecipeRestModel recipeToUpdate) {
+	public Response updateRecipe(@PathParam("recipeId") @RecipeId Long recipeId, RecipeRestModel recipeToUpdate) {
 		RecipeValidationUtil.validateRecipe(recipeToUpdate);
 
 		return Response.ok(

@@ -22,7 +22,7 @@ create table recipe_categories (recipe_id bigint not null, categories_id bigint 
 create table recipe_cuisines (recipe_id bigint not null, cuisines_id bigint not null, primary key(recipe_id, cuisines_id) );
 
 create table recipe_ingredient (id bigint, creation_date timestamp, modification_date timestamp, quantity integer not null, selected_unit varchar(255), ingredient_id bigint, recipe_id bigint, primary key (id, recipe_id, ingredient_id));
-create sequence recipe_ingredient_seq start with 1 increment by 1;
+create sequence recipe_ingredient_seq start with 6 increment by 1;
 
 create table right (id bigint, creation_date timestamp, modification_date timestamp, name varchar(255) not null unique, primary key (id));
 create sequence right_seq start with 13 increment by 1;
