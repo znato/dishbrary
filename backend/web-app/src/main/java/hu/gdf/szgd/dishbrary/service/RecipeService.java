@@ -10,7 +10,6 @@ import hu.gdf.szgd.dishbrary.db.repository.IngredientRepository;
 import hu.gdf.szgd.dishbrary.db.repository.RecipeRepository;
 import hu.gdf.szgd.dishbrary.security.SecurityUtils;
 import hu.gdf.szgd.dishbrary.service.exception.DishbraryValidationException;
-import hu.gdf.szgd.dishbrary.service.validation.RecipeValidatorUtil;
 import hu.gdf.szgd.dishbrary.transformer.RecipeSearchCriteriaTransformer;
 import hu.gdf.szgd.dishbrary.transformer.RecipeTransformer;
 import hu.gdf.szgd.dishbrary.transformer.TransformerConfig;
@@ -161,8 +160,6 @@ public class RecipeService {
 			recipeRestModel.setId(null);
 		}
 
-		RecipeValidatorUtil.validateRecipeForCreation(recipeRestModel);
-
 		Recipe recipeToSave = recipeTransformer.transform(recipeRestModel);
 		recipeToSave.setAdditionalInfo(createAdditionalInfo(recipeRestModel));
 
@@ -172,8 +169,6 @@ public class RecipeService {
 	@Transactional
 	public RecipeRestModel updateRecipe(RecipeRestModel recipeRestModel) {
 		Objects.requireNonNull(recipeRestModel.getId(), "A receptet nem sikerült azonosítani mert hiányzik az id mező!");
-
-		RecipeValidatorUtil.validateRecipeForCreation(recipeRestModel);
 
 		Optional<Recipe> recipeToUpdateHolder = recipeRepository.findById(recipeRestModel.getId());
 		if (!recipeToUpdateHolder.isPresent()) {

@@ -1,15 +1,15 @@
-package hu.gdf.szgd.dishbrary.service.validation;
+package hu.gdf.szgd.dishbrary.web.validation;
 
 import hu.gdf.szgd.dishbrary.service.exception.DishbraryValidationException;
 import hu.gdf.szgd.dishbrary.web.model.RecipeRestModel;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-public class RecipeValidatorUtil {
+public class RecipeValidationUtil {
 
 	private static final String RECIPE_VALIDATION_BASE_MESAGE = "A recept ellenőrzése közben a következő hibak léptek fel:";
 
-	public static void validateRecipeForCreation(RecipeRestModel recipeRestModel) {
+	public static void validateRecipe(RecipeRestModel recipeRestModel) {
 		StringBuilder errorMessageBuilder = null;
 
 		if (StringUtils.isEmpty(recipeRestModel.getName())) {

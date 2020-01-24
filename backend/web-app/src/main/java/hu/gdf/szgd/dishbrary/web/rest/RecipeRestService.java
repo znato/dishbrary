@@ -10,6 +10,7 @@ import hu.gdf.szgd.dishbrary.service.RecipeService;
 import hu.gdf.szgd.dishbrary.web.model.DishbraryResponse;
 import hu.gdf.szgd.dishbrary.web.model.RecipeRestModel;
 import hu.gdf.szgd.dishbrary.web.model.request.RecipeSearchCriteriaRestModel;
+import hu.gdf.szgd.dishbrary.web.validation.RecipeValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,15 @@ public class RecipeRestService {
 			context = RecipeSearchContextType.fromContextName(contextName);
 		} catch (IllegalArgumentException ex) {
 			throw new ClientErrorException(Response.Status.BAD_REQUEST);
+		}
+
+		switch (context) {
+			case USER_OWN_RECIPE:
+			case USER_FAVOURITE_RECIPES:
+				if (!SecurityUtils.isSessionAuthenticated()) {
+					throw new ClientErrorException(Response.Status.UNAUTHORIZED);
+				}
+				break;
 		}
 
 		return Response.ok(
@@ -81,6 +91,8 @@ public class RecipeRestService {
 	@Path("/create")
 	@PreAuthorize("hasAuthority('WRITE_RECIPE')")
 	public Response createRecipe(RecipeRestModel recipeToSave) {
+		RecipeValidationUtil.validateRecipe(recipeToSave);
+
 		return Response.ok(
 				new DishbraryResponse<>(recipeService.saveRecipe(recipeToSave))
 		).build();
@@ -91,6 +103,8 @@ public class RecipeRestService {
 	@PreAuthorize("hasAuthority('WRITE_RECIPE')")
 	@ValidateRecipeBelongsToLoggedInUser
 	public Response createRecipe(@PathParam("recipeId") @RecipeId Long recipeId, RecipeRestModel recipeToUpdate) {
+		RecipeValidationUtil.validateRecipe(recipeToUpdate);
+
 		return Response.ok(
 				new DishbraryResponse<>(recipeService.updateRecipe(recipeToUpdate))
 		).build();
