@@ -12,7 +12,6 @@ import hu.gdf.szgd.dishbrary.security.SecurityUtils;
 import hu.gdf.szgd.dishbrary.service.exception.DishbraryValidationException;
 import hu.gdf.szgd.dishbrary.transformer.RecipeSearchCriteriaTransformer;
 import hu.gdf.szgd.dishbrary.transformer.RecipeTransformer;
-import hu.gdf.szgd.dishbrary.transformer.TransformerConfig;
 import hu.gdf.szgd.dishbrary.web.model.PageableRestModel;
 import hu.gdf.szgd.dishbrary.web.model.RecipeIngredientRestModel;
 import hu.gdf.szgd.dishbrary.web.model.RecipeRestModel;
@@ -32,15 +31,14 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 
+import static hu.gdf.szgd.dishbrary.transformer.TransformerUtil.TRANSFORMER_CONFIG_FOR_RECIPE_PREVIEW;
+
 @Service
 @Log4j2
 public class RecipeService {
 
 	private static final int MAX_RANDOM_RECIPES_SIZE = 10;
 	private static final BigDecimal HUNDRED = new BigDecimal(100);
-
-	private static final TransformerConfig TRANSFORMER_CONFIG_FOR_RECIPE_PREVIEW =
-			TransformerConfig.includeOnlyFields("id", "name", "creationDate", "owner", "coverImageFileName", "calorieInfo", "editable", "likeable", "favourite");
 
 	@Autowired
 	private RecipeRepository recipeRepository;
@@ -55,7 +53,7 @@ public class RecipeService {
 	@Autowired
 	private RecipeSearchCriteriaTransformer criteriaTransformer;
 
-	public PageableRestModel<RecipeRestModel> findRecipeByContextAndCriteria(RecipeSearchContextType context, RecipeSearchCriteriaRestModel searchCriteria, int pageNumber) {
+	public PageableRestModel<RecipeRestModel> findRecipesByContextAndCriteria(RecipeSearchContextType context, RecipeSearchCriteriaRestModel searchCriteria, int pageNumber) {
 		Long userId = SecurityUtils.getDishbraryUserFromContext().getId();
 
 		Page<Recipe> pageableSearchResult = null;
@@ -71,9 +69,8 @@ public class RecipeService {
 			case USER_OWN_RECIPE:
 				pageableSearchResult = recipeRepository.findByOwnerIdAndSearchCriteria(userId, criteria, pageInfo);
 				break;
-			case USER_FAVOURITE_RECIPES:
-				pageableSearchResult = favouriteRecipeRepository.findFavouriteRecipesForUserBySearchCriteria(userId, criteria, pageInfo);
-				break;
+			default:
+				throw new IllegalArgumentException("Unknown context SearchContext for RecipeService: " + context.name());
 		}
 
 		List<RecipeRestModel> restModels = recipeTransformer.transformAll(pageableSearchResult, TRANSFORMER_CONFIG_FOR_RECIPE_PREVIEW);

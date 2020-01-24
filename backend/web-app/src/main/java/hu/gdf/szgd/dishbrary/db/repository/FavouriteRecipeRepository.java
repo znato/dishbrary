@@ -22,25 +22,28 @@ public interface FavouriteRecipeRepository extends CrudRepository<FavouriteRecip
 
 	@Query("select fr.recipe from FavouriteRecipe fr where " +
 			"fr.user.id = :userId " +
-			"and (" +
-				":#{#criteria.plainTextSearch} is null " +
-				"or (" +
-					"fr.recipe.name like '%:#{#criteria.plainTextSearch}%' " +
-					"or fr.recipe.instruction like '%:#{#criteria.plainTextSearch}%' " +
-				")" +
-			") " +
-			"and (" +
-				":#{#criteria.categoryList} is null " +
-				"or (fr.recipe.categories in (:#{#criteria.categoryList}))" +
-			") " +
-			"and (" +
-				":#{#criteria.cuisineList} is null " +
-				"or (fr.recipe.cuisines in (:#{#criteria.cuisineList}))" +
-			") " +
-			"and (" +
-				":#{#criteria.ingredientList} is null) " +
-				"or (fr.recipe.ingredients in (:#{#criteria.ingredientList})" +
-			")"
+			"and fr.recipe.id in " +
+				"(select distinct r.id from Recipe r inner join r.ingredients recipe_ingredient left join r.categories category left join r.cuisines cuisine where " +
+					"(" +
+						":#{#criteria.plainTextEmpty} = true " +
+						"or (" +
+							"upper(r.name) like %:#{#criteria.plainTextSearch}% " + //criteria.plainTextSearch is converted t uppercase already by the transformer
+							"or upper(r.instruction) like %:#{#criteria.plainTextSearch}% " +
+						")" +
+					") " +
+					"and (" +
+						":#{#criteria.categoriesEmpty} = true " +
+						"or (category.id in (:#{#criteria.categoryIdList}))" +
+					") " +
+					"and (" +
+						":#{#criteria.cuisinesEmpty} = true " +
+						"or (cuisine.id in (:#{#criteria.cuisineIdList}))" +
+					") " +
+					"and (" +
+						":#{#criteria.ingredientsEmpty} = true " +
+						"or (recipe_ingredient.ingredient.id in (:#{#criteria.ingredientIdList}))" +
+					")" +
+				")"
 	)
 	Page<Recipe> findFavouriteRecipesForUserBySearchCriteria(Long userId, @Param("criteria") RecipeSearchCriteria criteria, Pageable pageInfo);
 
