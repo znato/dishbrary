@@ -20,7 +20,7 @@ function DishbraryApp() {
             <Router>
                 <DishbraryAppBar/>
 
-                <div id="dishbrary-page-content" style={{marginTop: "70px"}}>
+                <div id="dishbrary-page-content" style={{marginTop: "64px"}}>
 
                     <Route exact path={ApplicationRoutes.homePath} component={HomeView} />
 
