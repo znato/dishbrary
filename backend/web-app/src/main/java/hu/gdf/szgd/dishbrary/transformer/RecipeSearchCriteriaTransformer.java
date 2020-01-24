@@ -24,7 +24,7 @@ public class RecipeSearchCriteriaTransformer {
 		RecipeSearchCriteria criteria = new RecipeSearchCriteria();
 
 		if (StringUtils.hasText(criteriaRestModel.getPlainTextSearch())) {
-			criteria.setPlainTextSearch(criteriaRestModel.getPlainTextSearch());
+			criteria.setPlainTextSearch(criteriaRestModel.getPlainTextSearch().toUpperCase());
 		} else {
 			criteria.setPlainTextEmpty(true);
 		}

@@ -28,8 +28,8 @@ public interface RecipeRepository extends PagingAndSortingRepository<Recipe, Lon
 			"(" +
 				":#{#criteria.plainTextEmpty} = true " +
 				"or (" +
-					"r.name like %:#{#criteria.plainTextSearch}% " +
-					"or r.instruction like %:#{#criteria.plainTextSearch}% " +
+					"upper(r.name) like %:#{#criteria.plainTextSearch}% " + //criteria.plainTextSearch is converted t uppercase already by the transformer
+					"or upper(r.instruction) like %:#{#criteria.plainTextSearch}% " +
 				")" +
 			") " +
 			"and (" +
@@ -52,8 +52,8 @@ public interface RecipeRepository extends PagingAndSortingRepository<Recipe, Lon
 			"and (" +
 				":#{#criteria.plainTextEmpty} = true " +
 				"or (" +
-					"r.name like %:#{#criteria.plainTextSearch}% " +
-					"or r.instruction like %:#{#criteria.plainTextSearch}% " +
+					"upper(r.name) like %:#{#criteria.plainTextSearch}% " + //criteria.plainTextSearch is converted t uppercase already by the transformer
+					"or upper(r.instruction) like %:#{#criteria.plainTextSearch}% " +
 				")" +
 			") " +
 			"and (" +
