@@ -27,7 +27,11 @@ const styles = theme => ({
         maxWidth: 345,
         display: "inline-block",
         margin: "0 5px 0 5px",
-        textAlign: "center"
+        textAlign: "center",
+        '& a': {
+            color: "white",
+            textDecoration: "none",
+        }
     },
     cardActionForOwnRecipes: {
         float: "right"

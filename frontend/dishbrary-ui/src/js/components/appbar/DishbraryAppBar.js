@@ -12,6 +12,9 @@ import MenuIcon from '@material-ui/icons/Menu';
 import UserManagementBlock from "./UserManagementBlock";
 import DishbrarySideMenu from '../sidemenu/DishbrarySideMenu';
 
+import {Link} from "react-router-dom";
+import * as ApplicationRoutes from '../../config/ApplicationRoutes';
+
 const styles = {
     root: {
         flexGrow: 1,
@@ -24,6 +27,10 @@ const styles = {
         // flexGrow: 1,
         fontWeight: 700,
         textTransform: "uppercase",
+        '& a': {
+            color: "white",
+            textDecoration: "none",
+        }
     },
     placeHolder: {
         flexGrow: 1,
@@ -67,7 +74,9 @@ class DishbraryAppBar extends React.Component {
                             <MenuIcon />
                         </IconButton>
                         <Typography variant="h6" color="inherit" align="center" className={classes.title}>
-                            DISHBRARY
+                            <Link to={ApplicationRoutes.homePath}>
+                                DISHBRARY
+                            </Link>
                         </Typography>
                         <span className={classes.placeHolder}>&nbsp;</span>
                         <UserManagementBlock/>
