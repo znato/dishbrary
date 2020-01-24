@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@SequenceGenerator(name = AbstractEntity.ID_GENERATOR_NAME, sequenceName = "role_seq")
+@SequenceGenerator(name = AbstractEntity.ID_GENERATOR_NAME, sequenceName = "role_seq", allocationSize = 1)
 public class Role extends AbstractEntity {
 
 	@Column(nullable = false, unique = true)

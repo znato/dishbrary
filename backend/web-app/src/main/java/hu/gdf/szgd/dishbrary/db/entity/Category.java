@@ -14,7 +14,7 @@ import javax.persistence.SequenceGenerator;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@SequenceGenerator(name = AbstractEntity.ID_GENERATOR_NAME, sequenceName = "category_seq")
+@SequenceGenerator(name = AbstractEntity.ID_GENERATOR_NAME, sequenceName = "category_seq", allocationSize = 1)
 public class Category extends AbstractEntity {
 
 	@Column

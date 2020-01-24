@@ -10,7 +10,7 @@ import javax.persistence.SequenceGenerator;
 @Entity
 @Getter
 @Setter
-@SequenceGenerator(name = AbstractEntity.ID_GENERATOR_NAME, sequenceName = "cuisine_seq")
+@SequenceGenerator(name = AbstractEntity.ID_GENERATOR_NAME, sequenceName = "cuisine_seq", allocationSize = 1)
 public class Cuisine extends AbstractEntity {
 
 	@Column

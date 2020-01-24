@@ -12,7 +12,7 @@ import java.util.List;
 @NamedEntityGraph(name = Recipe.FETCH_INGREDIENTS, attributeNodes = {
 		@NamedAttributeNode("ingredients")
 })
-@SequenceGenerator(name = AbstractEntity.ID_GENERATOR_NAME, sequenceName = "recipe_seq")
+@SequenceGenerator(name = AbstractEntity.ID_GENERATOR_NAME, sequenceName = "recipe_seq", allocationSize = 1)
 public class Recipe extends AbstractEntity {
 
 	public static final String FETCH_INGREDIENTS = "recipe.fetch.ingredients";

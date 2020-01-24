@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@SequenceGenerator(name = AbstractEntity.ID_GENERATOR_NAME, sequenceName = "right_seq")
+@SequenceGenerator(name = AbstractEntity.ID_GENERATOR_NAME, sequenceName = "right_seq", allocationSize = 1)
 public class Right extends AbstractEntity {
 
 	@Column(nullable = false, unique = true)

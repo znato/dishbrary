@@ -16,7 +16,7 @@ import javax.persistence.*;
 )
 @NoArgsConstructor
 @AllArgsConstructor
-@SequenceGenerator(name = AbstractEntity.ID_GENERATOR_NAME, sequenceName = "favourite_recipe_seq")
+@SequenceGenerator(name = AbstractEntity.ID_GENERATOR_NAME, sequenceName = "favourite_recipe_seq", allocationSize = 1)
 public class FavouriteRecipe extends AbstractEntity {
 
 	@ManyToOne
