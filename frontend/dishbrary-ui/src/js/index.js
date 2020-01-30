@@ -13,6 +13,7 @@ import FavouriteRecipesView from './components/view/FavouriteRecipesView';
 import CreateRecipeView from './components/view/CreateRecipeView';
 import EditRecipeView from './components/view/EditRecipeView';
 import RecipeView from './components/view/RecipeView';
+import EditAccountView from './components/view/EditAccountView';
 
 import userStatusChecker from "./services/UserStatusChecker";
 
@@ -37,6 +38,8 @@ function DishbraryApp() {
                     <Route path={ApplicationRoutes.editRecipePath + "/:recipeId"} component={EditRecipeView}/>
 
                     <Route path={ApplicationRoutes.viewRecipePath + "/:recipeId"} component={RecipeView} />
+
+                    <Route path={ApplicationRoutes.editAccountPath} component={EditAccountView} />
                 </div>
             </Router>
         </React.Fragment>

@@ -13,10 +13,11 @@ import {
     calorieTablePath,
     createRecipePath,
     userOwnRecipesPath,
-    favouriteRecipesPath
+    favouriteRecipesPath,
+    editAccountPath
 } from '../../config/ApplicationRoutes';
 
-import {Home, Create, AccountBox, Favorite} from '@material-ui/icons';
+import {Home, Create, AccountBox, Favorite, AssignmentInd} from '@material-ui/icons';
 import CalorieIcon from '../icons/CalorieIcon';
 
 import AuthSection from '../general/AuthSection';
@@ -54,6 +55,12 @@ const menuItems = [
         title: 'Új recept',
         icon: Create,
         linkTo: createRecipePath,
+        authRequired: true,
+    },
+    {
+        title: 'Fiók szerkesztése',
+        icon: AssignmentInd,
+        linkTo: editAccountPath,
         authRequired: true,
     }
 ]

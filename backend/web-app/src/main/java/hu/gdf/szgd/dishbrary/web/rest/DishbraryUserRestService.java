@@ -87,6 +87,15 @@ public class DishbraryUserRestService {
 	}
 
 	@GET
+	@Path("/data")
+	@PreAuthorize("isAuthenticated()")
+	public Response getLoggedInUserData() {
+		return Response.ok(
+				new DishbraryResponse<>(SecurityUtils.getDishbraryUserFromContext())
+		).build();
+	}
+
+	@GET
 	@Path("/authenticated")
 	public Response isSessionAuthenticated() {
 		return Response.ok(
