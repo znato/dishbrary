@@ -21,6 +21,7 @@ import * as ApplicationRoutes from '../../config/ApplicationRoutes';
 
 import recipeService from "../../services/RecipeService";
 import DishbraryAlertDialog from "../general/DishbraryAlertDialog";
+import ApplicationState from "../../ApplicationState";
 
 const styles = theme => ({
     card: {
@@ -186,7 +187,7 @@ class DishbraryRecipeCard extends React.Component {
                     </CardContent>
                 </Link>
                 {
-                    recipeData.editable ?
+                    ApplicationState.isUserAuthenticated && recipeData.editable ?
                         <CardActions className={classes.cardActionForOwnRecipes} disableActionSpacing>
                             <React.Fragment>
                                 <Link to={ApplicationRoutes.editRecipePath + "/" + recipeData.id}>
@@ -207,7 +208,7 @@ class DishbraryRecipeCard extends React.Component {
                         : ""
                 }
                 {
-                    (recipeData.likeable && !isRecipeFavourite) || recipeRemovedFromFavourites ?
+                    ApplicationState.isUserAuthenticated && ((recipeData.likeable && !isRecipeFavourite) || recipeRemovedFromFavourites) ?
                         <CardActions disableActionSpacing>
                             <Tooltip title="Kedvencekhez adás" aria-label="add-to-fav">
                                 <IconButton aria-label="add to favorites" onClick={this.addRecipeToFavourites(recipeData.id)}>
@@ -218,7 +219,7 @@ class DishbraryRecipeCard extends React.Component {
                         : ""
                 }
                 {
-                    isRecipeFavourite ?
+                    ApplicationState.isUserAuthenticated && isRecipeFavourite ?
                         <CardActions disableActionSpacing>
                             <Tooltip title="Eltávolítás a kedvencekhez közül" aria-label="remove-from-fav">
                                 <IconButton aria-label="remove from favorites" onClick={this.deleteRecipeFromFavourites(recipeData.id)}>

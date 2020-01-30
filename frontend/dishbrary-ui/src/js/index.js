@@ -14,6 +14,8 @@ import CreateRecipeView from './components/view/CreateRecipeView';
 import EditRecipeView from './components/view/EditRecipeView';
 import RecipeView from './components/view/RecipeView';
 
+import userStatusChecker from "./services/UserStatusChecker";
+
 function DishbraryApp() {
     return (
         <React.Fragment>

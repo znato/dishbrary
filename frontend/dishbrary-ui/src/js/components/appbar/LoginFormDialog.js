@@ -92,7 +92,7 @@ class LoginFormDialog extends React.Component {
     handleLoginSuccess = (user) => {
         this.handleClose();
 
-        messagingService.publish(eventType.loginSuccess, user);
+        messagingService.publish(eventType.userLoggedIn, user);
     };
 
     handleLoginFailure = (errorMessage) => {

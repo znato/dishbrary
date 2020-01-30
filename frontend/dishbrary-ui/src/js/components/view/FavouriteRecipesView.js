@@ -14,6 +14,11 @@ import DishbraryProgress from "../general/DishbraryProgress";
 import Pagination from "../general/Pagination";
 import DishbraryRecipeSearch from "../recipe/DishbraryRecipeSearch";
 import * as RecipeSearchContext from "../../services/constants/RecipeSearchContext";
+import AuthSection from "../general/AuthSection";
+
+import {UNAUTHORIZED_MESSAGE} from "../../config/Constants";
+import messagingService from "../../services/messaging/MessagingService";
+import {eventType} from "../../config/MessageConstants";
 
 const styles = theme => ({
     root: {
@@ -29,6 +34,7 @@ const styles = theme => ({
 });
 
 class FavouriteRecipesView extends React.Component {
+    isMounted = false;
 
     constructor(props) {
         super(props);
@@ -41,11 +47,31 @@ class FavouriteRecipesView extends React.Component {
             totalElement: null,
             totalPages: null,
             errorMessage: null
-        }
+        };
+
+        messagingService.subscribe(eventType.userLoggedIn, () => {
+            if (this.isMounted) {
+                //avoid component update in case it is not mounted
+                this.fetchUserFavouriteRecipes();
+            }
+        });
+
+        messagingService.subscribe(eventType.userLoggedOut, () => {
+            if (this.isMounted) {
+                //avoid component update in case it is not mounted
+                this.forceUpdate();
+            }
+        });
     }
 
     componentDidMount() {
+        this.isMounted = true;
+
         this.fetchUserFavouriteRecipes();
+    }
+
+    componentWillUnmount() {
+        this.isMounted = false;
     }
 
     fetchUserFavouriteRecipes = (pageNumber) => {
@@ -123,7 +149,8 @@ class FavouriteRecipesView extends React.Component {
             //actual page indexed from zero while totalPages is the number of the pages
             if (recipes.length == 1 && actualPage == totalPages - 1) {
                 recipeCards.push(
-                    <DishbraryRecipeCard key={recipes[0].id} recipeData={recipes[0]} onDeleteSuccess={() => this.changePage(actualPage - 1)}/>
+                    <DishbraryRecipeCard key={recipes[0].id} recipeData={recipes[0]}
+                                         onDeleteSuccess={() => this.changePage(actualPage - 1)}/>
                 );
             } else {
                 recipeCards = recipes.map(recipe => {
@@ -139,31 +166,35 @@ class FavouriteRecipesView extends React.Component {
                     Kedvenc receptek
                 </Typography>
 
-                {
-                    loadingState === LoadingState.inProgress
-                        ?
-                        <DishbraryProgress/>
-                        :
-                        loadingState === LoadingState.none
+                <AuthSection unauthorizedMessage={UNAUTHORIZED_MESSAGE}>
+                    {
+                        loadingState === LoadingState.inProgress
                             ?
-                            ""
+                            <DishbraryProgress/>
                             :
-                            loadingState === LoadingState.error
+                            loadingState === LoadingState.none
                                 ?
-                                <Typography>{errorMessage}</Typography>
+                                ""
                                 :
-                                (
-                                    <React.Fragment>
-                                        <DishbraryRecipeSearch searchCriteria={searchCriteria} onSearchTrigger={this.triggerSearch}/>
+                                loadingState === LoadingState.error
+                                    ?
+                                    <Typography>{errorMessage}</Typography>
+                                    :
+                                    (
+                                        <React.Fragment>
+                                            <DishbraryRecipeSearch searchCriteria={searchCriteria}
+                                                                   onSearchTrigger={this.triggerSearch}/>
 
-                                        <div id="recipe-card-container" className={classes.recipeCardContainer}>
-                                            <Pagination totalPages={totalPages} actualPage={actualPage} onPageChange={this.changePage}>
-                                                {recipeCards}
-                                            </Pagination>
-                                        </div>
-                                    </React.Fragment>
-                                )
-                }
+                                            <div id="recipe-card-container" className={classes.recipeCardContainer}>
+                                                <Pagination totalPages={totalPages} actualPage={actualPage}
+                                                            onPageChange={this.changePage}>
+                                                    {recipeCards}
+                                                </Pagination>
+                                            </div>
+                                        </React.Fragment>
+                                    )
+                    }
+                </AuthSection>
             </Paper>
         )
     }

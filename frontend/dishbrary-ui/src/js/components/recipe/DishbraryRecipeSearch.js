@@ -92,7 +92,7 @@ class DishbraryRecipeSearch extends React.Component {
 
         this.state = {
             advancedSearchOptionsOpen: false,
-            searchText: passedSearchText,
+            searchText: passedSearchText || "",
             ingredients: [],
             selectedIngredients: passedIngredientSelection || [],
             categories: [],

@@ -30,9 +30,9 @@ class UserManagementBlock extends React.Component {
             registerDialogOpened: false
         }
 
-        messagingService.subscribe(eventType.loginSuccess, this.handleLoginSuccess);
-
-        this.loginFormRef = React.createRef();
+        messagingService.subscribe(eventType.userLoggedIn, this.handleLoginSuccess);
+        messagingService.subscribe(eventType.userAuthenticated, this.handleLoginSuccess);
+        messagingService.subscribe(eventType.userLoggedOut, this.handleLogoutSuccess);
     }
 
     openLoginDialog = () => {
@@ -55,13 +55,17 @@ class UserManagementBlock extends React.Component {
         this.setState({loggedIn: true});
     }
 
+    handleLogoutSuccess = () => {
+        this.setState({loggedIn: false});
+    }
+
     logout = () => {
         userService.logout()
             .then(jsonResponse => {
                 if (jsonResponse.error) {
                     //todo: handle logout error
                 } else {
-                    messagingService.publish("logoutSuccess");
+                    messagingService.publish(eventType.userLoggedOut);
                     this.setState({loggedIn: false});
                 }
         })

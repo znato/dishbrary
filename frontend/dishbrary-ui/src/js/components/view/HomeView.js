@@ -14,6 +14,8 @@ import * as ArrayUtils from '../../services/utils/ArrayUtils';
 import DishbraryProgress from "../general/DishbraryProgress";
 import Pagination from "../general/Pagination";
 import DishbraryRecipeSearch from "../recipe/DishbraryRecipeSearch";
+import messagingService from "../../services/messaging/MessagingService";
+import {eventType} from "../../config/MessageConstants";
 
 const styles = theme => ({
     root: {
@@ -29,6 +31,7 @@ const styles = theme => ({
 });
 
 class HomeView extends React.Component {
+    isMounted = false;
 
     constructor(props) {
         super(props);
@@ -41,11 +44,24 @@ class HomeView extends React.Component {
             actualPage: 0,
             totalElement: null,
             totalPages: null,
-        }
+        };
+
+        messagingService.subscribe(eventType.userLoggedOut, () => {
+            if (this.isMounted) {
+                //avoid component update in case it is not mounted
+                this.forceUpdate();
+            }
+        });
     }
 
     componentDidMount() {
+        this.isMounted = true;
+
         this.fetchRandomRecipes();
+    }
+
+    componentWillUnmount() {
+        this.isMounted = false;
     }
 
     fetchRandomRecipes = () => {

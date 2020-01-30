@@ -3,6 +3,7 @@ import * as DishbraryServerRestClient from "./utils/DishbraryServerRestClient";
 const loginPath = "user/login";
 const logoutPath = "user/logout";
 const registrationPath = "user/register";
+const isAuthenticatedPath = "user/authenticated";
 
 class UserService {
 
@@ -19,6 +20,10 @@ class UserService {
 
     register = (userData) => {
         return DishbraryServerRestClient.post(registrationPath, userData);
+    }
+
+    isUserAuthenticated = () => {
+        return DishbraryServerRestClient.get(isAuthenticatedPath);
     }
 }
 

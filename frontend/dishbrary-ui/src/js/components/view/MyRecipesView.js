@@ -14,6 +14,10 @@ import DishbraryProgress from "../general/DishbraryProgress";
 import Pagination from "../general/Pagination";
 import DishbraryRecipeSearch from "../recipe/DishbraryRecipeSearch";
 import * as RecipeSearchContext from "../../services/constants/RecipeSearchContext";
+import messagingService from "../../services/messaging/MessagingService";
+import {eventType} from "../../config/MessageConstants";
+import {UNAUTHORIZED_MESSAGE} from "../../config/Constants";
+import AuthSection from "../general/AuthSection";
 
 const styles = theme => ({
     root: {
@@ -29,6 +33,7 @@ const styles = theme => ({
 });
 
 class MyRecipesView extends React.Component {
+    isMounted = false;
 
     constructor(props) {
         super(props);
@@ -41,11 +46,31 @@ class MyRecipesView extends React.Component {
             totalElement: null,
             totalPages: null,
             errorMessage: null
-        }
+        };
+
+        messagingService.subscribe(eventType.userLoggedIn, () => {
+            if (this.isMounted) {
+                //avoid component update in case it is not mounted
+                this.fetchUserRecipes();
+            }
+        });
+
+        messagingService.subscribe(eventType.userLoggedOut, () => {
+            if (this.isMounted) {
+                //avoid component update in case it is not mounted
+                this.forceUpdate();
+            }
+        });
     }
 
     componentDidMount() {
+        this.isMounted = true;
+
         this.fetchUserRecipes();
+    }
+
+    componentWillUnmount() {
+        this.isMounted = false;
     }
 
     fetchUserRecipes = (pageNumber) => {
@@ -123,8 +148,9 @@ class MyRecipesView extends React.Component {
             //actual page indexed from zero while totalPages is the number of the pages
             if (recipes.length == 1 && actualPage == totalPages - 1) {
                 recipeCards.push(
-                    <DishbraryRecipeCard key={recipes[0].id} recipeData={recipes[0]} onDeleteSuccess={() => this.changePage(actualPage - 1)}/>
-                    );
+                    <DishbraryRecipeCard key={recipes[0].id} recipeData={recipes[0]}
+                                         onDeleteSuccess={() => this.changePage(actualPage - 1)}/>
+                );
             } else {
                 recipeCards = recipes.map(recipe => {
                     return (<DishbraryRecipeCard key={recipe.id} recipeData={recipe}
@@ -139,31 +165,35 @@ class MyRecipesView extends React.Component {
                     Saját receptek
                 </Typography>
 
-                {
-                    loadingState === LoadingState.inProgress
-                    ?
-                    <DishbraryProgress/>
-                    :
-                        loadingState === LoadingState.none
-                        ?
-                        ""
-                        :
-                        loadingState === LoadingState.error
-                        ?
-                            <Typography>{errorMessage}</Typography>
-                        :
-                        (
-                            <React.Fragment>
-                                <DishbraryRecipeSearch searchCriteria={searchCriteria} onSearchTrigger={this.triggerSearch}/>
+                <AuthSection unauthorizedMessage={UNAUTHORIZED_MESSAGE}>
+                    {
+                        loadingState === LoadingState.inProgress
+                            ?
+                            <DishbraryProgress/>
+                            :
+                            loadingState === LoadingState.none
+                                ?
+                                ""
+                                :
+                                loadingState === LoadingState.error
+                                    ?
+                                    <Typography>{errorMessage}</Typography>
+                                    :
+                                    (
+                                        <React.Fragment>
+                                            <DishbraryRecipeSearch searchCriteria={searchCriteria}
+                                                                   onSearchTrigger={this.triggerSearch}/>
 
-                                <div id="recipe-card-container" className={classes.recipeCardContainer}>
-                                    <Pagination totalPages={totalPages} actualPage={actualPage} onPageChange={this.changePage}>
-                                        {recipeCards}
-                                    </Pagination>
-                                </div>
-                            </React.Fragment>
-                        )
-                }
+                                            <div id="recipe-card-container" className={classes.recipeCardContainer}>
+                                                <Pagination totalPages={totalPages} actualPage={actualPage}
+                                                            onPageChange={this.changePage}>
+                                                    {recipeCards}
+                                                </Pagination>
+                                            </div>
+                                        </React.Fragment>
+                                    )
+                    }
+                </AuthSection>
             </Paper>
         )
     }

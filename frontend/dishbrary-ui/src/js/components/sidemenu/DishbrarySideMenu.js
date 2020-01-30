@@ -8,10 +8,18 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText'
 
 import {Link} from "react-router-dom";
-import {homePath, calorieTablePath, createRecipePath, userOwnRecipesPath, favouriteRecipesPath} from '../../config/ApplicationRoutes';
+import {
+    homePath,
+    calorieTablePath,
+    createRecipePath,
+    userOwnRecipesPath,
+    favouriteRecipesPath
+} from '../../config/ApplicationRoutes';
 
 import {Home, Create, AccountBox, Favorite} from '@material-ui/icons';
 import CalorieIcon from '../icons/CalorieIcon';
+
+import AuthSection from '../general/AuthSection';
 
 const styles = {
     link: {
@@ -34,16 +42,19 @@ const menuItems = [
         title: 'Saját receptek',
         icon: AccountBox,
         linkTo: userOwnRecipesPath,
+        authRequired: true,
     },
     {
         title: 'Kedvenc receptek',
         icon: Favorite,
         linkTo: favouriteRecipesPath,
+        authRequired: true,
     },
     {
         title: 'Új recept',
         icon: Create,
         linkTo: createRecipePath,
+        authRequired: true,
     }
 ]
 
@@ -71,22 +82,35 @@ class DishbrarySideMenu extends React.Component {
             <SwipeableDrawer onClose={this.onClose} onOpen={this.onOpen} open={open}>
                 <List>
                     {
-                        menuItems.map((menuItem, index) => (
-                            <ListItem button key={menuItem.title} id={index} onClick={this.onClose}>
-                                <ListItemIcon>
-                                    {
-                                        typeof menuItem.color === 'undefined'
-                                            ?
-                                            <menuItem.icon/>
-                                            :
-                                            <menuItem.icon nativeColor={menuItem.color}/>
-                                    }
-                                </ListItemIcon>
-                                <Link to={menuItem.linkTo} className={classes.link}>
-                                    <ListItemText primary={menuItem.title}/>
-                                </Link>
-                            </ListItem>
-                        ))}
+                        menuItems.map((menuItem, index) => {
+                            const menuHtml =
+                                <ListItem button key={menuItem.title} id={index} onClick={this.onClose}>
+                                    <ListItemIcon>
+                                        {
+                                            typeof menuItem.color === 'undefined'
+                                                ?
+                                                <menuItem.icon/>
+                                                :
+                                                <menuItem.icon nativeColor={menuItem.color}/>
+                                        }
+                                    </ListItemIcon>
+                                    <Link to={menuItem.linkTo} className={classes.link}>
+                                        <ListItemText primary={menuItem.title}/>
+                                    </Link>
+                                </ListItem>
+
+                            if (menuItem.authRequired) {
+                                return (
+                                    <AuthSection key={"auth-" + menuItem.title}>
+                                        {menuHtml}
+                                    </AuthSection>
+                                )
+                            } else {
+                                return menuHtml;
+                            }
+
+
+                        })}
                 </List>
             </SwipeableDrawer>
         );

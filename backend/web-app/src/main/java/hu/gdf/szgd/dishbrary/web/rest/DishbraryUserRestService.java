@@ -1,6 +1,7 @@
 package hu.gdf.szgd.dishbrary.web.rest;
 
 import hu.gdf.szgd.dishbrary.security.DishbraryUser;
+import hu.gdf.szgd.dishbrary.security.SecurityUtils;
 import hu.gdf.szgd.dishbrary.service.UserService;
 import hu.gdf.szgd.dishbrary.web.exception.UserAlreadyExistsException;
 import hu.gdf.szgd.dishbrary.web.model.DishbraryResponse;
@@ -83,5 +84,13 @@ public class DishbraryUserRestService {
 					.entity(response)
 					.build();
 		}
+	}
+
+	@GET
+	@Path("/authenticated")
+	public Response isSessionAuthenticated() {
+		return Response.ok(
+				new DishbraryResponse<>(SecurityUtils.isSessionAuthenticated())
+		).build();
 	}
 }
