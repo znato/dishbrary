@@ -17,6 +17,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 import {Link} from "react-router-dom";
 
+import {isNotBlank} from '../../services/utils/StringUtils';
 import * as ApplicationRoutes from '../../config/ApplicationRoutes';
 
 import recipeService from "../../services/RecipeService";
@@ -25,6 +26,8 @@ import ApplicationState from "../../ApplicationState";
 
 const styles = theme => ({
     card: {
+        minWidth: 290,
+        minHeight: 460,
         maxWidth: 345,
         display: "inline-block",
         margin: "0 5px 0 5px",
@@ -151,17 +154,26 @@ class DishbraryRecipeCard extends React.Component {
             recipeName = recipeName.substring(0, 20) + "...";
         }
 
+        const ownerAvatar = isNotBlank(recipeData.owner.profileImageUrl)
+            ? (
+                <Avatar aria-label="recipe" src={recipeData.owner.profileImageUrl} />
+            )
+            : (
+                <Avatar aria-label="recipe" className={classes.avatar}>
+                    {recipeData.owner.username.charAt(0)}
+                </Avatar>
+            );
+
+        const cDate = new Date(recipeData.creationDate);
+        const formattedCreationDate = cDate.getFullYear() + "/" + (cDate.getMonth() + 1) + "/" + cDate.getDate();
+
         return (
             <Card className={classes.card}>
                 <Link to={ApplicationRoutes.viewRecipePath + "/" + recipeData.id}>
                     <CardHeader
-                        avatar={
-                            <Avatar aria-label="recipe" className={classes.avatar}>
-                                {recipeData.owner.username.charAt(0)}
-                            </Avatar>
-                        }
+                        avatar={ownerAvatar}
                         title={recipeName}
-                        subheader={recipeData.creationDate}
+                        subheader={formattedCreationDate}
                     />
                     <CardMedia
                         className={classes.media}
