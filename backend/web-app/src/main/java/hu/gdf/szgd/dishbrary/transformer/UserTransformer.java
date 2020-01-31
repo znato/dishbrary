@@ -1,5 +1,6 @@
 package hu.gdf.szgd.dishbrary.transformer;
 
+import hu.gdf.szgd.dishbrary.StaticResourceComponentType;
 import hu.gdf.szgd.dishbrary.db.entity.Right;
 import hu.gdf.szgd.dishbrary.db.entity.Role;
 import hu.gdf.szgd.dishbrary.db.entity.User;
@@ -10,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +20,8 @@ import java.util.List;
 @Component
 @Log4j2
 public class UserTransformer {
+
+	public static String PROFILE_IMG_BASE_URL = "/rest/resource/image/" + StaticResourceComponentType.USER.name().toLowerCase() + "/";
 
 	@Autowired
 	private GenericReflectionBasedTransformer genericTransformer;
@@ -31,11 +35,28 @@ public class UserTransformer {
 
 		DishbraryUser dishbraryUser = genericTransformer.transform(user, new DishbraryUser(), config);
 
+		if (StringUtils.hasText(user.getProfileImageFileName())) {
+			dishbraryUser.setProfileImageUrl(PROFILE_IMG_BASE_URL + user.getId() + "/" + user.getProfileImageFileName());
+		}
+
 		if (!TransformerConfig.isFieldExcludedInConfig(config, "grantedAuthorities")) {
 			dishbraryUser.setGrantedAuthorities(mapRoleForUser(user));
 		}
 
 		return dishbraryUser;
+	}
+
+	public User transformForUpdate(User userToUpdate, DishbraryUser newData) {
+		userToUpdate.setUsername(newData.getUsername());
+		userToUpdate.setFirstName(newData.getFirstName());
+		userToUpdate.setLastName(newData.getLastName());
+		userToUpdate.setEmail(newData.getEmail());
+
+		if (StringUtils.hasText(newData.getPassword())) {
+			userToUpdate.setPassword(newData.getPassword());
+		}
+
+		return userToUpdate;
 	}
 
 	public User transformDishbraryUser(DishbraryUser dishbraryUser) {

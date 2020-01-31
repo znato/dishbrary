@@ -4,6 +4,7 @@ const loginPath = "user/login";
 const logoutPath = "user/logout";
 const registrationPath = "user/register";
 const userDataPath = "user/data";
+const saveUserDataPath = "user/data/save";
 const isAuthenticatedPath = "user/authenticated";
 
 class UserService {
@@ -25,6 +26,10 @@ class UserService {
 
     getUserData = () => {
         return DishbraryServerRestClient.get(userDataPath);
+    }
+
+    saveUserData = (userFormData) => {
+        return DishbraryServerRestClient.postFormData(saveUserDataPath, userFormData);
     }
 
     isUserAuthenticated = () => {

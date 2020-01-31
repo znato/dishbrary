@@ -51,6 +51,10 @@ public class ResourcePathService {
 		return getBasePathForComponentType(componentType) + getRemainingPathForRecipeByComponentSubType(recipeOwnerId, recipeId, componentSubType);
 	}
 
+	public String getFullResourceDirectoryPathForUserProfileImage(Long userId) {
+		return getBasePathForComponentType(StaticResourceComponentType.USER) + "/" + userId + "/profileImg/";
+	}
+
 	public Map<String, String> getImageBasePathByComponentName() {
 		return imageBasePathByComponentName;
 	}

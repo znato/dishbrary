@@ -7,6 +7,7 @@ import hu.gdf.szgd.dishbrary.security.DishbraryUser;
 import hu.gdf.szgd.dishbrary.security.SecurityUtils;
 import hu.gdf.szgd.dishbrary.transformer.UserTransformer;
 import hu.gdf.szgd.dishbrary.web.exception.UserAlreadyExistsException;
+import hu.gdf.szgd.dishbrary.web.model.FileResource;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -14,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
 import java.util.Date;
@@ -36,6 +38,8 @@ public class UserService {
 	private PasswordEncoder passwordEncoder;
 	@Autowired
 	private UserTransformer userTransformer;
+	@Autowired
+	private StaticResourceService staticResourceService;
 
 	private static final ExecutorService REGISTER_USER_LOGIN_ACTION_EXECUTOR = Executors.newFixedThreadPool(5);
 
@@ -95,6 +99,33 @@ public class UserService {
 
 		return userTransformer.transformUser(newUser);
 
+	}
+
+	@Transactional
+	public void updateUserData(DishbraryUser updatedUser, FileResource profileImageResource, boolean deleteProfileImage) {
+		Long userId = SecurityUtils.getDishbraryUserFromContext().getId();
+
+		User userFromDb = userRepository.findById(userId).get();
+
+		if (StringUtils.hasText(updatedUser.getPassword())) {
+			updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+		}
+
+		User newUserState = userTransformer.transformForUpdate(userFromDb, updatedUser);
+
+		if (profileImageResource != null) {
+			staticResourceService.saveUserProfileImageForUser(userFromDb, profileImageResource);
+
+			newUserState.setProfileImageFileName(profileImageResource.getFileName());
+
+			SecurityUtils.getDishbraryUserFromContext().setProfileImageUrl(UserTransformer.PROFILE_IMG_BASE_URL + userId + "/" + profileImageResource.getFileName());
+		} else if (deleteProfileImage) {
+			staticResourceService.removeProfileImageForUser(userId, userFromDb.getProfileImageFileName());
+			newUserState.setProfileImageFileName(null);
+			SecurityUtils.getDishbraryUserFromContext().setProfileImageUrl(null);
+		}
+
+		userRepository.save(newUserState);
 	}
 
 	private void registerUserLoginAction(DishbraryUser user) {

@@ -63,4 +63,19 @@ public class StaticResourceDeliveryRestService {
 			throw new NotFoundException(e);
 		}
 	}
+
+	@GET
+	@Path("/image/user/{userId}/{profileImgName}")
+	@Produces("image/png")
+	public Response getProfileImgForuser(
+			@PathParam("userId") Long userId,
+			@PathParam("profileImgName") String profileImgName) {
+		try {
+			return Response.ok(
+					staticResourceService.getProfileImageForUser(userId, profileImgName)
+			).build();
+		} catch (ResourceNotFoundException e) {
+			throw new NotFoundException(e);
+		}
+	}
 }

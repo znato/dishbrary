@@ -2,6 +2,7 @@ package hu.gdf.szgd.dishbrary.service;
 
 import hu.gdf.szgd.dishbrary.StaticResourceComponentType;
 import hu.gdf.szgd.dishbrary.StaticResourceComponentType.StaticResourceComponentSubType;
+import hu.gdf.szgd.dishbrary.db.entity.User;
 import hu.gdf.szgd.dishbrary.db.repository.UserRepository;
 import hu.gdf.szgd.dishbrary.security.SecurityUtils;
 import hu.gdf.szgd.dishbrary.service.exception.ResourceCannotBeSavedException;
@@ -44,6 +45,22 @@ public class StaticResourceService {
 		String basePathForComponent = resourcePathService.getBasePathForComponentType(componentType);
 
 		File image = new File(basePathForComponent, imgName);
+
+		if (log.isDebugEnabled()) {
+			log.debug("Image requested from the following location: {}", image.getAbsolutePath());
+		}
+
+		if (!image.exists()) {
+			throw new ResourceNotFoundException("Cannot find resource: " + image.getAbsolutePath());
+		}
+
+		return image;
+	}
+
+	public File getProfileImageForUser(Long userId, String imgName) throws ResourceNotFoundException {
+		String basePathForProfileImg = resourcePathService.getFullResourceDirectoryPathForUserProfileImage(userId);
+
+		File image = new File(basePathForProfileImg, imgName);
 
 		if (log.isDebugEnabled()) {
 			log.debug("Image requested from the following location: {}", image.getAbsolutePath());
@@ -213,6 +230,53 @@ public class StaticResourceService {
 		recipeService.saveImagesToRecipe(recipe);
 
 		removeOldImagesFromDirectory(basePathToSaveResource, recipe);
+	}
+
+	public void saveUserProfileImageForUser(User user, FileResource profileImageResource) {
+
+		if (StringUtils.hasText(user.getProfileImageFileName())) {
+			removeProfileImageForUser(user.getId(), user.getProfileImageFileName());
+		}
+
+		String profileImgDirName = resourcePathService.getFullResourceDirectoryPathForUserProfileImage(user.getId());
+
+		File directoryToSaveIn = new File(profileImgDirName);
+
+		if (!directoryToSaveIn.exists()) {
+			log.info("Image directory does not exist for user with id: {}! Creating directory: {}", user.getId(), profileImageResource);
+			directoryToSaveIn.mkdirs();
+		}
+
+		InputStream inputStream = profileImageResource.getInputStream();
+
+		try (OutputStream out = new FileOutputStream(new File(directoryToSaveIn, profileImageResource.getFileName()))) {
+			int read = 0;
+			byte[] bytes = new byte[1024];
+
+			while ((read = inputStream.read(bytes)) != -1) {
+				out.write(bytes, 0, read);
+			}
+
+			log.info("The following image is saved for user with id: {}, image name: {}", user.getId(), profileImgDirName + profileImageResource.getFileName());
+		} catch (Exception ex) {
+			//clean up all files if some cannot be saved
+
+			log.error("An exception occurred while saving profile image for user with id: {}!", user.getId(), ex);
+
+			throw new ResourceCannotBeSavedException("A kiválasztott profilkép mentése közben hiba lépett fel. Kérlek próbald újra!");
+		}
+	}
+
+	public void removeProfileImageForUser(Long userId, String fileName) {
+		String profileImgDirName = resourcePathService.getFullResourceDirectoryPathForUserProfileImage(userId);
+
+		File profileImg = new File(profileImgDirName, fileName);
+
+		if (profileImg.exists()) {
+			log.debug("Deleting old profile image for user! UserId: {}, fileName: {}", userId, profileImg.getAbsolutePath());
+
+			profileImg.delete();
+		}
 	}
 
 	private void removeOldVideoFromDirectory(String dirName,  RecipeRestModel recipeWithNewVideo) {

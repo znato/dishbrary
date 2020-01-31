@@ -36,6 +36,7 @@ dishbrary:
         name: default-recipe-cover-image.png
   resources:
     imageBasePathByComponentName:
+      user: /home/znato/work/szakdolgozat/dishbrary-assets/
       cuisine: /home/znato/work/szakdolgozat/dishbrary/cuisine_icons/
       ingredient: /path/to/ingredientImages/
       recipe: /home/znato/work/szakdolgozat/dishbrary-assets/
