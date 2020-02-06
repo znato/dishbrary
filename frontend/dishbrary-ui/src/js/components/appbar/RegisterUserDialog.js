@@ -192,7 +192,7 @@ class RegisterUserDialog extends React.Component {
                                 <InputLabel htmlFor="reg-firstname">Keresztnév</InputLabel>
                                 <Input id="reg-firstname" name="reg-firstname" autoComplete="off"/>
                             </FormControl>
-                            <FormControl margin="normal" fullWidth>
+                            <FormControl margin="normal" required fullWidth>
                                 <InputLabel htmlFor="reg-email">Email cím</InputLabel>
                                 <Input id="reg-email" name="reg-email" type="email" autoComplete="off"/>
                             </FormControl>

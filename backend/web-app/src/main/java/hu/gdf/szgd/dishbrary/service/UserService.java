@@ -5,8 +5,8 @@ import hu.gdf.szgd.dishbrary.db.repository.RoleRepository;
 import hu.gdf.szgd.dishbrary.db.repository.UserRepository;
 import hu.gdf.szgd.dishbrary.security.DishbraryUser;
 import hu.gdf.szgd.dishbrary.security.SecurityUtils;
+import hu.gdf.szgd.dishbrary.service.exception.DishbraryValidationException;
 import hu.gdf.szgd.dishbrary.transformer.UserTransformer;
-import hu.gdf.szgd.dishbrary.web.exception.UserAlreadyExistsException;
 import hu.gdf.szgd.dishbrary.web.model.FileResource;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,15 +81,9 @@ public class UserService {
 	}
 
 	public DishbraryUser registerUser(DishbraryUser userData) {
-		Optional<User> existingUser = userRepository.findUserByUsername(userData.getUsername());
-
-		if (existingUser.isPresent()) {
-			throw new UserAlreadyExistsException("A megadott felhasználónév már foglalt!");
-		}
+		validateUserPropertiesUniqueness(userData);
 
 		userData.setPassword(passwordEncoder.encode(userData.getPassword()));
-
-		validateUser(userData);
 
 		User newUser = userTransformer.transformDishbraryUser(userData);
 
@@ -103,12 +97,18 @@ public class UserService {
 
 	@Transactional
 	public void updateUserData(DishbraryUser updatedUser, FileResource profileImageResource, boolean deleteProfileImage) {
-		Long userId = SecurityUtils.getDishbraryUserFromContext().getId();
+		validateUserPropertiesUniqueness(updatedUser);
 
-		User userFromDb = userRepository.findById(userId).get();
+		DishbraryUser userFromContext = SecurityUtils.getDishbraryUserFromContext();
+
+		User userFromDb = userRepository.findById(userFromContext.getId()).get();
 
 		if (StringUtils.hasText(updatedUser.getPassword())) {
-			updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+			String encodedPassword = passwordEncoder.encode(updatedUser.getPassword());
+
+			updatedUser.setPassword(encodedPassword);
+			//update user data in current session to avoid re-login
+			userFromContext.setPassword(encodedPassword);
 		}
 
 		User newUserState = userTransformer.transformForUpdate(userFromDb, updatedUser);
@@ -118,11 +118,13 @@ public class UserService {
 
 			newUserState.setProfileImageFileName(profileImageResource.getFileName());
 
-			SecurityUtils.getDishbraryUserFromContext().setProfileImageUrl(UserTransformer.PROFILE_IMG_BASE_URL + userId + "/" + profileImageResource.getFileName());
+			//update user data in current session to avoid re-login
+			userFromContext.setProfileImageUrl(UserTransformer.PROFILE_IMG_BASE_URL + userFromContext.getId() + "/" + profileImageResource.getFileName());
 		} else if (deleteProfileImage) {
-			staticResourceService.removeProfileImageForUser(userId, userFromDb.getProfileImageFileName());
+			staticResourceService.removeProfileImageForUser(userFromContext.getId(), userFromDb.getProfileImageFileName());
 			newUserState.setProfileImageFileName(null);
-			SecurityUtils.getDishbraryUserFromContext().setProfileImageUrl(null);
+			//update user data in current session to avoid re-login
+			userFromContext.setProfileImageUrl(null);
 		}
 
 		userRepository.save(newUserState);
@@ -137,10 +139,19 @@ public class UserService {
 			dbUser.setLastLoginDate(lastLoginDate);
 			userRepository.save(dbUser);
 		});
-
 	}
 
-	private DishbraryUser validateUser(DishbraryUser dishbraryUser) {
-		return dishbraryUser;
+	private void validateUserPropertiesUniqueness(DishbraryUser user) {
+		Optional<Long> existingUserId = userRepository.findUserIdByUsername(user.getUsername());
+
+		if (existingUserId.isPresent() && !existingUserId.get().equals(user.getId())) {
+			throw new DishbraryValidationException("A megadott felhasználónév már foglalt!");
+		}
+
+		existingUserId = userRepository.findUserIdByEmail(user.getEmail());
+
+		if (existingUserId.isPresent() && !existingUserId.get().equals(user.getId())) {
+			throw new DishbraryValidationException("A megadott email cím már foglalt!");
+		}
 	}
 }

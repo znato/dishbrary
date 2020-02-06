@@ -32,7 +32,7 @@ create sequence role_seq start with 3 increment by 1;
 
 create table role_rights (roles_id bigint not null, rights_id bigint not null, primary key(roles_id, rights_id) );
 
-create table user (id bigint, creation_date timestamp, modification_date timestamp, banned boolean, email varchar(255), expired boolean, first_name varchar(255), last_login_date date, last_name varchar(255), password varchar(255), profile_image_file_name varchar(255), username varchar(255), role_id bigint, primary key (id));
+create table user (id bigint, creation_date timestamp, modification_date timestamp, banned boolean, email varchar(255) unique not null, expired boolean, first_name varchar(255), last_login_date date, last_name varchar(255), password varchar(255) not null, profile_image_file_name varchar(255), username varchar(255) unique not null, role_id bigint, primary key (id));
 create sequence user_seq start with 1 increment by 1;
 
 -- *************************************************************

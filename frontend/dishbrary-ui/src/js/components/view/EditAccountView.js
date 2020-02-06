@@ -259,7 +259,7 @@ class EditAccountView extends React.Component {
         const {classes} = this.props;
         const {loadingState, user, dataEdited, selectedProfileImage, passwordChangeIntended, confirmedPassword, currentPassword, errorMessage, alertData} = this.state;
 
-        const requiredFieldAreSet = isNotBlank(user.username);
+        const requiredFieldAreSet = isNotBlank(user.username) && isNotBlank(user.email);
         const formIsChangedAndComplete = requiredFieldAreSet && ((!passwordChangeIntended && dataEdited) || (passwordChangeIntended && user.password === confirmedPassword));
 
         const readyToSave = formIsChangedAndComplete && isNotBlank(currentPassword);
@@ -362,6 +362,7 @@ class EditAccountView extends React.Component {
                                                 <TextField
                                                     label="Email cím:"
                                                     value={user.email || ""}
+                                                    error={isBlank(user.email)}
                                                     onChange={this.onUserDataChange('email')}
                                                 />
                                             </FormControl>

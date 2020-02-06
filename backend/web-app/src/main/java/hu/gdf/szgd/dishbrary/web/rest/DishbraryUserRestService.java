@@ -4,9 +4,9 @@ import hu.gdf.szgd.dishbrary.security.DishbraryUser;
 import hu.gdf.szgd.dishbrary.security.SecurityUtils;
 import hu.gdf.szgd.dishbrary.service.UserService;
 import hu.gdf.szgd.dishbrary.service.exception.DishbraryValidationException;
-import hu.gdf.szgd.dishbrary.web.exception.UserAlreadyExistsException;
 import hu.gdf.szgd.dishbrary.web.model.DishbraryResponse;
 import hu.gdf.szgd.dishbrary.web.model.FileResource;
+import hu.gdf.szgd.dishbrary.web.validation.DishbraryUserValidationUtil;
 import lombok.extern.log4j.Log4j2;
 import org.glassfish.jersey.media.multipart.BodyPart;
 import org.glassfish.jersey.media.multipart.BodyPartEntity;
@@ -80,20 +80,11 @@ public class DishbraryUserRestService {
 	@POST
 	@Path("/register")
 	public Response register(DishbraryUser userData) {
-		try {
-			return Response.ok(
-					new DishbraryResponse<>(userService.registerUser(userData))
-			).build();
-		} catch (UserAlreadyExistsException ex) {
-			DishbraryResponse response = new DishbraryResponse();
+		DishbraryUserValidationUtil.validateUser(userData, true);
 
-			response.setError(true);
-			response.setMessage("A megadott felhasználónév már foglalt!");
-
-			return Response.status(Response.Status.BAD_REQUEST)
-					.entity(response)
-					.build();
-		}
+		return Response.ok(
+				new DishbraryResponse<>(userService.registerUser(userData))
+		).build();
 	}
 
 	@POST
@@ -111,11 +102,14 @@ public class DishbraryUserRestService {
 		}
 
 		DishbraryUser userData = new DishbraryUser();
+		userData.setId(currentUser.getId());
 		userData.setUsername(multiPart.getField("username").getValue());
 		userData.setFirstName(multiPart.getField("firstName").getValue());
 		userData.setLastName(multiPart.getField("lastName").getValue());
 		userData.setEmail(multiPart.getField("email").getValue());
 		userData.setPassword(multiPart.getField("password").getValue());
+
+		DishbraryUserValidationUtil.validateUser(userData, false);
 
 		boolean profileImageDeleted = Boolean.valueOf(multiPart.getField("profileImageDeleted").getValue());
 

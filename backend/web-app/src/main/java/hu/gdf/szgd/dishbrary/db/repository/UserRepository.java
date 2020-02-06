@@ -14,4 +14,10 @@ public interface UserRepository extends CrudRepository<User, Long> {
 
 	@Query("select u.id from User u inner join u.recipes recipe where recipe.id = :recipeId")
 	Long findUserIdByRecipesId(Long recipeId);
+
+	@Query("select u.id from User u where u.username = :username")
+	Optional<Long> findUserIdByUsername(String username);
+
+	@Query("select u.id from User u where u.email = :email")
+	Optional<Long> findUserIdByEmail(String email);
 }

@@ -13,7 +13,7 @@ import java.util.List;
 @SequenceGenerator(name = AbstractEntity.ID_GENERATOR_NAME, sequenceName = "user_seq", allocationSize = 1)
 public class User extends AbstractEntity {
 
-	@Column
+	@Column(unique = true, nullable = false)
 	private String username;
 	@Column
 	private String profileImageFileName;
@@ -21,9 +21,9 @@ public class User extends AbstractEntity {
 	private String firstName;
 	@Column
 	private String lastName;
-	@Column
+	@Column(unique = true, nullable = false)
 	private String email;
-	@Column
+	@Column(nullable = false)
 	private String password;
 	@Column
 	private boolean expired;
