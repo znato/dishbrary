@@ -143,6 +143,8 @@ class MyRecipesView extends React.Component {
 
         let recipeCards = [];
 
+        let noRecipesFound = loadingState === LoadingState.loaded && ArrayUtils.isEmpty(recipes);
+
         if (ArrayUtils.isNotEmpty(recipes)) {
             //in case we are on the last page and there is only one element on it after deletion we need to fetch the actualPage - 1 page
             //actual page indexed from zero while totalPages is the number of the pages
@@ -183,6 +185,15 @@ class MyRecipesView extends React.Component {
                                         <React.Fragment>
                                             <DishbraryRecipeSearch searchCriteria={searchCriteria}
                                                                    onSearchTrigger={this.triggerSearch}/>
+
+                                            {
+                                                noRecipesFound
+                                                    ?
+                                                    <Typography>
+                                                        Nem található recept
+                                                    </Typography>
+                                                    : ""
+                                            }
 
                                             <div id="recipe-card-container" className={classes.recipeCardContainer}>
                                                 <Pagination totalPages={totalPages} actualPage={actualPage}

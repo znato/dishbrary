@@ -128,6 +128,8 @@ class HomeView extends React.Component {
 
         let recipeCards = [];
 
+        let noRecipesFound = loadingState === LoadingState.loaded && ArrayUtils.isEmpty(recipes);
+
         if (ArrayUtils.isNotEmpty(recipes)) {
             recipeCards = recipes.map(recipe => {
                 return (<DishbraryRecipeCard key={recipe.id} recipeData={recipe} onDeleteSuccess={this.fetchUserRecipes}/>)
@@ -156,6 +158,15 @@ class HomeView extends React.Component {
                                 (
                                     <React.Fragment>
                                         <DishbraryRecipeSearch searchCriteria={searchCriteria} onSearchTrigger={this.triggerSearch}/>
+
+                                        {
+                                            noRecipesFound
+                                                ?
+                                                <Typography>
+                                                    Nem található a keresésnek megfelelő recept
+                                                </Typography>
+                                                : ""
+                                        }
 
                                         <div id="recipe-card-container" className={classes.recipeCardContainer}>
                                             <Pagination totalPages={totalPages} actualPage={actualPage} onPageChange={this.changePage}>
