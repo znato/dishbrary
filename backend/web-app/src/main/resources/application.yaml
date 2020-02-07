@@ -1,27 +1,15 @@
 spring:
-  h2:
-    console:
-      enabled: true
-      path: /h2
-
-  datasource:
-    url: jdbc:h2:mem:testdb
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
-    schema: classpath:/sql/dishbrary-schema.sql
   jpa:
     hibernate:
       ddl-auto: none
 
-
 dishbrary:
   init:
-    security: true
-    ingredients: true
-    cuisines: true
-    categories: true
-    generateMockData: true
+    security: false
+    ingredients: false
+    cuisines: false
+    categories: false
+    generateMockData: false
   ingredients:
     images:
       default:
@@ -40,3 +28,42 @@ dishbrary:
       cuisine: /home/znato/work/szakdolgozat/dishbrary/cuisine_icons/
       ingredient: /path/to/ingredientImages/
       recipe: /home/znato/work/szakdolgozat/dishbrary-assets/
+
+---
+
+spring:
+  profiles: prod
+  datasource:
+    url: jdbc:postgresql://localhost:5432/dishbrary
+    username: dishbrary
+    password: qwe123
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+---
+
+spring:
+  profiles: demo, dev
+  h2:
+    console:
+      enabled: true
+      path: /h2
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+    schema: classpath:/sql/dishbrary-schema.sql
+
+dishbrary:
+  init:
+    security: true
+    ingredients: true
+    cuisines: true
+    categories: true
+    generateMockData: true
