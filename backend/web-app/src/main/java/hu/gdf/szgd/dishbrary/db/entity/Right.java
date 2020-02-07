@@ -3,15 +3,13 @@ package hu.gdf.szgd.dishbrary.db.entity;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.SequenceGenerator;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
+@Table(name = "dishbrary_right")
 @SequenceGenerator(name = AbstractEntity.ID_GENERATOR_NAME, sequenceName = "right_seq", allocationSize = 1)
 public class Right extends AbstractEntity {
 

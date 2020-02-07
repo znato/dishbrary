@@ -1,5 +1,5 @@
 -- test user, password: qwe123
-INSERT INTO USER (ID, BANNED, EXPIRED, EMAIL, FIRST_NAME, LAST_NAME, PASSWORD, USERNAME, ROLE_ID)
+INSERT INTO dishbrary_user (ID, BANNED, EXPIRED, EMAIL, FIRST_NAME, LAST_NAME, PASSWORD, USERNAME, ROLE_ID)
 VALUES (user_seq.nextval, false, false, 'test@test.com', 'FirstName', 'LastName', '$2a$10$hkYYE/B9uGMNKLeaRCrEXunO.ePdWeu1yLiTb28X3WQIOOgq2TIm.', 'test', 2);
 
 -- 1st recipe ==========================================================================================================
