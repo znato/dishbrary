@@ -8,6 +8,7 @@ import * as ApplicationRoutes from './config/ApplicationRoutes';
 import DishbraryAppBar from './components/appbar/DishbraryAppBar';
 import HomeView from './components/view/HomeView';
 import CalorieTableView from './components/view/CalorieTableView';
+import WhatIsInTheFridgeView from './components/view/WhatIsInTheFridgeView';
 import MyRecipesView from './components/view/MyRecipesView';
 import FavouriteRecipesView from './components/view/FavouriteRecipesView';
 import CreateRecipeView from './components/view/CreateRecipeView';
@@ -28,6 +29,8 @@ function DishbraryApp() {
                     <Route exact path={ApplicationRoutes.homePath} component={HomeView} />
 
                     <Route path={ApplicationRoutes.calorieTablePath} component={CalorieTableView} />
+
+                    <Route path={ApplicationRoutes.whatIsInTheFridgePath} component={WhatIsInTheFridgeView} />
 
                     <Route path={ApplicationRoutes.userOwnRecipesPath} component={MyRecipesView}/>
 

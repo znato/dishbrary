@@ -8,8 +8,8 @@ import hu.gdf.szgd.dishbrary.security.annotation.ValidateRecipeBelongsToLoggedIn
 import hu.gdf.szgd.dishbrary.service.FavouriteRecipeService;
 import hu.gdf.szgd.dishbrary.service.RecipeService;
 import hu.gdf.szgd.dishbrary.web.model.DishbraryResponse;
-import hu.gdf.szgd.dishbrary.web.model.PageableRestModel;
 import hu.gdf.szgd.dishbrary.web.model.RecipeRestModel;
+import hu.gdf.szgd.dishbrary.web.model.RecipeSearchResponseRestModel;
 import hu.gdf.szgd.dishbrary.web.model.request.RecipeSearchCriteriaRestModel;
 import hu.gdf.szgd.dishbrary.web.validation.RecipeValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,15 +52,14 @@ public class RecipeRestService {
 				break;
 		}
 
-		PageableRestModel<RecipeRestModel> searchResult = null;
+		RecipeSearchResponseRestModel searchResult = null;
 
 		switch (context) {
-			case ALL_RECIPE:
-			case USER_OWN_RECIPE:
-				searchResult = recipeService.findRecipesByContextAndCriteria(context, searchCriteria, pageNumber);
-				break;
 			case USER_FAVOURITE_RECIPES:
 				searchResult = favouriteRecipeService.findFavouriteRecipesByCriteria(searchCriteria, pageNumber);
+				break;
+			default:
+				searchResult = recipeService.findRecipesByContextAndCriteria(context, searchCriteria, pageNumber);
 				break;
 		}
 

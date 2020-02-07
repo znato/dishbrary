@@ -13,6 +13,7 @@ import hu.gdf.szgd.dishbrary.transformer.RecipeSearchCriteriaTransformer;
 import hu.gdf.szgd.dishbrary.transformer.RecipeTransformer;
 import hu.gdf.szgd.dishbrary.web.model.PageableRestModel;
 import hu.gdf.szgd.dishbrary.web.model.RecipeRestModel;
+import hu.gdf.szgd.dishbrary.web.model.RecipeSearchResponseRestModel;
 import hu.gdf.szgd.dishbrary.web.model.request.RecipeSearchCriteriaRestModel;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +71,7 @@ public class FavouriteRecipeService {
 		favouriteRecipeRepository.deleteByUserIdAndRecipeId(userId, recipeId);
 	}
 
-	public PageableRestModel<RecipeRestModel> findFavouriteRecipesByCriteria(RecipeSearchCriteriaRestModel searchCriteria, int pageNumber) {
+	public RecipeSearchResponseRestModel findFavouriteRecipesByCriteria(RecipeSearchCriteriaRestModel searchCriteria, int pageNumber) {
 		Long userId = SecurityUtils.getDishbraryUserFromContext().getId();
 
 		Pageable pageInfo = PageRequest.of(pageNumber, RecipeRepository.DEFAULT_PAGE_SIZE, Sort.by(Sort.Direction.DESC, "modificationDate"));
@@ -89,7 +90,7 @@ public class FavouriteRecipeService {
 			restModels.add(model);
 		}
 
-		return new PageableRestModel<>(restModels, pageableSearchResult.getTotalElements(), pageableSearchResult.getTotalPages());
+		return new RecipeSearchResponseRestModel(restModels, pageableSearchResult.getTotalElements(), pageableSearchResult.getTotalPages());
 	}
 
 	public PageableRestModel<RecipeRestModel> findFavouriteRecipesForUser(Long userId, int pageNumber) {

@@ -11,13 +11,14 @@ import {Link} from "react-router-dom";
 import {
     homePath,
     calorieTablePath,
+    whatIsInTheFridgePath,
     createRecipePath,
     userOwnRecipesPath,
     favouriteRecipesPath,
     editAccountPath
 } from '../../config/ApplicationRoutes';
 
-import {Home, Create, AccountBox, Favorite, AssignmentInd} from '@material-ui/icons';
+import {Home, Kitchen, Create, AccountBox, Favorite, AssignmentInd} from '@material-ui/icons';
 import CalorieIcon from '../icons/CalorieIcon';
 
 import AuthSection from '../general/AuthSection';
@@ -38,6 +39,11 @@ const menuItems = [
         title: 'Kalóriatáblázat',
         icon: CalorieIcon,
         linkTo: calorieTablePath
+    },
+    {
+        title: 'Mi van a hűtőben?',
+        icon: Kitchen,
+        linkTo: whatIsInTheFridgePath
     },
     {
         title: 'Saját receptek',

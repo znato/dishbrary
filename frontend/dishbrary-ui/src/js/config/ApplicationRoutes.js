@@ -1,5 +1,6 @@
 export const homePath = "/";
 export const calorieTablePath = "/calorieTable";
+export const whatIsInTheFridgePath = "/whatIsInTheFridge";
 export const userOwnRecipesPath = "/userOwnRecipes";
 export const createRecipePath = "/createRecipe";
 export const editRecipePath = "/editRecipe";

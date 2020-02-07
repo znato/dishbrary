@@ -15,14 +15,12 @@ import hu.gdf.szgd.dishbrary.transformer.RecipeTransformer;
 import hu.gdf.szgd.dishbrary.web.model.PageableRestModel;
 import hu.gdf.szgd.dishbrary.web.model.RecipeIngredientRestModel;
 import hu.gdf.szgd.dishbrary.web.model.RecipeRestModel;
+import hu.gdf.szgd.dishbrary.web.model.RecipeSearchResponseRestModel;
 import hu.gdf.szgd.dishbrary.web.model.request.RecipeSearchCriteriaRestModel;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -30,12 +28,15 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static hu.gdf.szgd.dishbrary.transformer.TransformerUtil.TRANSFORMER_CONFIG_FOR_RECIPE_PREVIEW;
 
 @Service
 @Log4j2
 public class RecipeService {
+
+	private static final int FETCH_SIZE_FOR_WHAT_IS_IN_THE_FRIDGE = 100;
 
 	private static final int MAX_RANDOM_RECIPES_SIZE = 10;
 	private static final BigDecimal HUNDRED = new BigDecimal(100);
@@ -53,10 +54,11 @@ public class RecipeService {
 	@Autowired
 	private RecipeSearchCriteriaTransformer criteriaTransformer;
 
-	public PageableRestModel<RecipeRestModel> findRecipesByContextAndCriteria(RecipeSearchContextType context, RecipeSearchCriteriaRestModel searchCriteria, int pageNumber) {
+	public RecipeSearchResponseRestModel findRecipesByContextAndCriteria(RecipeSearchContextType context, RecipeSearchCriteriaRestModel searchCriteria, int pageNumber) {
 		Long userId = SecurityUtils.getDishbraryUserFromContext().getId();
 
-		Page<Recipe> pageableSearchResult = null;
+		Page<Recipe> pageableSearchResult = Page.empty();
+		Page<Recipe> alternativeSearchResult = Page.empty();
 
 		Pageable pageInfo = PageRequest.of(pageNumber, RecipeRepository.DEFAULT_PAGE_SIZE, Sort.by(Sort.Direction.DESC, "modificationDate"));
 
@@ -69,13 +71,82 @@ public class RecipeService {
 			case USER_OWN_RECIPE:
 				pageableSearchResult = recipeRepository.findByOwnerIdAndSearchCriteria(userId, criteria, pageInfo);
 				break;
+			case WHAT_IS_IN_THE_FRIDGE:
+				pageableSearchResult = findRecipesByWhatIsInTheFridge(criteria, pageInfo);
+
+				if (pageableSearchResult.stream().count() == 0) {
+					alternativeSearchResult = recipeRepository.findBySearchCriteria(criteria, pageInfo);
+				}
+
+				break;
 			default:
 				throw new IllegalArgumentException("Unknown context SearchContext for RecipeService: " + context.name());
 		}
 
-		List<RecipeRestModel> restModels = recipeTransformer.transformAll(pageableSearchResult, TRANSFORMER_CONFIG_FOR_RECIPE_PREVIEW);
+		List<RecipeRestModel> recipeRestModels = recipeTransformer.transformAll(pageableSearchResult, TRANSFORMER_CONFIG_FOR_RECIPE_PREVIEW);
+		List<RecipeRestModel> alternativeRecipeRestModels = recipeTransformer.transformAll(alternativeSearchResult, TRANSFORMER_CONFIG_FOR_RECIPE_PREVIEW);
 
-		return new PageableRestModel<>(restModels, pageableSearchResult.getTotalElements(), pageableSearchResult.getTotalPages());
+		return new RecipeSearchResponseRestModel(recipeRestModels, pageableSearchResult.getTotalElements(), pageableSearchResult.getTotalPages(), alternativeRecipeRestModels);
+	}
+
+	private Page<Recipe> findRecipesByWhatIsInTheFridge(RecipeSearchCriteria searchCriteria, Pageable pageInfo) {
+		int actualPageOfRecipesWithRequestedIngredients = -1;
+
+		Page<Recipe> recipesWithRequestedIngredients;
+
+		Set<Long> ingredientIdSet = new HashSet<>(searchCriteria.getIngredientIdList());
+
+		List<Recipe> eligibleRecipes = new ArrayList<>();
+		long eligibleRecipesTotal = 0;
+		int eligibleRecipesActualPage = 0;
+
+		do {
+			Pageable recipeIdsWithRequestedIngredientsPageInfo = PageRequest.of(++actualPageOfRecipesWithRequestedIngredients, FETCH_SIZE_FOR_WHAT_IS_IN_THE_FRIDGE);
+			Pageable recipesWithRequestedIngredientsPageInfo = PageRequest.of(actualPageOfRecipesWithRequestedIngredients, FETCH_SIZE_FOR_WHAT_IS_IN_THE_FRIDGE, Sort.by(Sort.Direction.DESC, "modificationDate"));
+
+			//first get the recipe ids only
+			//in order to use as less query as possible query the recipes by id and fetch the ingredients too
+			//we cannot use one query with ingredient fetch because of the IN clause in the sql
+			//fetch would only fetch the ingredients which are given in the parameter this would cause recipes considered eligible which are not (e.g: because it has more ingredients but those are not fetched)
+			Page<Long> recipeIds = recipeRepository.findRecipeIdsByIngredientsIn(ingredientIdSet, recipeIdsWithRequestedIngredientsPageInfo);
+
+			if (recipeIds.isEmpty()) {
+				break;
+			}
+
+			recipesWithRequestedIngredients = recipeRepository.findByIdInAndFetchIngredients(recipeIds.stream().collect(Collectors.toList()), recipesWithRequestedIngredientsPageInfo);
+
+			for (Recipe recipe : recipesWithRequestedIngredients) {
+				if (recipe.getIngredients().size() > ingredientIdSet.size()) {
+					continue;
+				}
+
+				boolean recipeNotFit = false;
+
+				for (RecipeIngredient recipeIngredient : recipe.getIngredients()) {
+					Long ingredientId = recipeIngredient.getIngredient().getId();
+
+					if (!ingredientIdSet.contains(ingredientId)) {
+						recipeNotFit = true;
+						break;
+					}
+				}
+
+				if (recipeNotFit) {
+					continue;
+				}
+
+				eligibleRecipesTotal++;
+
+				eligibleRecipesActualPage = (int) eligibleRecipesTotal / RecipeRepository.DEFAULT_PAGE_SIZE;
+
+				if (eligibleRecipesActualPage == pageInfo.getPageNumber() && eligibleRecipes.size() <= RecipeRepository.DEFAULT_PAGE_SIZE) {
+					eligibleRecipes.add(recipe);
+				}
+			}
+		} while (recipesWithRequestedIngredients.getTotalPages() != actualPageOfRecipesWithRequestedIngredients);
+
+		return new PageImpl<>(eligibleRecipes, PageRequest.of(pageInfo.getPageNumber(), RecipeRepository.DEFAULT_PAGE_SIZE), eligibleRecipesTotal);
 	}
 
 	@Transactional

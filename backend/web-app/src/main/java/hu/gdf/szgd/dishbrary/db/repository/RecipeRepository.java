@@ -10,6 +10,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.Optional;
 
 @Repository
@@ -70,6 +71,14 @@ public interface RecipeRepository extends PagingAndSortingRepository<Recipe, Lon
 			")"
 	)
 	Page<Recipe> findByOwnerIdAndSearchCriteria(Long ownerId, @Param("criteria") RecipeSearchCriteria criteria, Pageable pageInfo);
+
+	@Query("select distinct r.id from Recipe r join r.ingredients recipe_ingredient where " +
+			"recipe_ingredient.ingredient.id in (:ingredientIds)")
+	Page<Long> findRecipeIdsByIngredientsIn(Collection<Long> ingredientIds, Pageable pageInfo);
+
+	@EntityGraph(Recipe.FETCH_INGREDIENTS)
+	@Query("select r from Recipe r where r.id = (:recipeIds)")
+	Page<Recipe> findByIdInAndFetchIngredients(Collection<Long> recipeIds, Pageable pageInfo);
 
 	@Query(value = "SELECT min(r.id) FROM Recipe r")
 	Long findMinId();
