@@ -21,8 +21,7 @@ public class Recipe extends AbstractEntity {
 	private User owner;
 	@Column(nullable = false)
 	private String name;
-	@Lob
-	@Column
+	@Column(columnDefinition = "TEXT")
 	private String instruction;
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "recipe")
 	private List<RecipeIngredient> ingredients;
