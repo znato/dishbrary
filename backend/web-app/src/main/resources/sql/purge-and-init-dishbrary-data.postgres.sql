@@ -13,6 +13,8 @@ CREATE DATABASE dishbrary ENCODING = 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE 
 
 ALTER DATABASE dishbrary OWNER TO znato;
 
+GRANT ALL PRIVILEGES ON DATABASE dishbrary TO dishbrary;
+
 \connect dishbrary
 
 create table category (id bigint, creation_date timestamp, modification_date timestamp, name varchar(255), primary key (id));
@@ -86,6 +88,8 @@ alter table dishbrary_role_rights add constraint FK_RoleRightsRole foreign key (
 
 alter table dishbrary_user add constraint FK_UserRole foreign key (role_id) references dishbrary_role;
 
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO dishbrary;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO dishbrary;
 
 INSERT INTO CATEGORY(id, name) VALUES (nextval('category_seq'), 'Reggeli');
 INSERT INTO CATEGORY(id, name) VALUES (nextval('category_seq'), 'Ebéd');
