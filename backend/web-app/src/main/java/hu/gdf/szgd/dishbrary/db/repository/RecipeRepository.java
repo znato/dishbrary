@@ -10,6 +10,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -20,8 +21,10 @@ public interface RecipeRepository extends PagingAndSortingRepository<Recipe, Lon
 
 	@EntityGraph(Recipe.FETCH_INGREDIENTS)
 	@Query("select r from Recipe r where r.id = :id")
+	@Transactional
 	Optional<Recipe> findByIdAndFetchIngredients(Long id);
 
+	@Transactional
 	Page<Recipe> findByOwnerId(Long userId, Pageable pageInfo);
 
 
@@ -46,6 +49,7 @@ public interface RecipeRepository extends PagingAndSortingRepository<Recipe, Lon
 				"or (recipe_ingredient.ingredient.id in (:#{#criteria.ingredientIdList}))" +
 			")"
 	)
+	@Transactional
 	Page<Recipe> findBySearchCriteria(@Param("criteria") RecipeSearchCriteria criteria, Pageable pageInfo);
 
 	@Query("select distinct r from Recipe r inner join r.ingredients recipe_ingredient left join r.categories category left join r.cuisines cuisine where " +
@@ -70,6 +74,7 @@ public interface RecipeRepository extends PagingAndSortingRepository<Recipe, Lon
 				"or (recipe_ingredient.ingredient.id in (:#{#criteria.ingredientIdList}))" +
 			")"
 	)
+	@Transactional
 	Page<Recipe> findByOwnerIdAndSearchCriteria(Long ownerId, @Param("criteria") RecipeSearchCriteria criteria, Pageable pageInfo);
 
 	@Query("select distinct r.id from Recipe r join r.ingredients recipe_ingredient where " +
@@ -78,6 +83,7 @@ public interface RecipeRepository extends PagingAndSortingRepository<Recipe, Lon
 
 	@EntityGraph(Recipe.FETCH_INGREDIENTS)
 	@Query("select r from Recipe r where r.id = (:recipeIds)")
+	@Transactional
 	Page<Recipe> findByIdInAndFetchIngredients(Collection<Long> recipeIds, Pageable pageInfo);
 
 	@Query(value = "SELECT min(r.id) FROM Recipe r")

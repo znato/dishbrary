@@ -182,6 +182,10 @@ public class RecipeService {
 		Long minRecipeId = recipeRepository.findMinId();
 		Long maxRecipeId = recipeRepository.findMaxId();
 
+		if (minRecipeId == null || maxRecipeId == null) {
+			throw new DishbraryValidationException("A recept adatbázis egyelőre üres!");
+		}
+
 		int resultSize = maxRecipeId < MAX_RANDOM_RECIPES_SIZE ? (int) (long) maxRecipeId : MAX_RANDOM_RECIPES_SIZE;
 
 		Set<Long> randomIds = new HashSet<>(resultSize);
