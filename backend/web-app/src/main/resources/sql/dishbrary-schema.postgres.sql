@@ -25,10 +25,10 @@ create table if not exists recipe_ingredient (id bigint, creation_date timestamp
 create sequence if not exists recipe_ingredient_seq start with 1 increment by 1;
 
 create table if not exists dishbrary_right (id bigint, creation_date timestamp, modification_date timestamp, name varchar(255) not null unique, primary key (id));
-create sequence if not exists right_seq start with 1 increment by 1;
+create sequence if not exists right_seq start with 13 increment by 1;
 
 create table if not exists dishbrary_role (id bigint, creation_date timestamp, modification_date timestamp, name varchar(255) not null unique , primary key (id));
-create sequence role_seq start with 1 increment by 1;
+create sequence if not exists role_seq start with 3 increment by 1;
 
 create table if not exists dishbrary_role_rights (roles_id bigint not null, rights_id bigint not null, primary key(roles_id, rights_id) );
 
