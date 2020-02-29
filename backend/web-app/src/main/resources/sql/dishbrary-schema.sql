@@ -12,7 +12,7 @@ alter table favourite_recipe add constraint UK_FavRecipeUserAndRecipeId unique (
 create table ingredient (id bigint, creation_date timestamp, modification_date timestamp, carbohydrate decimal(19,2), energykcal integer, fat decimal(19,2), image_file_name varchar(255), name varchar(255) not null unique , protein decimal(19,2), unit varchar(255), primary key (id));
 create sequence ingredient_seq start with 1 increment by 1;
 
-create table recipe (id bigint, creation_date timestamp, modification_date timestamp, additional_info varchar(255), cook_time_in_millis bigint, cover_image_file_name varchar(255), instruction clob, name varchar(255) not null, popularity_index bigint, portion integer, preparation_time_in_millis bigint, video_file_name varchar(255), owner_id bigint, primary key (id));
+create table recipe (id bigint, creation_date timestamp, modification_date timestamp, additional_info varchar(255), cook_time_in_millis bigint, cover_image_file_name varchar(255), instruction clob not null , name varchar(255) not null, popularity_index bigint, portion integer not null, preparation_time_in_millis bigint, video_file_name varchar(255), owner_id bigint, primary key (id));
 create sequence recipe_seq start with 3 increment by 1;
 
 create table recipe_additional_images_file_names (recipe_id bigint not null, additional_images_file_names varchar(255));

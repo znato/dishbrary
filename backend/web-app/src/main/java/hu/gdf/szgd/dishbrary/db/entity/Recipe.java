@@ -21,7 +21,7 @@ public class Recipe extends AbstractEntity {
 	private User owner;
 	@Column(nullable = false)
 	private String name;
-	@Column(columnDefinition = "TEXT")
+	@Column(columnDefinition = "TEXT", nullable = false)
 	private String instruction;
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "recipe")
 	private List<RecipeIngredient> ingredients;
@@ -43,7 +43,7 @@ public class Recipe extends AbstractEntity {
 	private Long preparationTimeInMillis;
 	@Column
 	private Long cookTimeInMillis;
-	@Column
+	@Column(nullable = false)
 	private Integer portion;
 	@Column
 	@Convert(converter = RecipeAdditionalInfoJsonConverter.class)

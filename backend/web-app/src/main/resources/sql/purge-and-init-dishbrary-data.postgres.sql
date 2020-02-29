@@ -34,7 +34,7 @@ create table ingredient (id bigint, creation_date timestamp, modification_date t
 ALTER TABLE ingredient OWNER TO dishbrary;
 create sequence ingredient_seq start with 1 increment by 1;
 
-create table recipe (id bigint, creation_date timestamp, modification_date timestamp, additional_info varchar(255), cook_time_in_millis bigint, cover_image_file_name varchar(255), instruction text, name varchar(255) not null, popularity_index bigint, portion integer, preparation_time_in_millis bigint, video_file_name varchar(255), owner_id bigint, primary key (id));
+create table recipe (id bigint, creation_date timestamp, modification_date timestamp, additional_info varchar(255), cook_time_in_millis bigint, cover_image_file_name varchar(255), instruction text not null, name varchar(255) not null, popularity_index bigint, portion integer not null, preparation_time_in_millis bigint, video_file_name varchar(255), owner_id bigint, primary key (id));
 ALTER TABLE recipe OWNER TO dishbrary;
 create sequence recipe_seq start with 1 increment by 1;
 
