@@ -31,7 +31,7 @@ const styles = {
 
 const menuItems = [
     {
-        title: 'Home',
+        title: 'Főoldal',
         icon: Home,
         linkTo: homePath
     },
