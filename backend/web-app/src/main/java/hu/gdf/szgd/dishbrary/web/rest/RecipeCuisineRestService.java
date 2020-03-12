@@ -12,6 +12,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import static hu.gdf.szgd.dishbrary.web.WebConstants.JSON_WITH_UTF8_ENCODING;
+import static hu.gdf.szgd.dishbrary.web.WebConstants.MAX_AGE_30_MIN;
 
 @Service
 @Path("/recipe/cuisine")
@@ -27,6 +28,8 @@ public class RecipeCuisineRestService {
 	public Response getAllCuisines() {
 		return Response.ok(
 				new DishbraryCollectionResponse<>(cuisineService.getAllCuisine())
-		).build();
+		)
+				.cacheControl(MAX_AGE_30_MIN)
+				.build();
 	}
 }
