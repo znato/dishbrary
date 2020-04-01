@@ -19,7 +19,8 @@
 
     <properties>
         <common-io.version>2.5</common-io.version>
-        <jersey.version>2.27</jersey.version>
+        <cxf.springboot.jaxrs.version>3.3.5</cxf.springboot.jaxrs.version>
+        <jackson.version>2.10.3</jackson.version>
     </properties>
 
     <dependencyManagement>
@@ -30,9 +31,14 @@
                 <version>${common-io.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.jersey.media</groupId>
-                <artifactId>jersey-media-multipart</artifactId>
-                <version>${jersey.version}</version>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-spring-boot-starter-jaxrs</artifactId>
+                <version>${cxf.springboot.jaxrs.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.jaxrs</groupId>
+                <artifactId>jackson-jaxrs-json-provider</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

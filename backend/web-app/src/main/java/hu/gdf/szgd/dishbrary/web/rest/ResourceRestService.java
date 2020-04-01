@@ -5,14 +5,18 @@ import hu.gdf.szgd.dishbrary.security.annotation.ValidateRecipeBelongsToLoggedIn
 import hu.gdf.szgd.dishbrary.service.StaticResourceService;
 import hu.gdf.szgd.dishbrary.web.model.DishbraryResponse;
 import hu.gdf.szgd.dishbrary.web.model.FileResource;
-import org.glassfish.jersey.media.multipart.*;
+import lombok.extern.log4j.Log4j2;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +26,7 @@ import static hu.gdf.szgd.dishbrary.web.WebConstants.JSON_WITH_UTF8_ENCODING;
 @Path("/resource/")
 @Consumes({MediaType.MULTIPART_FORM_DATA})
 @Produces(JSON_WITH_UTF8_ENCODING)
+@Log4j2
 public class ResourceRestService {
 
 	@Autowired
@@ -32,23 +37,24 @@ public class ResourceRestService {
 	@PreAuthorize("hasAuthority('WRITE_RECIPE')")
 	@ValidateRecipeBelongsToLoggedInUser
 	public Response uploadImage(@PathParam("recipeId") @RecipeId Long recipeId,
-						   @FormDataParam("selectedCoverImageFileName") String selectedCoverImageFileName,
-						   final FormDataMultiPart multiPart) {
+								@Multipart("selectedCoverImageFileName") String selectedCoverImageFileName,
+								final List<Attachment> attachments) {
 
-		List<BodyPart> bodyParts = multiPart.getBodyParts();
-		List<FileResource> fileResources = new ArrayList<>(bodyParts.size());
+		List<FileResource> fileResources = new ArrayList<>(attachments.size());
 
-		for (BodyPart bodyPart : bodyParts) {
-			String fileName = bodyPart.getContentDisposition().getFileName();
+		for (Attachment attachment : attachments) {
+			String fileName = attachment.getContentDisposition().getFilename();
 
 			//if filename is not filled ignore the bodypart (it can be null for non image entries like selectedCoverImageFileName which appended manually)
 			if (fileName == null) {
 				continue;
 			}
 
-			BodyPartEntity bodyPartEntity = (BodyPartEntity) bodyPart.getEntity();
-
-			fileResources.add(new FileResource(fileName, bodyPartEntity.getInputStream()));
+			try {
+				fileResources.add(new FileResource(fileName, attachment.getDataHandler().getInputStream()));
+			} catch (IOException e) {
+				log.warn("File data inputstream cannot be obtained!", e);
+			}
 		}
 
 		staticResourceService.uploadRecipeImages(recipeId, selectedCoverImageFileName, fileResources);
@@ -60,7 +66,7 @@ public class ResourceRestService {
 	@Path("recipe/{recipeId}/image/deleteAll")
 	@PreAuthorize("hasAuthority('WRITE_RECIPE')")
 	@ValidateRecipeBelongsToLoggedInUser
-	public Response uploadImage(@PathParam("recipeId") @RecipeId Long recipeId) {
+	public Response deleteAllImages(@PathParam("recipeId") @RecipeId Long recipeId) {
 		staticResourceService.deleteAllRecipeImages(recipeId);
 
 		return Response.ok(new DishbraryResponse<>("A kép(ek) sikeresen törölve!")).build();
@@ -71,26 +77,21 @@ public class ResourceRestService {
 	@PreAuthorize("hasAuthority('WRITE_RECIPE')")
 	@ValidateRecipeBelongsToLoggedInUser
 	public Response uploadVideo(@PathParam("recipeId") @RecipeId Long recipeId,
-								final FormDataMultiPart multiPart) {
+								@Multipart(value = "videoInput", required = false) Attachment videoInput) {
 
-		FileResource videoResource = null;
-
-		for (BodyPart bodyPart : multiPart.getBodyParts()) {
-			String multipartName = bodyPart.getContentDisposition().getParameters().get("name");
-
-			if ("videoInput".equals(multipartName)) {
-				BodyPartEntity bodyPartEntity = (BodyPartEntity) bodyPart.getEntity();
-				videoResource = new FileResource(bodyPart.getContentDisposition().getFileName(), bodyPartEntity.getInputStream());
-
-				break;
-			}
-		}
-
-		if (videoResource == null) {
+		if (videoInput == null || StringUtils.isEmpty(videoInput.getContentDisposition().getFilename())) {
 			throw new ClientErrorException(Response.Status.BAD_REQUEST);
 		}
 
-		staticResourceService.uploadRecipeVideo(recipeId, videoResource);
+		FileResource fileResource = null;
+
+		try {
+			fileResource = new FileResource(videoInput.getContentDisposition().getFilename(), videoInput.getDataHandler().getInputStream());
+		} catch (IOException e) {
+			log.warn("File data inputstream cannot be obtained!", e);
+		}
+
+		staticResourceService.uploadRecipeVideo(recipeId, fileResource);
 
 		return Response.ok(new DishbraryResponse<>("A videó sikeresen mentve!")).build();
 	}

@@ -1,5 +1,6 @@
 package hu.gdf.szgd.dishbrary.web.exceptionhandlers;
 
+import hu.gdf.szgd.dishbrary.web.WebConstants;
 import hu.gdf.szgd.dishbrary.web.model.DishbraryResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,7 @@ public class DishbraryGenericExceptionHandler implements ExceptionMapper<Throwab
 
 		return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 				.entity(response)
+				.type(WebConstants.JSON_WITH_UTF8_ENCODING)
 				.build();
 	}
 

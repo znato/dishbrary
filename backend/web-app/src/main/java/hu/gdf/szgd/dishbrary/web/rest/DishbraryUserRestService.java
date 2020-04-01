@@ -8,9 +8,8 @@ import hu.gdf.szgd.dishbrary.web.model.DishbraryResponse;
 import hu.gdf.szgd.dishbrary.web.model.FileResource;
 import hu.gdf.szgd.dishbrary.web.validation.DishbraryUserValidationUtil;
 import lombok.extern.log4j.Log4j2;
-import org.glassfish.jersey.media.multipart.BodyPart;
-import org.glassfish.jersey.media.multipart.BodyPartEntity;
-import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -23,6 +22,7 @@ import org.springframework.util.StringUtils;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 
 import static hu.gdf.szgd.dishbrary.web.WebConstants.JSON_WITH_UTF8_ENCODING;
 
@@ -91,11 +91,16 @@ public class DishbraryUserRestService {
 	@Path("/data/save")
 	@PreAuthorize("isAuthenticated()")
 	@Consumes({MediaType.MULTIPART_FORM_DATA})
-	public Response saveLoggedInUserData(final FormDataMultiPart multiPart) {
+	public Response saveLoggedInUserData(@Multipart(value = "currentPassword", required = false) String currentPasswordToValidateRequest,
+										 @Multipart(value = "username", required = false) String username,
+										 @Multipart(value = "firstName", required = false) String firstName,
+										 @Multipart(value = "lastName", required = false) String lastName,
+										 @Multipart(value = "email", required = false) String email,
+										 @Multipart(value = "password", required = false) String password,
+										 @Multipart(value = "profileImageDeleted", required = false) Boolean profileImageDeleted,
+										 @Multipart(value = "profileImageInput", required = false) Attachment profileImageInput) {
 
 		DishbraryUser currentUser = SecurityUtils.getDishbraryUserFromContext();
-
-		String currentPasswordToValidateRequest = multiPart.getField("currentPassword").getValue();
 
 		if (!passwordEncoder.matches(currentPasswordToValidateRequest, currentUser.getPassword())) {
 			throw new DishbraryValidationException("Helytelen jelenlegi jelszó!");
@@ -103,25 +108,24 @@ public class DishbraryUserRestService {
 
 		DishbraryUser userData = new DishbraryUser();
 		userData.setId(currentUser.getId());
-		userData.setUsername(multiPart.getField("username").getValue());
-		userData.setFirstName(multiPart.getField("firstName").getValue());
-		userData.setLastName(multiPart.getField("lastName").getValue());
-		userData.setEmail(multiPart.getField("email").getValue());
-		userData.setPassword(multiPart.getField("password").getValue());
+		userData.setUsername(username);
+		userData.setFirstName(firstName);
+		userData.setLastName(lastName);
+		userData.setEmail(email);
+		userData.setPassword(password);
 
 		DishbraryUserValidationUtil.validateUser(userData, false);
-
-		boolean profileImageDeleted = Boolean.valueOf(multiPart.getField("profileImageDeleted").getValue());
 
 		FileResource profileImageResource = null;
 
 		if (!profileImageDeleted) {
-			BodyPart profileImageBodyPart = multiPart.getField("profileImageInput");
-			String fileName = profileImageBodyPart.getContentDisposition().getFileName();
+			String fileName = profileImageInput.getContentDisposition().getFilename();
 			if (StringUtils.hasText(fileName)) {
-				BodyPartEntity bodyPartEntity = (BodyPartEntity) profileImageBodyPart.getEntity();
-
-				profileImageResource = new FileResource(fileName, bodyPartEntity.getInputStream());
+				try {
+					profileImageResource = new FileResource(fileName, profileImageInput.getDataHandler().getInputStream());
+				} catch (IOException e) {
+					log.warn("File data inputstream cannot be obtained!", e);
+				}
 			}
 		}
 

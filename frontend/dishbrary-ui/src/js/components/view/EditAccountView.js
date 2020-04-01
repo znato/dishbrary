@@ -180,7 +180,10 @@ class EditAccountView extends React.Component {
         formData.set("firstName", firstName);
         formData.set("lastName", lastName);
         formData.set("email", email);
-        formData.set("password", password);
+
+        if (isNotBlank(password)) {
+            formData.set("password", password);
+        }
         formData.set("currentPassword", this.state.currentPassword);
         formData.set("profileImageDeleted", this.state.profileImageDeleted);
 

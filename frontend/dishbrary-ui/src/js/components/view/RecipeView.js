@@ -76,7 +76,7 @@ class RecipeView extends React.Component {
 
         this.state = {
             loadingState: LoadingState.none,
-            showVideo: false,
+            showVideo: true,
             showCategories: true,
             showCuisines: true,
             showIngredients: true,

@@ -1,6 +1,7 @@
 package hu.gdf.szgd.dishbrary.web.exceptionhandlers;
 
 import hu.gdf.szgd.dishbrary.service.exception.DishbraryValidationException;
+import hu.gdf.szgd.dishbrary.web.WebConstants;
 import hu.gdf.szgd.dishbrary.web.model.DishbraryResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,7 @@ public class DishbraryValidationExceptionHandler implements ExceptionMapper<Dish
 
 		return Response.status(Response.Status.BAD_REQUEST)
 				.entity(response)
+				.type(WebConstants.JSON_WITH_UTF8_ENCODING)
 				.build();
 	}
 }

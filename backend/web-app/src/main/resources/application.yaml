@@ -3,6 +3,13 @@ spring:
     hibernate:
       ddl-auto: none
 
+cxf:
+  path: /rest
+  jaxrs:
+    component-scan: true
+    classes-scan-packages: hu.gdf.szgd.dishbrary.web.rest, com.fasterxml.jackson.jaxrs
+
+
 dishbrary:
   init:
     security: false

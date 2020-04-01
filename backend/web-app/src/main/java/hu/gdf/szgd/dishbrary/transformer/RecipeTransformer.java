@@ -1,8 +1,5 @@
 package hu.gdf.szgd.dishbrary.transformer;
 
-import static hu.gdf.szgd.dishbrary.transformer.TransformerUtil.minuteToMillis;
-import static hu.gdf.szgd.dishbrary.transformer.TransformerUtil.millisToMinute;
-
 import hu.gdf.szgd.dishbrary.db.entity.Recipe;
 import hu.gdf.szgd.dishbrary.db.entity.RecipeIngredient;
 import hu.gdf.szgd.dishbrary.security.SecurityUtils;
@@ -16,6 +13,9 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static hu.gdf.szgd.dishbrary.transformer.TransformerUtil.millisToMinute;
+import static hu.gdf.szgd.dishbrary.transformer.TransformerUtil.minuteToMillis;
 
 @Component
 @Log4j2
