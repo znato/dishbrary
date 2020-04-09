@@ -54,6 +54,7 @@ public class RecipeService {
 	@Autowired
 	private RecipeSearchCriteriaTransformer criteriaTransformer;
 
+	@Transactional
 	public RecipeSearchResponseRestModel findRecipesByContextAndCriteria(RecipeSearchContextType context, RecipeSearchCriteriaRestModel searchCriteria, int pageNumber) {
 		Long userId = SecurityUtils.getDishbraryUserFromContext().getId();
 
