@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <!-- LOG everything at INFO level -->
+<!--    appender: "FILE" is also available from base.xml-->
+    <root level="info">
+        <appender-ref ref="CONSOLE" />
+    </root>
+
+    <logger name="hu.gdf.szgd.dishbrary.transformer.GenericReflectionBasedTransformer" level="off" additivity="false" />
+
+</configuration>
+
+
