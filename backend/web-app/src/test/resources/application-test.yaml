@@ -1,0 +1,7 @@
+dishbrary:
+  resources:
+    imageBasePathByComponentName:
+      user: /undefined
+      cuisine: /undefined
+      ingredient: /undefined
+      recipe: /undefined
