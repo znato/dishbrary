@@ -206,6 +206,39 @@ public class RESTFulServiceTest extends AbstractTest {
 //		Assert.assertEquals(response.getStatus(), 401);
 	}
 
+	@Test
+	public void testDeleteRecipeWithAnonymousUser() throws JsonProcessingException {
+		ResponseEntity<String> responseEntity = restTemplate.exchange("/rest/recipe/delete/" + 2, HttpMethod.DELETE, null, String.class);
+
+		DishbraryResponse<String> response = om.readValue(responseEntity.getBody(), ResponseTypeReferences.STRING_RESPONSE_TYPE);
+
+		Assert.assertTrue(response.isError());
+
+		Assert.assertEquals(response.getStatus(), 401);
+	}
+
+	@Test
+	public void testDeleteOtherUsersRecipeWithAuthenticatedUser() throws JsonProcessingException {
+		HttpEntity request = new HttpEntity(prepareHeadersForAuthenticatedSession());
+		ResponseEntity<String> responseEntity = restTemplate.exchange("/rest/recipe/delete/" + 6, HttpMethod.DELETE, request, String.class);
+
+		DishbraryResponse<String> response = om.readValue(responseEntity.getBody(), ResponseTypeReferences.STRING_RESPONSE_TYPE);
+
+		Assert.assertTrue(response.isError());
+
+		Assert.assertEquals(response.getStatus(), 400);
+	}
+
+	@Test
+	public void testDeleteOwnRecipeWithAuthenticatedUser() throws JsonProcessingException {
+		HttpEntity request = new HttpEntity(prepareHeadersForAuthenticatedSession());
+		ResponseEntity<String> responseEntity = restTemplate.exchange("/rest/recipe/delete/" + 3, HttpMethod.DELETE, request, String.class);
+
+		DishbraryResponse<String> response = om.readValue(responseEntity.getBody(), ResponseTypeReferences.STRING_RESPONSE_TYPE);
+
+		Assert.assertFalse(response.isError());
+	}
+
 	private HttpHeaders prepareHeadersForAuthenticatedSession() {
 		ResponseEntity<String> loginResponse = restTemplate.postForEntity("/rest/user/login", loginRequest, String.class);
 		String cookie = loginResponse.getHeaders().get("Set-Cookie").get(0);
