@@ -18,4 +18,6 @@ public interface ResponseTypeReferences {
 	TypeReference<DishbraryResponse<RecipeSearchResponseRestModel>> RECIPE_SEARCH_RESPONSE_TYPE = new TypeReference<DishbraryResponse<RecipeSearchResponseRestModel>>() {};
 
 	TypeReference<DishbraryResponse<DishbraryUser>> DISHBRARY_USER_RESPONSE_TYPE = new TypeReference<DishbraryResponse<DishbraryUser>>() {};
+
+	TypeReference<DishbraryResponse<String>> STRING_RESPONSE_TYPE = new TypeReference<DishbraryResponse<String>>() {};
 }
