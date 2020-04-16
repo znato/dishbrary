@@ -9,7 +9,9 @@ import javax.annotation.Nullable;
 
 public class CommonValidationUtil {
 
-	private static final PolicyFactory POLICY_FACTORY = new HtmlPolicyBuilder().allowCommonInlineFormattingElements().toFactory();
+	private static final PolicyFactory POLICY_FACTORY = new HtmlPolicyBuilder()
+			.allowCommonInlineFormattingElements()
+			.allowCommonBlockElements().toFactory();
 
 	public static void validateAgainstXSSAttack(String text, RuntimeException throwIfInvalid) {
 		if (StringUtils.hasText(text)) {
