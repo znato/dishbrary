@@ -11,8 +11,13 @@ import ListItemText from '@material-ui/core/ListItemText'
 import {ArrowRight} from '@material-ui/icons';
 import Avatar from '@material-ui/core/Avatar';
 import Collapse from '@material-ui/core/Collapse';
+import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
+import Tooltip from "@material-ui/core/Tooltip";
+import IconButton from "@material-ui/core/IconButton"
 
 import ReactPlayer from 'react-player';
+import {Link} from "react-router-dom";
 
 import {Carousel} from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
@@ -25,6 +30,8 @@ import {LoadingState} from "../../services/constants/LoadingState";
 
 import * as ArrayUtils from '../../services/utils/ArrayUtils';
 import DishbraryProgress from "../general/DishbraryProgress";
+import ApplicationState from "../../ApplicationState";
+import * as ApplicationRoutes from "../../config/ApplicationRoutes";
 
 const styles = theme => ({
     root: {
@@ -35,6 +42,11 @@ const styles = theme => ({
         textAlign: 'center',
         background: 'url(\'' + backgroundImg + '\') no-repeat center center fixed',
         backgroundSize: 'cover'
+    },
+    editOrDelete: {
+        float: "right",
+        marginTop: "5px",
+        marginRight: "15px",
     },
     videoContainer: {
         margin: '25px auto',
@@ -313,6 +325,17 @@ class RecipeView extends React.Component {
         );
     }
 
+    deleteRecipe = (recipeId) => () => {
+        recipeService.deleteRecipe(recipeId)
+            .then(jsonResponse => {
+                if (jsonResponse.error) {
+                    //todo handele error case
+                } else {
+                    window.location.hash = "#/userOwnRecipes";
+                }
+            });
+    }
+
     render() {
         const {classes} = this.props;
         const {loadingState, recipe, errorMessage} = this.state;
@@ -349,6 +372,26 @@ class RecipeView extends React.Component {
                                 :
                                 (
                                     <div id="recipe-container" className={classes.recipeContainer}>
+                                        {
+                                            ApplicationState.isUserAuthenticated && recipe.editable ?
+                                                <div className={classes.editOrDelete}>
+                                                    <Link to={ApplicationRoutes.editRecipePath + "/" + recipe.id}>
+                                                        <Tooltip title="Recept szerkesztése" aria-label="edit-recipe">
+                                                            <IconButton aria-label="edit recipe">
+                                                                <EditIcon/>
+                                                            </IconButton>
+                                                        </Tooltip>
+                                                    </Link>
+                                                    <Tooltip title="Recept törlése" aria-label="del-recipe">
+                                                        <IconButton aria-label="delete recipe"
+                                                                    onClick={this.deleteRecipe(recipe.id)}>
+                                                            <DeleteIcon/>
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                </div>
+                                                : ""
+                                        }
+
                                         <Typography component="h1" variant="h5">
                                             {recipe.name}
                                         </Typography>
