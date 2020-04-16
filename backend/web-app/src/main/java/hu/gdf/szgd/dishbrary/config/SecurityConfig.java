@@ -28,12 +28,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		//TODO: after h2 development phase is finished enable csrf and frameOptions
 		http
 				.csrf().disable()
 				//spring boot will lookup for a bean named: corsConfigurationSource
 				.cors().and()
-				.headers().frameOptions().disable()
+				.headers().frameOptions().and()
 				.and()
 				.authorizeRequests()
 				.antMatchers("/**").permitAll()
