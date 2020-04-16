@@ -259,6 +259,8 @@ public class RecipeService {
 	@Transactional
 	public void deleteRecipeById(Long recipeId) {
 		try {
+			favouriteRecipeRepository.deleteByRecipeId(recipeId);
+
 			recipeRepository.deleteById(recipeId);
 
 			//after delete recipe from database also remove the resource directory

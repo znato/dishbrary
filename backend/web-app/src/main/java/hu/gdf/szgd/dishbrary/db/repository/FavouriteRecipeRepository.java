@@ -48,4 +48,6 @@ public interface FavouriteRecipeRepository extends CrudRepository<FavouriteRecip
 	Page<Recipe> findFavouriteRecipesForUserBySearchCriteria(Long userId, @Param("criteria") RecipeSearchCriteria criteria, Pageable pageInfo);
 
 	void deleteByUserIdAndRecipeId(Long userId, Long recipeId);
+
+	void deleteByRecipeId(Long recipeId);
 }
