@@ -13,7 +13,7 @@ create table ingredient (id bigint, creation_date timestamp, modification_date t
 create sequence ingredient_seq start with 1 increment by 1;
 
 create table recipe (id bigint, creation_date timestamp, modification_date timestamp, additional_info varchar(255), cook_time_in_millis bigint, cover_image_file_name varchar(255), instruction clob not null , name varchar(255) not null, popularity_index bigint, portion integer not null, preparation_time_in_millis bigint, video_file_name varchar(255), owner_id bigint, primary key (id));
-create sequence recipe_seq start with 3 increment by 1;
+create sequence recipe_seq start with 11 increment by 1;
 
 create table recipe_additional_images_file_names (recipe_id bigint not null, additional_images_file_names varchar(255));
 
@@ -22,7 +22,7 @@ create table recipe_categories (recipe_id bigint not null, categories_id bigint 
 create table recipe_cuisines (recipe_id bigint not null, cuisines_id bigint not null, primary key(recipe_id, cuisines_id) );
 
 create table recipe_ingredient (id bigint, creation_date timestamp, modification_date timestamp, quantity integer not null, selected_unit varchar(255), ingredient_id bigint, recipe_id bigint, primary key (id, recipe_id, ingredient_id));
-create sequence recipe_ingredient_seq start with 6 increment by 1;
+create sequence recipe_ingredient_seq start with 122 increment by 1;
 
 create table dishbrary_right (id bigint, creation_date timestamp, modification_date timestamp, name varchar(255) not null unique, primary key (id));
 create sequence right_seq start with 13 increment by 1;
@@ -33,7 +33,7 @@ create sequence role_seq start with 3 increment by 1;
 create table dishbrary_role_rights (roles_id bigint not null, rights_id bigint not null, primary key(roles_id, rights_id) );
 
 create table dishbrary_user (id bigint, creation_date timestamp, modification_date timestamp, banned boolean, email varchar(255) unique not null, expired boolean, first_name varchar(255), last_login_date date, last_name varchar(255), password varchar(255) not null, profile_image_file_name varchar(255), username varchar(255) unique not null, role_id bigint, primary key (id));
-create sequence user_seq start with 1 increment by 1;
+create sequence user_seq start with 3 increment by 1;
 
 -- *************************************************************
 alter table favourite_recipe add constraint FK_FavRecipeRecipe foreign key (recipe_id) references recipe;
