@@ -7,6 +7,7 @@ import hu.gdf.szgd.dishbrary.db.entity.RecipeIngredient;
 import hu.gdf.szgd.dishbrary.security.DishbraryUser;
 import hu.gdf.szgd.dishbrary.test.AbstractTest;
 import hu.gdf.szgd.dishbrary.web.model.*;
+import hu.gdf.szgd.dishbrary.web.model.request.RecipeSearchCriteriaRestModel;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.ResourceAccessException;
 
 import java.util.Arrays;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
@@ -237,6 +239,70 @@ public class RESTFulServiceTest extends AbstractTest {
 		DishbraryResponse<String> response = om.readValue(responseEntity.getBody(), ResponseTypeReferences.STRING_RESPONSE_TYPE);
 
 		Assert.assertFalse(response.isError());
+	}
+
+	@Test
+	public void testSearchByIngredient() throws JsonProcessingException {
+		RecipeSearchCriteriaRestModel criteria = new RecipeSearchCriteriaRestModel();
+		IngredientRestModel ingredient = new IngredientRestModel();
+		ingredient.setId(11l);
+		criteria.setIngredientList(Arrays.asList(ingredient));
+
+		HttpEntity request = new HttpEntity(criteria);
+		ResponseEntity<String> responseEntity = restTemplate.exchange("/rest/recipe/search/all", HttpMethod.POST, request, String.class);
+
+		DishbraryResponse<RecipeSearchResponseRestModel> response = om.readValue(responseEntity.getBody(), ResponseTypeReferences.RECIPE_SEARCH_RESPONSE_TYPE);
+
+		Assert.assertFalse(response.isError());
+
+		Assert.assertEquals((long) response.getContent().getElements().get(0).getId(), 4);
+	}
+
+	@Test
+	public void testSearchByPlainText() throws JsonProcessingException {
+		RecipeSearchCriteriaRestModel criteria = new RecipeSearchCriteriaRestModel();
+		criteria.setPlainTextSearch("csirke");
+
+		HttpEntity request = new HttpEntity(criteria);
+		ResponseEntity<String> responseEntity = restTemplate.exchange("/rest/recipe/search/all", HttpMethod.POST, request, String.class);
+
+		DishbraryResponse<RecipeSearchResponseRestModel> response = om.readValue(responseEntity.getBody(), ResponseTypeReferences.RECIPE_SEARCH_RESPONSE_TYPE);
+
+		Assert.assertFalse(response.isError());
+
+		Assert.assertEquals(response.getContent().getTotalElements(), 2);
+
+		List<RecipeRestModel> recipes = response.getContent().getElements();
+
+		Assert.assertTrue(recipes.get(0).getId() == 1 || recipes.get(0).getId() == 10);
+		Assert.assertTrue(recipes.get(1).getId() == 1 || recipes.get(1).getId() == 10);
+	}
+
+	@Test
+	public void testSearchByWhatIsInTheFridge() throws JsonProcessingException {
+		RecipeSearchCriteriaRestModel criteria = new RecipeSearchCriteriaRestModel();
+		IngredientRestModel ingredient1 = new IngredientRestModel();
+		ingredient1.setId(127l);
+		IngredientRestModel ingredient2 = new IngredientRestModel();
+		ingredient2.setId(789l);
+		IngredientRestModel ingredient3 = new IngredientRestModel();
+		ingredient3.setId(620l);
+		IngredientRestModel ingredient4 = new IngredientRestModel();
+		ingredient4.setId(704l);
+		IngredientRestModel ingredient5 = new IngredientRestModel();
+		ingredient5.setId(682l);
+		criteria.setIngredientList(Arrays.asList(ingredient1, ingredient2, ingredient3, ingredient4, ingredient5));
+
+		HttpEntity request = new HttpEntity(criteria);
+		ResponseEntity<String> responseEntity = restTemplate.exchange("/rest/recipe/search/fridge", HttpMethod.POST, request, String.class);
+
+		DishbraryResponse<RecipeSearchResponseRestModel> response = om.readValue(responseEntity.getBody(), ResponseTypeReferences.RECIPE_SEARCH_RESPONSE_TYPE);
+
+		Assert.assertFalse(response.isError());
+
+		Assert.assertTrue(response.getContent().getTotalElements() == 1);
+
+		Assert.assertEquals((long) response.getContent().getElements().get(0).getId(), 8);
 	}
 
 	private HttpHeaders prepareHeadersForAuthenticatedSession() {
