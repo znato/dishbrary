@@ -82,7 +82,7 @@ public interface RecipeRepository extends PagingAndSortingRepository<Recipe, Lon
 	Page<Long> findRecipeIdsByIngredientsIn(Collection<Long> ingredientIds, Pageable pageInfo);
 
 	@EntityGraph(Recipe.FETCH_INGREDIENTS)
-	@Query("select r from Recipe r where r.id = (:recipeIds)")
+	@Query("select r from Recipe r where r.id in (:recipeIds)")
 	@Transactional
 	Page<Recipe> findByIdInAndFetchIngredients(Collection<Long> recipeIds, Pageable pageInfo);
 
