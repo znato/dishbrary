@@ -21,6 +21,7 @@
         <common-io.version>2.5</common-io.version>
         <cxf.springboot.jaxrs.version>3.3.5</cxf.springboot.jaxrs.version>
         <jackson.version>2.10.3</jackson.version>
+        <owasp-html-sanitizer.version>20191001.1</owasp-html-sanitizer.version>
     </properties>
 
     <dependencyManagement>
@@ -39,6 +40,11 @@
                 <groupId>com.fasterxml.jackson.jaxrs</groupId>
                 <artifactId>jackson-jaxrs-json-provider</artifactId>
                 <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+                <artifactId>owasp-java-html-sanitizer</artifactId>
+                <version>${owasp-html-sanitizer.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

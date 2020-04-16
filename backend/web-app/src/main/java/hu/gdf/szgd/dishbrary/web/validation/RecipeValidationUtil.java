@@ -12,7 +12,7 @@ public class RecipeValidationUtil {
 	public static void validateRecipe(RecipeRestModel recipeRestModel) {
 		StringBuilder errorMessageBuilder = null;
 
-		if (StringUtils.isEmpty(recipeRestModel.getName())) {
+		if (!StringUtils.hasText(recipeRestModel.getName())) {
 			errorMessageBuilder = createOrRetrieveErrorMessageBuilder(errorMessageBuilder, RECIPE_VALIDATION_BASE_MESAGE)
 					.append("\nA recept neve nincs kitöltve!");
 		}
@@ -25,7 +25,7 @@ public class RecipeValidationUtil {
 					.append("\nAz adagok száma nem lehet egynél kisebb!");
 		}
 
-		if (StringUtils.isEmpty(recipeRestModel.getInstruction())) {
+		if (!StringUtils.hasText(recipeRestModel.getInstruction())) {
 			errorMessageBuilder = createOrRetrieveErrorMessageBuilder(errorMessageBuilder, RECIPE_VALIDATION_BASE_MESAGE)
 					.append("\nA recept leírása hiányzik!");
 		}
@@ -38,6 +38,12 @@ public class RecipeValidationUtil {
 		if (errorMessageBuilder != null) {
 			throw new DishbraryValidationException(errorMessageBuilder.toString());
 		}
+
+		CommonValidationUtil.validateAgainstXSSAttack(recipeRestModel.getName(),
+				new DishbraryValidationException("A recept neve nem megengedett karaktereket tartalmaz!"));
+
+		CommonValidationUtil.validateAgainstXSSAttack(recipeRestModel.getInstruction(),
+				new DishbraryValidationException("A recept leírása nem megengedett karaktereket tartalmaz!"));
 	}
 
 	private static StringBuilder createOrRetrieveErrorMessageBuilder(StringBuilder errorMessageBuilder, String initialText) {

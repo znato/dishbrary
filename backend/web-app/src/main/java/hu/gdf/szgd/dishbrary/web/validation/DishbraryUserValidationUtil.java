@@ -31,6 +31,12 @@ public class DishbraryUserValidationUtil {
 		if (errorMessageBuilder != null) {
 			throw new DishbraryValidationException(errorMessageBuilder.toString());
 		}
+
+		CommonValidationUtil.validateAgainstXSSAttack(user.getUsername(), new DishbraryValidationException("A felhasznalónév nem megengedett karaktereket tartalmaz!'"));
+
+		CommonValidationUtil.validateAgainstXSSAttack(user.getFirstName(), new DishbraryValidationException("A keresztnév nem megengedett karaktereket tartalmaz!'"));
+
+		CommonValidationUtil.validateAgainstXSSAttack(user.getLastName(), new DishbraryValidationException("A vezetéknév nem megengedett karaktereket tartalmaz!'"));
 	}
 
 	private static StringBuilder initOrAppendMessageInNewLine(StringBuilder sb, String message) {
