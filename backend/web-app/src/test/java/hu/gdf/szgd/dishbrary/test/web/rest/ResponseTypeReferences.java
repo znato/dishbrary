@@ -1,4 +1,4 @@
-package test.hu.gdf.szgd.dishbrary.web.rest;
+package hu.gdf.szgd.dishbrary.test.web.rest;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import hu.gdf.szgd.dishbrary.security.DishbraryUser;

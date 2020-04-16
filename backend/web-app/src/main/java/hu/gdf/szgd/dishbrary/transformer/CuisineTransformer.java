@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -34,6 +35,10 @@ public class CuisineTransformer {
 	}
 
 	public List<Cuisine> transformAllCuisineRestModel(Iterable<CuisineRestModel> restModels) {
+		if (restModels == null) {
+			return Collections.emptyList();
+		}
+
 		List<Cuisine> retVal = new ArrayList<>();
 
 		restModels.forEach(restModel -> retVal.add(transform(restModel)));
@@ -58,6 +63,10 @@ public class CuisineTransformer {
 
 
 	public List<CuisineRestModel> transformAll(Iterable<Cuisine> cuisineEntities) {
+		if (cuisineEntities == null) {
+			return Collections.emptyList();
+		}
+
 		List<CuisineRestModel> retVal = new ArrayList<>();
 
 		cuisineEntities.forEach(cuisine -> retVal.add(transform(cuisine)));

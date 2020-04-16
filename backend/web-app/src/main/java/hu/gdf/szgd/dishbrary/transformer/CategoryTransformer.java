@@ -6,6 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -21,6 +22,10 @@ public class CategoryTransformer {
 	}
 
 	public List<Category> transformAllCategoryRestModel(Iterable<CategoryRestModel> restModels) {
+		if (restModels == null) {
+			return Collections.emptyList();
+		}
+
 		List<Category> retVal = new ArrayList<>();
 
 		restModels.forEach(restModel -> retVal.add(transform(restModel)));
@@ -35,6 +40,10 @@ public class CategoryTransformer {
 	}
 
 	public List<CategoryRestModel> transformAll(Iterable<Category> categoryEntities) {
+		if (categoryEntities == null) {
+			return Collections.emptyList();
+		}
+
 		List<CategoryRestModel> retVal = new ArrayList<>();
 
 		categoryEntities.forEach(category -> retVal.add(transform(category)));
