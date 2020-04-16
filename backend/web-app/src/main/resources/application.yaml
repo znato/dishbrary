@@ -55,7 +55,7 @@ spring:
 ---
 
 spring:
-  profiles: demo, dev
+  profiles: demo, dev, test
   h2:
     console:
       enabled: true
