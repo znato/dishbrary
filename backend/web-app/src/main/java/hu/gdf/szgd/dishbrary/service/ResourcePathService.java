@@ -11,10 +11,14 @@ import org.springframework.util.StringUtils;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.io.File.separator;
+
 @Service
 @Log4j2
 @ConfigurationProperties(prefix = "dishbrary.resources")
 public class ResourcePathService {
+	private static final String PROFILE_IMAGE_DIR_WITH_SEPARATOR = separator +"profileImg" + separator;
+
 	private Map<String, String> imageBasePathByComponentName = new HashMap<>();
 
 	public String getBasePathForComponentType(StaticResourceComponentType componentType) {
@@ -34,13 +38,13 @@ public class ResourcePathService {
 
 	public String getRemainingPathForRecipeBaseDirectory(Long recipeOwnerId, Long recipeId) {
 		return recipeOwnerId +
-				"/" + StaticResourceComponentType.RECIPE.name().toLowerCase() +
-				"/" + recipeId;
+				separator + StaticResourceComponentType.RECIPE.name().toLowerCase() +
+				separator + recipeId;
 	}
 
 	public String getRemainingPathForRecipeByComponentSubType(Long recipeOwnerId, Long recipeId, StaticResourceComponentSubType componentSubType) {
 		return getRemainingPathForRecipeBaseDirectory(recipeOwnerId, recipeId) +
-				"/" + componentSubType.name().toLowerCase();
+				separator + componentSubType.name().toLowerCase();
 	}
 
 	public String getFullResourceDirectoryRootPathForRecipe(Long recipeOwnerId, Long recipeId) {
@@ -52,7 +56,7 @@ public class ResourcePathService {
 	}
 
 	public String getFullResourceDirectoryPathForUserProfileImage(Long userId) {
-		return getBasePathForComponentType(StaticResourceComponentType.USER) + "/" + userId + "/profileImg/";
+		return getBasePathForComponentType(StaticResourceComponentType.USER) + separator + userId + PROFILE_IMAGE_DIR_WITH_SEPARATOR;
 	}
 
 	public Map<String, String> getImageBasePathByComponentName() {
