@@ -24,11 +24,6 @@ module.exports = merge(baseConfig, {
                 ]
             },
             {
-                // rule for pure CSS (without CSS modules)
-                test: /\.pure\.css$|(carousel.min.css|main.min.css)$/i,
-                use: [MiniCssExtractPlugin.loader, 'css-loader'],
-            },
-            {
                 // rule for CSS modules
                 test: /\.css$/i,
                 exclude: /\.pure\.css$|(carousel.min.css)$/i,
@@ -69,11 +64,5 @@ module.exports = merge(baseConfig, {
                 ]
             }
         ]
-    },
-    plugins: [
-        new MiniCssExtractPlugin({
-            filename: "[name].css",
-            chunkFilename: "[id].css"
-        })
-    ]
+    }
 });

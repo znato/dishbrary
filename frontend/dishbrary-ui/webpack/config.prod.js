@@ -2,6 +2,8 @@
 const merge = require("webpack-merge");
 const baseConfig = require("./config.base.js");
 
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
 module.exports = merge(baseConfig, {
     mode: "production",
     module: {
@@ -11,8 +13,19 @@ module.exports = merge(baseConfig, {
                 use: "html-loader"
             },
             {
-                test: /\.css$/,
-                use: ["style-loader", "css-loader?modules"]
+                // rule for CSS modules
+                test: /\.css$/i,
+                exclude: /\.pure\.css$|(carousel.min.css)$/i,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    {
+                        loader: "css-loader",
+                        options: {
+                            modules: true,
+                            importLoaders: 1
+                        }
+                    },
+                ],
             },
             {
                 test: /\.(woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
