@@ -54,6 +54,6 @@ public class MockDataInitializer extends AbstractDatabaseInitializer {
 		return roleRepository.count() > 0 &&
 				categoryRepository.count() > 0 &&
 				cuisineRepository.count() > 0 &&
-				ingredientRepository.count() > 0;
+				ingredientRepository.count() > 1000;
 	}
 }
