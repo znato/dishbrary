@@ -14,7 +14,7 @@ import java.util.Arrays;
 public class RecipeValidationTest extends AbstractTest {
 
 	@Test(expected = DishbraryValidationException.class)
-	public void testEmptyUserName() {
+	public void testEmptyRecipeName() {
 		RecipeRestModel recipe = new RecipeRestModel();
 		recipe.setName("     ");
 		recipe.setPortion(2);
