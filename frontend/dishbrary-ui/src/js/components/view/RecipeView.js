@@ -32,6 +32,7 @@ import * as ArrayUtils from '../../services/utils/ArrayUtils';
 import DishbraryProgress from "../general/DishbraryProgress";
 import ApplicationState from "../../ApplicationState";
 import * as ApplicationRoutes from "../../config/ApplicationRoutes";
+import DishbraryConfirmDialog from "../general/DishbraryConfirmDialog";
 
 const styles = theme => ({
     root: {
@@ -94,7 +95,12 @@ class RecipeView extends React.Component {
             showIngredients: true,
             selectedCarouselItemNumber: 0,
             recipe: {},
-            errorMessage: null
+            errorMessage: null,
+            confirmData: {
+                openConfirm: false,
+                confirmDialogTitle: "",
+                confirmDialogContent: ""
+            }
         }
     }
 
@@ -104,6 +110,28 @@ class RecipeView extends React.Component {
         } = this.props.match;
 
         this.fetchRecipeById(recipeId);
+    }
+
+    openConfirmDialog = (title, message) => () => {
+        this.setState(
+            {
+                confirmData: {
+                    openConfirm: true,
+                    confirmDialogTitle: title,
+                    confirmDialogContent: message
+                }
+            })
+    }
+
+    closeConfirmDialog = () => {
+        this.setState(
+            {
+                confirmData: {
+                    openConfirm: false,
+                    confirmDialogTitle: "",
+                    confirmDialogContent: ""
+                }
+            })
     }
 
     toggle = (propName) => () => {
@@ -338,7 +366,7 @@ class RecipeView extends React.Component {
 
     render() {
         const {classes} = this.props;
-        const {loadingState, recipe, errorMessage} = this.state;
+        const {confirmData, loadingState, recipe, errorMessage} = this.state;
 
         const {
             preparationTimeInMinute,
@@ -384,7 +412,7 @@ class RecipeView extends React.Component {
                                                     </Link>
                                                     <Tooltip title="Recept törlése" aria-label="del-recipe">
                                                         <IconButton aria-label="delete recipe"
-                                                                    onClick={this.deleteRecipe(recipe.id)}>
+                                                                    onClick={this.openConfirmDialog("Megerősítés", "Biztosan törlöd a receptet?")}>
                                                             <DeleteIcon/>
                                                         </IconButton>
                                                     </Tooltip>
@@ -425,6 +453,12 @@ class RecipeView extends React.Component {
 
                                             {this.renderInstruction(instruction)}
                                         </div>
+
+                                        <DishbraryConfirmDialog open={confirmData.openConfirm}
+                                                                dialogTitle={confirmData.confirmDialogTitle}
+                                                                dialogContent={confirmData.confirmDialogContent}
+                                                                onActionNo={this.closeConfirmDialog}
+                                                                onActionYes={this.deleteRecipe(recipe.id)}/>
                                     </div>
                                 )
                 }

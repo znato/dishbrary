@@ -22,6 +22,7 @@ import * as ApplicationRoutes from '../../config/ApplicationRoutes';
 
 import recipeService from "../../services/RecipeService";
 import DishbraryAlertDialog from "../general/DishbraryAlertDialog";
+import DishbraryConfirmDialog from "../general/DishbraryConfirmDialog";
 import ApplicationState from "../../ApplicationState";
 
 const styles = theme => ({
@@ -72,6 +73,11 @@ class DishbraryRecipeCard extends React.Component {
                 openAlert: false,
                 alertDialogTitle: "",
                 alertDialogContent: ""
+            },
+            confirmData: {
+                openConfirm: false,
+                confirmDialogTitle: "",
+                confirmDialogContent: ""
             }
         }
     }
@@ -94,6 +100,28 @@ class DishbraryRecipeCard extends React.Component {
                     openAlert: false,
                     alertDialogTitle: "",
                     alertDialogContent: ""
+                }
+            })
+    }
+
+    openConfirmDialog = (title, message) => () => {
+        this.setState(
+            {
+                confirmData: {
+                    openConfirm: true,
+                    confirmDialogTitle: title,
+                    confirmDialogContent: message
+                }
+            })
+    }
+
+    closeConfirmDialog = () => {
+        this.setState(
+            {
+                confirmData: {
+                    openConfirm: false,
+                    confirmDialogTitle: "",
+                    confirmDialogContent: ""
                 }
             })
     }
@@ -142,7 +170,7 @@ class DishbraryRecipeCard extends React.Component {
 
     render() {
         const {classes, recipeData} = this.props;
-        const {alertData, recipeAddedToFavourites, recipeRemovedFromFavourites} = this.state;
+        const {confirmData, alertData, recipeAddedToFavourites, recipeRemovedFromFavourites} = this.state;
 
         const isRecipeFavourite = (recipeData.favourite && !recipeRemovedFromFavourites) || recipeAddedToFavourites;
 
@@ -211,7 +239,7 @@ class DishbraryRecipeCard extends React.Component {
                                 </Link>
                                 <Tooltip title="Recept törlése" aria-label="del-recipe">
                                     <IconButton aria-label="delete recipe"
-                                                onClick={this.deleteRecipe(recipeData.id)}>
+                                                onClick={this.openConfirmDialog("Megerősítés", "Biztosan törlöd a receptet?")}>
                                         <DeleteIcon/>
                                     </IconButton>
                                 </Tooltip>
@@ -246,6 +274,12 @@ class DishbraryRecipeCard extends React.Component {
                                       dialogTitle={alertData.alertDialogTitle}
                                       dialogContent={alertData.alertDialogContent}
                                       onAlertDialogClose={this.closeAlertDialog}/>
+
+                <DishbraryConfirmDialog open={confirmData.openConfirm}
+                                        dialogTitle={confirmData.confirmDialogTitle}
+                                        dialogContent={confirmData.confirmDialogContent}
+                                        onActionNo={this.closeConfirmDialog}
+                                        onActionYes={this.deleteRecipe(recipeData.id)}/>
             </Card>
         );
     }
