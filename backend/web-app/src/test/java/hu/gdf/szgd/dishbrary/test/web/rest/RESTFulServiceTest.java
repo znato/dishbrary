@@ -284,13 +284,13 @@ public class RESTFulServiceTest extends AbstractTest {
 		IngredientRestModel ingredient1 = new IngredientRestModel();
 		ingredient1.setId(127l);
 		IngredientRestModel ingredient2 = new IngredientRestModel();
-		ingredient2.setId(789l);
+		ingredient2.setId(731l);
 		IngredientRestModel ingredient3 = new IngredientRestModel();
 		ingredient3.setId(620l);
 		IngredientRestModel ingredient4 = new IngredientRestModel();
-		ingredient4.setId(704l);
+		ingredient4.setId(709l);
 		IngredientRestModel ingredient5 = new IngredientRestModel();
-		ingredient5.setId(682l);
+		ingredient5.setId(816l);
 		criteria.setIngredientList(Arrays.asList(ingredient1, ingredient2, ingredient3, ingredient4, ingredient5));
 
 		HttpEntity request = new HttpEntity(criteria);
