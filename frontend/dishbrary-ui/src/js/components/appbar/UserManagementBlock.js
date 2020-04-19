@@ -80,7 +80,7 @@ class UserManagementBlock extends React.Component {
                 {loggedIn
                     ?
                     (
-                        <Button className={classes.button} color="secondary" onClick={this.logout}>Kijelentkezes</Button>
+                        <Button className={classes.button} color="secondary" onClick={this.logout}>Kijelentkezés</Button>
                     )
                     :
                     (
