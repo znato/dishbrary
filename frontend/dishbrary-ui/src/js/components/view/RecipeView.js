@@ -33,6 +33,8 @@ import DishbraryProgress from "../general/DishbraryProgress";
 import ApplicationState from "../../ApplicationState";
 import * as ApplicationRoutes from "../../config/ApplicationRoutes";
 import DishbraryConfirmDialog from "../general/DishbraryConfirmDialog";
+import FavoriteIcon from "@material-ui/icons/Favorite";
+import DishbraryAlertDialog from "../general/DishbraryAlertDialog";
 
 const styles = theme => ({
     root: {
@@ -44,7 +46,7 @@ const styles = theme => ({
         background: 'url(\'' + backgroundImg + '\') no-repeat center center fixed',
         backgroundSize: 'cover'
     },
-    editOrDelete: {
+    recipeActions: {
         float: "right",
         marginTop: "5px",
         marginRight: "15px",
@@ -96,11 +98,19 @@ class RecipeView extends React.Component {
             selectedCarouselItemNumber: 0,
             recipe: {},
             errorMessage: null,
+            alertData: {
+                openAlert: false,
+                alertDialogTitle: "",
+                alertDialogContent: "",
+                alertDialogCloseAction: null
+            },
             confirmData: {
                 openConfirm: false,
                 confirmDialogTitle: "",
                 confirmDialogContent: ""
-            }
+            },
+            recipeAddedToFavourites: false,
+            recipeRemovedFromFavourites: false
         }
     }
 
@@ -110,6 +120,30 @@ class RecipeView extends React.Component {
         } = this.props.match;
 
         this.fetchRecipeById(recipeId);
+    }
+
+    openAlertDialog = (title, message, closeAction) => {
+        this.setState(
+            {
+                alertData: {
+                    openAlert: true,
+                    alertDialogTitle: title,
+                    alertDialogContent: message,
+                    alertDialogCloseAction: typeof closeAction === "function" ? closeAction: this.closeAlertDialog
+                }
+            })
+    }
+
+    closeAlertDialog = () => {
+        this.setState(
+            {
+                alertData: {
+                    openAlert: false,
+                    alertDialogTitle: "",
+                    alertDialogContent: "",
+                    alertDialogCloseAction: this.closeAlertDialog
+                }
+            })
     }
 
     openConfirmDialog = (title, message) => () => {
@@ -357,16 +391,47 @@ class RecipeView extends React.Component {
         recipeService.deleteRecipe(recipeId)
             .then(jsonResponse => {
                 if (jsonResponse.error) {
-                    //todo handele error case
+                    this.openAlertDialog("Hiba történt!", jsonResponse.message);
                 } else {
-                    window.location.hash = "#/userOwnRecipes";
+                    this.openAlertDialog("", jsonResponse.content, () => {
+                        this.closeAlertDialog();
+                        window.location.hash = "#/userOwnRecipes";
+                    });
+                }
+            });
+    }
+
+    addRecipeToFavourites = (recipeId) => () => {
+        recipeService.addRecipeToFavourites(recipeId)
+            .then(jsonResponse => {
+                if (jsonResponse.error) {
+                    this.openAlertDialog("Hiba történt!", jsonResponse.message);
+                } else {
+                    this.setState({
+                        recipeAddedToFavourites: true,
+                        recipeRemovedFromFavourites: false
+                    });
+                }
+            });
+    }
+
+    deleteRecipeFromFavourites = (recipeId) => () => {
+        recipeService.deleteRecipeFromFavourites(recipeId)
+            .then(jsonResponse => {
+                if (jsonResponse.error) {
+                    this.openAlertDialog("Hiba történt!", jsonResponse.message);
+                } else {
+                    this.setState({
+                        recipeAddedToFavourites: false,
+                        recipeRemovedFromFavourites: true
+                    });
                 }
             });
     }
 
     render() {
         const {classes} = this.props;
-        const {confirmData, loadingState, recipe, errorMessage} = this.state;
+        const {confirmData, alertData, loadingState, recipe, errorMessage, recipeAddedToFavourites, recipeRemovedFromFavourites} = this.state;
 
         const {
             preparationTimeInMinute,
@@ -379,6 +444,8 @@ class RecipeView extends React.Component {
             instruction,
             creationDate
         } = recipe;
+
+        const isRecipeFavourite = (recipe.favourite && !recipeRemovedFromFavourites) || recipeAddedToFavourites;
 
         const cDate = new Date(creationDate);
         const formattedCreationDate = cDate.getFullYear() + "/" + (cDate.getMonth() + 1) + "/" + cDate.getDate();
@@ -400,25 +467,49 @@ class RecipeView extends React.Component {
                                 :
                                 (
                                     <div id="recipe-container" className={classes.recipeContainer}>
-                                        {
-                                            ApplicationState.isUserAuthenticated && recipe.editable ?
-                                                <div className={classes.editOrDelete}>
-                                                    <Link to={ApplicationRoutes.editRecipePath + "/" + recipe.id}>
-                                                        <Tooltip title="Recept szerkesztése" aria-label="edit-recipe">
-                                                            <IconButton aria-label="edit recipe">
-                                                                <EditIcon/>
+                                        <div className={classes.recipeActions}>
+                                            {
+                                                ApplicationState.isUserAuthenticated && recipe.editable ?
+                                                    <React.Fragment>
+                                                        <Link to={ApplicationRoutes.editRecipePath + "/" + recipe.id}>
+                                                            <Tooltip title="Recept szerkesztése"
+                                                                     aria-label="edit-recipe">
+                                                                <IconButton aria-label="edit recipe">
+                                                                    <EditIcon/>
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                        </Link>
+                                                        <Tooltip title="Recept törlése" aria-label="del-recipe">
+                                                            <IconButton aria-label="delete recipe"
+                                                                        onClick={this.openConfirmDialog("Megerősítés", "Biztosan törlöd a receptet?")}>
+                                                                <DeleteIcon/>
                                                             </IconButton>
                                                         </Tooltip>
-                                                    </Link>
-                                                    <Tooltip title="Recept törlése" aria-label="del-recipe">
-                                                        <IconButton aria-label="delete recipe"
-                                                                    onClick={this.openConfirmDialog("Megerősítés", "Biztosan törlöd a receptet?")}>
-                                                            <DeleteIcon/>
+                                                    </React.Fragment>
+                                                    : ""
+                                            }
+                                            {
+                                                ApplicationState.isUserAuthenticated && ((recipe.likeable && !isRecipeFavourite) || recipeRemovedFromFavourites) ?
+                                                    <Tooltip title="Kedvencekhez adás" aria-label="add-to-fav">
+                                                        <IconButton aria-label="add to favorites"
+                                                                    onClick={this.addRecipeToFavourites(recipe.id)}>
+                                                            <FavoriteIcon/>
                                                         </IconButton>
                                                     </Tooltip>
-                                                </div>
-                                                : ""
-                                        }
+                                                    : ""
+                                            }
+                                            {
+                                                ApplicationState.isUserAuthenticated && isRecipeFavourite ?
+                                                    <Tooltip title="Eltávolítás a kedvencekhez közül"
+                                                             aria-label="remove-from-fav">
+                                                        <IconButton aria-label="remove from favorites"
+                                                                    onClick={this.deleteRecipeFromFavourites(recipe.id)}>
+                                                            <FavoriteIcon color="secondary"/>
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                    : ""
+                                            }
+                                        </div>
 
                                         <Typography component="h1" variant="h5">
                                             {recipe.name}
@@ -453,6 +544,11 @@ class RecipeView extends React.Component {
 
                                             {this.renderInstruction(instruction)}
                                         </div>
+
+                                        <DishbraryAlertDialog open={alertData.openAlert}
+                                                              dialogTitle={alertData.alertDialogTitle}
+                                                              dialogContent={alertData.alertDialogContent}
+                                                              onAlertDialogClose={alertData.alertDialogCloseAction}/>
 
                                         <DishbraryConfirmDialog open={confirmData.openConfirm}
                                                                 dialogTitle={confirmData.confirmDialogTitle}
