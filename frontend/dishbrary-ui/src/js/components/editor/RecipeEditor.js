@@ -95,6 +95,19 @@ class RecipeEditor extends React.Component {
         super(props);
 
         const {recipe} = props;
+
+        let videoData = null;
+
+        if (recipe && recipe.videoFileName) {
+            let video =  new Blob([""], {type : 'video/mp4'});
+            video.name = recipe.videoFileName;
+
+            videoData = {
+                file: video,
+                videoPreviewUrl: recipeService.getRecipeVideoPath(recipe.id, recipe.videoFileName)
+            };
+        }
+
         this.state = {
             isEditMode: recipe ? true : false,
             recipeEdited: false,
@@ -139,10 +152,7 @@ class RecipeEditor extends React.Component {
                     label: cuisine.name
                 };
             }) : [],
-            videoFileUploaderData: recipe && recipe.videoFileName ? {
-                file: new File([""], recipe.videoFileName),
-                videoPreviewUrl: recipeService.getRecipeVideoPath(recipe.id, recipe.videoFileName)
-            } : null,
+            videoFileUploaderData: videoData,
             imageFileUploaderData: {
                 selectedImages: null,
                 selectedCoverImageFileName: null
@@ -160,8 +170,12 @@ class RecipeEditor extends React.Component {
             if (ArrayUtils.isNotEmpty(recipe.additionalImagesFileNames)) {
                 this.state.imageFileUploaderData = {
                     selectedImages: recipe.additionalImagesFileNames.map(imageName => {
+                        //use Blob instead of File since MS Edge does not support the File constructor
+                        let image =  new Blob([], {type : 'image/jpeg'});
+                        image.name = imageName;
+
                         return {
-                            file: new File([""], imageName),
+                            file: image,
                             imagePreviewUrl: recipeService.getRecipeImagePath(recipe.id, imageName)
                         };
                     })
@@ -176,9 +190,13 @@ class RecipeEditor extends React.Component {
                     this.state.imageFileUploaderData.selectedImages = [];
                 }
 
+                //use Blob instead of File since MS Edge does not support the File constructor
+                let coverImage =  new Blob([], {type : 'image/jpeg'});
+                coverImage.name = recipe.coverImageFileName;
+
                 this.state.imageFileUploaderData.selectedImages.push(
                     {
-                        file: new File([""], recipe.coverImageFileName),
+                        file: coverImage,
                         imagePreviewUrl: recipeService.getRecipeImagePath(recipe.id, recipe.coverImageFileName)
                     }
                 )

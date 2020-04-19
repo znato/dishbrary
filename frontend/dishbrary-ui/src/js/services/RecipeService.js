@@ -16,6 +16,17 @@ class RecipeService {
         return DishbraryServerRestClient.put(updateRecipePath, recipe);
     }
 
+    updateRecipeCoverImage = (recipeId, newCoverImageName) => {
+        const updateRecipeCoverImagePath = "recipe/update/coverImage/" + recipeId;
+
+        let recipeWrapper = {
+            id: recipeId,
+            coverImageFileName: newCoverImageName
+        };
+
+        return DishbraryServerRestClient.put(updateRecipeCoverImagePath, recipeWrapper);
+    }
+
     deleteRecipe = (recipeId) => {
         const deleteRecipePath = `recipe/delete/${recipeId}`;
         return DishbraryServerRestClient.del(deleteRecipePath);
@@ -59,7 +70,7 @@ class RecipeService {
     addRecipeToFavourites = (recipeId) => {
         const addToFavouritePath = `recipe/favourites/add/${recipeId}`;
 
-        return DishbraryServerRestClient.put(addToFavouritePath);
+        return DishbraryServerRestClient.post(addToFavouritePath);
     }
 
     deleteRecipeFromFavourites = (recipeId) => {

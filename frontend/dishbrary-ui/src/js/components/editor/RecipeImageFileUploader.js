@@ -115,11 +115,37 @@ class RecipeImageFileUploader extends React.Component {
 
         const {selectedFiles, selectedCoverImageFileName} = this.state;
 
-        formData.set("selectedCoverImageFileName", selectedCoverImageFileName);
-
+        let onlyCoverImageUpdated = true;
         for (let i = 0; i < selectedFiles.length; i++) {
-            formData.append("recipeImage", selectedFiles[i].file, selectedFiles[i].file.name);
+            let file = selectedFiles[i].file;
+            formData.append("recipeImage", file, file.name);
+
+            //in case component is in edit mode and all file has 0 size it means the file data is only fake for the previews, but new files has not been chosen
+            if (file.size > 0) {
+                onlyCoverImageUpdated = false;
+            }
         }
+
+        if (onlyCoverImageUpdated) {
+            recipeService.updateRecipeCoverImage(recipeId, selectedCoverImageFileName)
+                .then(jsonResponse => {
+                    if (jsonResponse.error) {
+                        this.openAlertDialog("Hiba történt!", jsonResponse.message);
+                    } else {
+                        //call additional callback if present
+                        if (typeof this.props.onUploadSuccess === "function") {
+                            this.props.onUploadSuccess({
+                                selectedImages: selectedFiles,
+                                selectedCoverImageFileName: selectedCoverImageFileName
+                            });
+                        }
+                    }
+                });
+
+            return;
+        }
+
+        formData.set("selectedCoverImageFileName", selectedCoverImageFileName);
 
         recipeService.saveRecipeImages(recipeId, formData)
             .then(jsonResponse => {

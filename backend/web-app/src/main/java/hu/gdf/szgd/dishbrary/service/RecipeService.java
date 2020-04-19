@@ -257,6 +257,24 @@ public class RecipeService {
 	}
 
 	@Transactional
+	public RecipeRestModel updateRecipeCoverImage(Long recipeId, String newCoverImageName) {
+		Objects.requireNonNull(recipeId, "A receptet nem sikerült azonosítani mert hiányzik az id mező!");
+
+		Optional<Recipe> recipeToUpdateHolder = recipeRepository.findById(recipeId);
+		if (!recipeToUpdateHolder.isPresent()) {
+			throw new DishbraryValidationException("Nem létezik recept a következő azonosíto alatt: " + recipeId + "!");
+		}
+
+		Recipe recipeToUpdate = recipeToUpdateHolder.get();
+
+		recipeToUpdate.setCoverImageFileName(newCoverImageName);
+
+		recipeToUpdate = recipeRepository.save(recipeToUpdate);
+
+		return recipeTransformer.transform(recipeRepository.save(recipeToUpdate));
+	}
+
+	@Transactional
 	public void deleteRecipeById(Long recipeId) {
 		try {
 			favouriteRecipeRepository.deleteByRecipeId(recipeId);

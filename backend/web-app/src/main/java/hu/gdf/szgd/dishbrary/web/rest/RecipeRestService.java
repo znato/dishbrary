@@ -120,6 +120,16 @@ public class RecipeRestService {
 		).build();
 	}
 
+	@PUT
+	@Path("/update/coverImage/{recipeId}")
+	@PreAuthorize("hasAuthority('WRITE_RECIPE')")
+	@ValidateRecipeBelongsToLoggedInUser
+	public Response updateRecipeCoverImage(@PathParam("recipeId") @RecipeId Long recipeId, RecipeRestModel coverImageWrapper) {
+		return Response.ok(
+				new DishbraryResponse<>(recipeService.updateRecipeCoverImage(recipeId, coverImageWrapper.getCoverImageFileName()))
+		).build();
+	}
+
 	@DELETE
 	@Path("/delete/{recipeId}")
 	@PreAuthorize("hasAuthority('WRITE_RECIPE')")
@@ -145,7 +155,7 @@ public class RecipeRestService {
 		).build();
 	}
 
-	@PUT
+	@POST
 	@Path("/favourites/add/{recipeId}")
 	@PreAuthorize("hasRole('SIMPLE_USER')")
 	public Response addRecipesToFavourites(@PathParam("recipeId") Long recipeId) {
