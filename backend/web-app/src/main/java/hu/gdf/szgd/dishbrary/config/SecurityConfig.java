@@ -44,8 +44,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
-	@Profile("ui-dev")
-	 //Enable CORS for local UI development only
+	@Profile("external-ui")
+	 //Enable CORS for external ui, for example local UI development
 	protected CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(Arrays.asList("http://localhost:9000"));
