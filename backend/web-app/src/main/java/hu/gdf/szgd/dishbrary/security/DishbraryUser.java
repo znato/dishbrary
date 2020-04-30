@@ -65,4 +65,8 @@ public class DishbraryUser implements UserDetails {
 	public boolean isEnabled() {
 		return !expired && !banned;
 	}
+
+	public boolean isAnonymous() {
+		return false;
+	}
 }

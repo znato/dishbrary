@@ -8,4 +8,9 @@ public class AnonymousDishbraryUser extends DishbraryUser {
 		setUsername("Anonymous");
 		setGrantedAuthorities(AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"));
 	}
+
+	@Override
+	public boolean isAnonymous() {
+		return true;
+	}
 }

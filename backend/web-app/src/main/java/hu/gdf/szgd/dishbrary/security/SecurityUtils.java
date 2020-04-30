@@ -13,6 +13,6 @@ public class SecurityUtils {
 	}
 
 	public static boolean isSessionAuthenticated() {
-		return !(getDishbraryUserFromContext() instanceof AnonymousDishbraryUser);
+		return !getDishbraryUserFromContext().isAnonymous();
 	}
 }
